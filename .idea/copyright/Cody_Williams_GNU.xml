@@ -1,0 +1,6 @@
+<component name="CopyrightManager">
+  <copyright>
+    <option name="notice" value="Copyright (c) &amp;#36;file.lastModified.format(&quot;yyyy&quot;). Cody Williams&#10; &#10;&amp;#36;file.fileName is part of Quidditch Season Generator.&#10; &#10;Quidditch Season Generator is free software: you can redistribute it and/or modify it under the terms of the GNU&#10;General Public License as published by the Free Software Foundation, either version 3 of the License, or&#10;(at your option) any later version.&#10;&#10;Quidditch Season Generator is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;&#10;without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.&#10;See the GNU General Public License for more details.&#10;&#10;You should have received a copy of the GNU General Public License along with Foobar.&#10;If not, see &lt;https://www.gnu.org/licenses/&gt;." />
+    <option name="myName" value="Cody Williams GNU" />
+  </copyright>
+</component>
