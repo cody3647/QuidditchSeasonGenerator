@@ -25,6 +25,9 @@ public class Settings {
     int year;
     int seed;
     List<Team> teams;
+    public Settings (){
+
+    }
 
 
     public Settings(List<Team> teams, int year, int seed) {
