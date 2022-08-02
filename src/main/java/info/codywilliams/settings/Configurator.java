@@ -3,6 +3,10 @@ package info.codywilliams.settings;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import info.codywilliams.models.*;
+import info.codywilliams.models.player.Beater;
+import info.codywilliams.models.player.Chaser;
+import info.codywilliams.models.player.Keeper;
+import info.codywilliams.models.player.Seeker;
 import info.codywilliams.util.Util;
 
 import java.io.FileNotFoundException;
@@ -42,7 +46,7 @@ public class Configurator {
      *
      * @param path the Path of the configFile or directory where config file is located.
      */
-    private void setSettingsFile(Path path) {
+    public void setSettingsFile(Path path) {
         this.settingsFile = path;
     }
 

@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2022. Cody Williams
  *
- * Beater.java is part of Quidditch Season Generator.
+ * Keeper.java is part of Quidditch Season Generator.
  *
  * Quidditch Season Generator is free software: you can redistribute it and/or modify it under the terms of the GNU
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
@@ -15,16 +15,18 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package info.codywilliams.models;
+package info.codywilliams.models.player;
 
-public class Beater extends Player{
+import info.codywilliams.models.Player;
 
-    public Beater(String name, String[] pronouns, int skillDefense, int skillOffense, int skillTeamwork, int foulLikelihood) {
+public class Keeper extends Player {
+
+    public Keeper(String name, String[] pronouns, int skillDefense, int skillOffense, int skillTeamwork, int foulLikelihood) {
         super(name, pronouns, skillDefense, skillOffense, skillTeamwork, foulLikelihood);
     }
 
     @Override
     public String toString() {
-        return "Beater" + super.toString();
+        return "Keeper" + super.toString();
     }
 }
