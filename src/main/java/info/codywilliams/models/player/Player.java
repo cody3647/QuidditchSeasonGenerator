@@ -161,16 +161,6 @@ abstract public class Player implements Serializable, Comparable<Player> {
 
     @Override
     public String toString() {
-        /*String.format("{%s:\n\tSkillLevel: %2d, SkillOffense: %2d, Skill Defense: %2d, SkillTeamwork: %2d, FoulLikelihood: %2d, InjuryHistory: %s}",
-                name.get(), skillLevel.intValue(), skillOffense.get(), skillDefense.get(), skillTeamwork.get(), foulLikelihood.get(), injuryHistory.toString());
-        return "{" +
-                "name='" + name + '\'' +
-                ", injuryHistory=" + injuryHistory +
-                ", skillDefense=" + skillDefense +
-                ", skillOffense=" + skillOffense +
-                ", foulLikelihood=" + foulLikelihood +
-                '}';
-                */
          return String.format("{Name: %-25s SkillLevel: %2d, SkillOffense: %2d, Skill Defense: %2d, SkillTeamwork: %2d, FoulLikelihood: %2d, InjuryHistory: %s}",
                  getName(), getSkillLevel(), getSkillOffense(), getSkillDefense(), getSkillTeamwork(), getFoulLikelihood(), getInjuryHistory());
     }
