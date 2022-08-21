@@ -5,6 +5,9 @@ module QuidditchSeasonGenerator {
     requires javafx.graphics;
     requires com.fasterxml.jackson.annotation;
     requires com.fasterxml.jackson.databind;
+    requires org.kordamp.ikonli.core;
+    requires org.kordamp.ikonli.javafx;
+    requires org.kordamp.ikonli.fontawesome5;
     requires org.slf4j;
     requires ch.qos.logback.classic;
 
