@@ -1,0 +1,822 @@
+{
+  "teams" : [ {
+    "name" : "Fox",
+    "home" : "Fox Pitch",
+    "beaters" : [ {
+      "name" : "Morag Luffman",
+      "skillDefense" : 9,
+      "skillOffense" : 1,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 6
+    }, {
+      "name" : "Roddy Ponsford",
+      "skillDefense" : 1,
+      "skillOffense" : 2,
+      "skillTeamwork" : 2,
+      "foulLikelihood" : 5
+    }, {
+      "name" : "Marley Gamp",
+      "skillDefense" : 4,
+      "skillOffense" : 6,
+      "skillTeamwork" : 1,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "Mac Atha",
+      "skillDefense" : 5,
+      "skillOffense" : 8,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 2
+    } ],
+    "chasers" : [ {
+      "name" : "Alannah Canning",
+      "skillDefense" : 6,
+      "skillOffense" : 1,
+      "skillTeamwork" : 2,
+      "foulLikelihood" : 9
+    }, {
+      "name" : "Regan Tyrrell",
+      "skillDefense" : 9,
+      "skillOffense" : 10,
+      "skillTeamwork" : 3,
+      "foulLikelihood" : 3
+    }, {
+      "name" : "Haven Ali",
+      "skillDefense" : 7,
+      "skillOffense" : 2,
+      "skillTeamwork" : 1,
+      "foulLikelihood" : 10
+    }, {
+      "name" : "Hugo Davda",
+      "skillDefense" : 6,
+      "skillOffense" : 4,
+      "skillTeamwork" : 8,
+      "foulLikelihood" : 8
+    }, {
+      "name" : "Heddwyn Wyman",
+      "skillDefense" : 6,
+      "skillOffense" : 7,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 7
+    }, {
+      "name" : "Creighton Ogg",
+      "skillDefense" : 9,
+      "skillOffense" : 7,
+      "skillTeamwork" : 4,
+      "foulLikelihood" : 9
+    } ],
+    "keepers" : [ {
+      "name" : "Ellie Roberts",
+      "skillDefense" : 7,
+      "skillOffense" : 9,
+      "skillTeamwork" : 3,
+      "foulLikelihood" : 5
+    }, {
+      "name" : "Cuddy Lewis",
+      "skillDefense" : 5,
+      "skillOffense" : 8,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 9
+    } ],
+    "seekers" : [ {
+      "name" : "Keh Shearing",
+      "skillDefense" : 6,
+      "skillOffense" : 4,
+      "skillTeamwork" : 1,
+      "foulLikelihood" : 1
+    }, {
+      "name" : "Pilip Dixon",
+      "skillDefense" : 6,
+      "skillOffense" : 10,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 3
+    } ]
+  }, {
+    "name" : "Blue whale",
+    "home" : "Blue whale Pitch",
+    "beaters" : [ {
+      "name" : "Ross Richards",
+      "skillDefense" : 7,
+      "skillOffense" : 5,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 9
+    }, {
+      "name" : "Thomas Slughorn",
+      "skillDefense" : 6,
+      "skillOffense" : 6,
+      "skillTeamwork" : 8,
+      "foulLikelihood" : 9
+    }, {
+      "name" : "Dean McLeod",
+      "skillDefense" : 2,
+      "skillOffense" : 7,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 9
+    }, {
+      "name" : "Cory Oakey",
+      "skillDefense" : 6,
+      "skillOffense" : 8,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 9
+    } ],
+    "chasers" : [ {
+      "name" : "Avery Whittle",
+      "skillDefense" : 9,
+      "skillOffense" : 7,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 5
+    }, {
+      "name" : "Zara Knight",
+      "skillDefense" : 3,
+      "skillOffense" : 10,
+      "skillTeamwork" : 10,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "Lilidh Carter",
+      "skillDefense" : 5,
+      "skillOffense" : 5,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 3
+    }, {
+      "name" : "Archibald Rey",
+      "skillDefense" : 4,
+      "skillOffense" : 4,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 3
+    }, {
+      "name" : "Courtney Healey",
+      "skillDefense" : 10,
+      "skillOffense" : 1,
+      "skillTeamwork" : 3,
+      "foulLikelihood" : 6
+    }, {
+      "name" : "Peadar Burrough",
+      "skillDefense" : 8,
+      "skillOffense" : 9,
+      "skillTeamwork" : 8,
+      "foulLikelihood" : 9
+    } ],
+    "keepers" : [ {
+      "name" : "Storm Weatherford",
+      "skillDefense" : 3,
+      "skillOffense" : 10,
+      "skillTeamwork" : 8,
+      "foulLikelihood" : 2
+    }, {
+      "name" : "Ryan Davidson",
+      "skillDefense" : 7,
+      "skillOffense" : 6,
+      "skillTeamwork" : 8,
+      "foulLikelihood" : 8
+    } ],
+    "seekers" : [ {
+      "name" : "Liam Watkins",
+      "skillDefense" : 8,
+      "skillOffense" : 5,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 9
+    }, {
+      "name" : "James Avery",
+      "skillDefense" : 10,
+      "skillOffense" : 9,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 8
+    } ]
+  }, {
+    "name" : "Chimpanzee",
+    "home" : "Chimpanzee Pitch",
+    "beaters" : [ {
+      "name" : "Amos Marden",
+      "skillDefense" : 3,
+      "skillOffense" : 6,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 2
+    }, {
+      "name" : "Haye Eckersley",
+      "skillDefense" : 1,
+      "skillOffense" : 6,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 8
+    }, {
+      "name" : "Eiriol Cronk",
+      "skillDefense" : 10,
+      "skillOffense" : 7,
+      "skillTeamwork" : 10,
+      "foulLikelihood" : 3
+    }, {
+      "name" : "Sage Lloyd",
+      "skillDefense" : 6,
+      "skillOffense" : 4,
+      "skillTeamwork" : 1,
+      "foulLikelihood" : 8
+    } ],
+    "chasers" : [ {
+      "name" : "Lennox Adamson",
+      "skillDefense" : 10,
+      "skillOffense" : 1,
+      "skillTeamwork" : 6,
+      "foulLikelihood" : 1
+    }, {
+      "name" : "Diarmuid Asquith",
+      "skillDefense" : 2,
+      "skillOffense" : 5,
+      "skillTeamwork" : 10,
+      "foulLikelihood" : 1
+    }, {
+      "name" : "Lesly Robinson",
+      "skillDefense" : 1,
+      "skillOffense" : 7,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 10
+    }, {
+      "name" : "Neil Thomas",
+      "skillDefense" : 3,
+      "skillOffense" : 7,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 1
+    }, {
+      "name" : "Martin Alder",
+      "skillDefense" : 10,
+      "skillOffense" : 5,
+      "skillTeamwork" : 3,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "Anabel Mahal",
+      "skillDefense" : 1,
+      "skillOffense" : 6,
+      "skillTeamwork" : 1,
+      "foulLikelihood" : 7
+    } ],
+    "keepers" : [ {
+      "name" : "Osmund Henney",
+      "skillDefense" : 10,
+      "skillOffense" : 7,
+      "skillTeamwork" : 2,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "Sinclair Nelis",
+      "skillDefense" : 6,
+      "skillOffense" : 3,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 5
+    } ],
+    "seekers" : [ {
+      "name" : "Beathan Hall",
+      "skillDefense" : 7,
+      "skillOffense" : 5,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "Damhan Sanger",
+      "skillDefense" : 8,
+      "skillOffense" : 6,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 9
+    } ]
+  }, {
+    "name" : "Flamingo",
+    "home" : "Flamingo Pitch",
+    "beaters" : [ {
+      "name" : "Elliot Ollivander",
+      "skillDefense" : 10,
+      "skillOffense" : 9,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 6
+    }, {
+      "name" : "Drummand Nurse",
+      "skillDefense" : 8,
+      "skillOffense" : 8,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 1
+    }, {
+      "name" : "Aonghus Greenwood",
+      "skillDefense" : 3,
+      "skillOffense" : 2,
+      "skillTeamwork" : 2,
+      "foulLikelihood" : 3
+    }, {
+      "name" : "Shannon Snape",
+      "skillDefense" : 8,
+      "skillOffense" : 7,
+      "skillTeamwork" : 3,
+      "foulLikelihood" : 6
+    } ],
+    "chasers" : [ {
+      "name" : "Absalom Clack",
+      "skillDefense" : 6,
+      "skillOffense" : 7,
+      "skillTeamwork" : 2,
+      "foulLikelihood" : 3
+    }, {
+      "name" : "Sachairi Sayre",
+      "skillDefense" : 10,
+      "skillOffense" : 7,
+      "skillTeamwork" : 3,
+      "foulLikelihood" : 5
+    }, {
+      "name" : "Ainsley Coppock",
+      "skillDefense" : 1,
+      "skillOffense" : 6,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "Andrew Cardon",
+      "skillDefense" : 9,
+      "skillOffense" : 1,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 1
+    }, {
+      "name" : "Ninian Hazeldine",
+      "skillDefense" : 9,
+      "skillOffense" : 9,
+      "skillTeamwork" : 10,
+      "foulLikelihood" : 2
+    }, {
+      "name" : "Matthias Langford",
+      "skillDefense" : 7,
+      "skillOffense" : 3,
+      "skillTeamwork" : 10,
+      "foulLikelihood" : 2
+    } ],
+    "keepers" : [ {
+      "name" : "Jodie Roughley",
+      "skillDefense" : 10,
+      "skillOffense" : 5,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 3
+    }, {
+      "name" : "Stuart Hopkins",
+      "skillDefense" : 4,
+      "skillOffense" : 1,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 3
+    } ],
+    "seekers" : [ {
+      "name" : "Moray MacDougal",
+      "skillDefense" : 3,
+      "skillOffense" : 6,
+      "skillTeamwork" : 10,
+      "foulLikelihood" : 2
+    }, {
+      "name" : "Fraser Edison",
+      "skillDefense" : 4,
+      "skillOffense" : 6,
+      "skillTeamwork" : 4,
+      "foulLikelihood" : 3
+    } ]
+  }, {
+    "name" : "Panda",
+    "home" : "Panda Pitch",
+    "beaters" : [ {
+      "name" : "Quany Moody",
+      "skillDefense" : 5,
+      "skillOffense" : 9,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "Caoimhín Cook",
+      "skillDefense" : 2,
+      "skillOffense" : 1,
+      "skillTeamwork" : 8,
+      "foulLikelihood" : 2
+    }, {
+      "name" : "Mikenzie Flint",
+      "skillDefense" : 10,
+      "skillOffense" : 7,
+      "skillTeamwork" : 2,
+      "foulLikelihood" : 5
+    }, {
+      "name" : "Railbeart Hogg",
+      "skillDefense" : 9,
+      "skillOffense" : 8,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 6
+    } ],
+    "chasers" : [ {
+      "name" : "Tegan Phillips",
+      "skillDefense" : 3,
+      "skillOffense" : 5,
+      "skillTeamwork" : 6,
+      "foulLikelihood" : 7
+    }, {
+      "name" : "Alwena Jury",
+      "skillDefense" : 3,
+      "skillOffense" : 10,
+      "skillTeamwork" : 2,
+      "foulLikelihood" : 2
+    }, {
+      "name" : "Cuithbeart Booth",
+      "skillDefense" : 10,
+      "skillOffense" : 1,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 6
+    }, {
+      "name" : "Paton Ruthven",
+      "skillDefense" : 7,
+      "skillOffense" : 2,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 2
+    }, {
+      "name" : "Fearghas McClerren",
+      "skillDefense" : 7,
+      "skillOffense" : 6,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 9
+    }, {
+      "name" : "Michelle Lavin",
+      "skillDefense" : 3,
+      "skillOffense" : 4,
+      "skillTeamwork" : 2,
+      "foulLikelihood" : 6
+    } ],
+    "keepers" : [ {
+      "name" : "Harry Farage",
+      "skillDefense" : 2,
+      "skillOffense" : 3,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 7
+    }, {
+      "name" : "Armstrong Scholes",
+      "skillDefense" : 1,
+      "skillOffense" : 1,
+      "skillTeamwork" : 2,
+      "foulLikelihood" : 5
+    } ],
+    "seekers" : [ {
+      "name" : "Cailean Travers",
+      "skillDefense" : 9,
+      "skillOffense" : 8,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 9
+    }, {
+      "name" : "Jordan Cadywould",
+      "skillDefense" : 1,
+      "skillOffense" : 6,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 2
+    } ]
+  }, {
+    "name" : "Gorilla",
+    "home" : "Gorilla Pitch",
+    "beaters" : [ {
+      "name" : "Ruiseart Colyer",
+      "skillDefense" : 9,
+      "skillOffense" : 10,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "Erroll Gale",
+      "skillDefense" : 6,
+      "skillOffense" : 5,
+      "skillTeamwork" : 6,
+      "foulLikelihood" : 10
+    }, {
+      "name" : "Fib Wray",
+      "skillDefense" : 7,
+      "skillOffense" : 1,
+      "skillTeamwork" : 2,
+      "foulLikelihood" : 2
+    }, {
+      "name" : "Gruffydd Heal",
+      "skillDefense" : 3,
+      "skillOffense" : 2,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 2
+    } ],
+    "chasers" : [ {
+      "name" : "Tommy Khela",
+      "skillDefense" : 1,
+      "skillOffense" : 7,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 3
+    }, {
+      "name" : "Tagwen Brannion",
+      "skillDefense" : 4,
+      "skillOffense" : 8,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "South Boothman",
+      "skillDefense" : 9,
+      "skillOffense" : 1,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 3
+    }, {
+      "name" : "Daisy Wright",
+      "skillDefense" : 1,
+      "skillOffense" : 9,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "Ranulf Smith",
+      "skillDefense" : 4,
+      "skillOffense" : 9,
+      "skillTeamwork" : 6,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "Rhiain Spruance",
+      "skillDefense" : 8,
+      "skillOffense" : 10,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 4
+    } ],
+    "keepers" : [ {
+      "name" : "Perry Halling",
+      "skillDefense" : 7,
+      "skillOffense" : 8,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 5
+    }, {
+      "name" : "Cenric Moak",
+      "skillDefense" : 6,
+      "skillOffense" : 2,
+      "skillTeamwork" : 10,
+      "foulLikelihood" : 10
+    } ],
+    "seekers" : [ {
+      "name" : "Jaine Crabbe",
+      "skillDefense" : 7,
+      "skillOffense" : 6,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 7
+    }, {
+      "name" : "Norval Fawley",
+      "skillDefense" : 3,
+      "skillOffense" : 10,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 5
+    } ]
+  }, {
+    "name" : "Toad",
+    "home" : "Toad Pitch",
+    "beaters" : [ {
+      "name" : "Aillig Gaunt",
+      "skillDefense" : 1,
+      "skillOffense" : 9,
+      "skillTeamwork" : 4,
+      "foulLikelihood" : 6
+    }, {
+      "name" : "Jane Carrow",
+      "skillDefense" : 5,
+      "skillOffense" : 1,
+      "skillTeamwork" : 10,
+      "foulLikelihood" : 3
+    }, {
+      "name" : "Aeres Patel",
+      "skillDefense" : 9,
+      "skillOffense" : 3,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "Neacal Thunder",
+      "skillDefense" : 7,
+      "skillOffense" : 6,
+      "skillTeamwork" : 8,
+      "foulLikelihood" : 5
+    } ],
+    "chasers" : [ {
+      "name" : "Harper Black",
+      "skillDefense" : 5,
+      "skillOffense" : 1,
+      "skillTeamwork" : 3,
+      "foulLikelihood" : 5
+    }, {
+      "name" : "Bac Tripe",
+      "skillDefense" : 3,
+      "skillOffense" : 9,
+      "skillTeamwork" : 6,
+      "foulLikelihood" : 10
+    }, {
+      "name" : "Clyde Wheeler",
+      "skillDefense" : 1,
+      "skillOffense" : 4,
+      "skillTeamwork" : 8,
+      "foulLikelihood" : 2
+    }, {
+      "name" : "Rhiannon Chaloner",
+      "skillDefense" : 8,
+      "skillOffense" : 6,
+      "skillTeamwork" : 1,
+      "foulLikelihood" : 5
+    }, {
+      "name" : "Micheal Jump",
+      "skillDefense" : 2,
+      "skillOffense" : 5,
+      "skillTeamwork" : 4,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "Lorcán Walker",
+      "skillDefense" : 3,
+      "skillOffense" : 4,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 3
+    } ],
+    "keepers" : [ {
+      "name" : "Gideon Wrigley",
+      "skillDefense" : 5,
+      "skillOffense" : 9,
+      "skillTeamwork" : 1,
+      "foulLikelihood" : 8
+    }, {
+      "name" : "Elis Edis",
+      "skillDefense" : 9,
+      "skillOffense" : 2,
+      "skillTeamwork" : 4,
+      "foulLikelihood" : 2
+    } ],
+    "seekers" : [ {
+      "name" : "Maddock Mogg",
+      "skillDefense" : 2,
+      "skillOffense" : 10,
+      "skillTeamwork" : 6,
+      "foulLikelihood" : 5
+    }, {
+      "name" : "Eric Urquart",
+      "skillDefense" : 9,
+      "skillOffense" : 8,
+      "skillTeamwork" : 6,
+      "foulLikelihood" : 8
+    } ]
+  }, {
+    "name" : "Penguin",
+    "home" : "Penguin Pitch",
+    "beaters" : [ {
+      "name" : "Jack Tremblay",
+      "skillDefense" : 5,
+      "skillOffense" : 3,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 7
+    }, {
+      "name" : "Aerona Armour",
+      "skillDefense" : 3,
+      "skillOffense" : 6,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 2
+    }, {
+      "name" : "Haf Gorla",
+      "skillDefense" : 1,
+      "skillOffense" : 3,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 7
+    }, {
+      "name" : "Bracken Gears",
+      "skillDefense" : 10,
+      "skillOffense" : 2,
+      "skillTeamwork" : 2,
+      "foulLikelihood" : 2
+    } ],
+    "chasers" : [ {
+      "name" : "Cillian Corbyn",
+      "skillDefense" : 7,
+      "skillOffense" : 10,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 3
+    }, {
+      "name" : "Hart Shaw",
+      "skillDefense" : 2,
+      "skillOffense" : 5,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 1
+    }, {
+      "name" : "Christie Kakaire",
+      "skillDefense" : 2,
+      "skillOffense" : 1,
+      "skillTeamwork" : 3,
+      "foulLikelihood" : 2
+    }, {
+      "name" : "Gwennan Shenton",
+      "skillDefense" : 4,
+      "skillOffense" : 7,
+      "skillTeamwork" : 2,
+      "foulLikelihood" : 7
+    }, {
+      "name" : "Magnus Reid",
+      "skillDefense" : 2,
+      "skillOffense" : 3,
+      "skillTeamwork" : 9,
+      "foulLikelihood" : 5
+    }, {
+      "name" : "Keltie Horide",
+      "skillDefense" : 9,
+      "skillOffense" : 5,
+      "skillTeamwork" : 3,
+      "foulLikelihood" : 3
+    } ],
+    "keepers" : [ {
+      "name" : "Mary Hunt",
+      "skillDefense" : 4,
+      "skillOffense" : 6,
+      "skillTeamwork" : 3,
+      "foulLikelihood" : 3
+    }, {
+      "name" : "Newlin Russell",
+      "skillDefense" : 9,
+      "skillOffense" : 4,
+      "skillTeamwork" : 4,
+      "foulLikelihood" : 10
+    } ],
+    "seekers" : [ {
+      "name" : "Beca Peverell",
+      "skillDefense" : 6,
+      "skillOffense" : 1,
+      "skillTeamwork" : 10,
+      "foulLikelihood" : 1
+    }, {
+      "name" : "Artair Parkinson",
+      "skillDefense" : 3,
+      "skillOffense" : 10,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 7
+    } ]
+  }, {
+    "name" : "Bald eagle",
+    "home" : "Bald eagle Pitch",
+    "beaters" : [ {
+      "name" : "River Wallace",
+      "skillDefense" : 8,
+      "skillOffense" : 8,
+      "skillTeamwork" : 10,
+      "foulLikelihood" : 2
+    }, {
+      "name" : "North Gregson",
+      "skillDefense" : 5,
+      "skillOffense" : 9,
+      "skillTeamwork" : 6,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "Fioled Eves",
+      "skillDefense" : 1,
+      "skillOffense" : 8,
+      "skillTeamwork" : 8,
+      "foulLikelihood" : 2
+    }, {
+      "name" : "Edmund Slauson",
+      "skillDefense" : 1,
+      "skillOffense" : 10,
+      "skillTeamwork" : 2,
+      "foulLikelihood" : 6
+    } ],
+    "chasers" : [ {
+      "name" : "Elenydd Crumlish",
+      "skillDefense" : 5,
+      "skillOffense" : 3,
+      "skillTeamwork" : 5,
+      "foulLikelihood" : 10
+    }, {
+      "name" : "London MacKenzie",
+      "skillDefense" : 7,
+      "skillOffense" : 1,
+      "skillTeamwork" : 3,
+      "foulLikelihood" : 8
+    }, {
+      "name" : "Yarrow Goyle",
+      "skillDefense" : 3,
+      "skillOffense" : 4,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "Ciaran Manger",
+      "skillDefense" : 6,
+      "skillOffense" : 2,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 6
+    }, {
+      "name" : "Elm Milne",
+      "skillDefense" : 6,
+      "skillOffense" : 9,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 1
+    }, {
+      "name" : "Conor Mutter",
+      "skillDefense" : 6,
+      "skillOffense" : 7,
+      "skillTeamwork" : 6,
+      "foulLikelihood" : 3
+    } ],
+    "keepers" : [ {
+      "name" : "Forbes Jones",
+      "skillDefense" : 1,
+      "skillOffense" : 6,
+      "skillTeamwork" : 7,
+      "foulLikelihood" : 3
+    }, {
+      "name" : "Reade Hessernam",
+      "skillDefense" : 7,
+      "skillOffense" : 7,
+      "skillTeamwork" : 3,
+      "foulLikelihood" : 2
+    } ],
+    "seekers" : [ {
+      "name" : "Salem Batten",
+      "skillDefense" : 6,
+      "skillOffense" : 8,
+      "skillTeamwork" : 2,
+      "foulLikelihood" : 4
+    }, {
+      "name" : "Godwin Brown",
+      "skillDefense" : 6,
+      "skillOffense" : 3,
+      "skillTeamwork" : 6,
+      "foulLikelihood" : 9
+    } ]
+  } ]
+}
