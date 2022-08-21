@@ -1,4 +1,4 @@
-<configuration debug="true">
+<configuration>
     <import class="ch.qos.logback.classic.encoder.PatternLayoutEncoder"/>
     <import class="ch.qos.logback.core.FileAppender"/>
     <import class="ch.qos.logback.core.ConsoleAppender"/>
