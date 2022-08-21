@@ -45,6 +45,36 @@ public class TeamGenerator {
         return team;
     }
 
+    static public Team newTeam(int num){
+        Context context = Context.getInstance();
+        Team team = new Team();
+        String teamName = context.getTextBundle().getString("gen.team.newName") + ' ' + num;
+
+        team.setName(teamName);
+        team.setHome(teamName + ' ' + context.getTextBundle().getString("gen.team.newHome"));
+
+        String name;
+        for(int i = 1; i <= Team.TOTAL_BEATERS; i++) {
+            name = context.getTextBundle().getString("player.beater") + ' ' + i;
+            team.getBeaters().add(PlayerGenerator.newBeater(name));
+        }
+
+        for(int i = 1; i <= Team.TOTAL_CHASERS; i++) {
+            name = context.getTextBundle().getString("player.chaser") + ' ' + i;
+            team.getChasers().add(PlayerGenerator.newChaser(name));
+        }
+
+        for(int i = 1; i <= Team.TOTAL_KEEPERS; i++) {
+            name = context.getTextBundle().getString("player.keeper") + ' ' + i;
+            team.getKeepers().add(PlayerGenerator.newKeeper(name));
+        }
+
+        for(int i = 1; i <= Team.TOTAL_SEEKERS; i++) {
+            name = context.getTextBundle().getString("player.seeker") + ' ' + i;
+            team.getSeekers().add(PlayerGenerator.newSeeker(name));
+        }
+        return team;
+    }
 
 
 

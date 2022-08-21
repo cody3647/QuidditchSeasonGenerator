@@ -53,6 +53,38 @@ public class PlayerGenerator {
         return seeker;
     }
 
+    public static Beater newBeater(String name){
+        Beater beater = new Beater();
+        beater.setName(name);
+        randomSkills(beater);
+
+        return beater;
+    }
+
+    public static Chaser newChaser(String name){
+        Chaser chaser = new Chaser();
+        chaser.setName(name);
+        randomSkills(chaser);
+
+        return chaser;
+    }
+
+    public static Keeper newKeeper(String name){
+        Keeper keeper = new Keeper();
+        keeper.setName(name);
+        randomSkills(keeper);
+
+        return keeper;
+    }
+
+    public static Seeker newSeeker(String name){
+        Seeker seeker = new Seeker();
+        seeker.setName(name);
+        randomSkills(seeker);
+
+        return seeker;
+    }
+
     private static void randomPlayer(Player player){
         Context context = Context.getInstance();
         NameGenerator femaleNames = context.getFemaleNames();
@@ -60,7 +92,6 @@ public class PlayerGenerator {
         NameGenerator nonBinaryNames = context.getNonBinaryNames();
         NameGenerator surnames = context.getSurnames();
         Random random = new Random();
-
 
         int i = random.nextInt(0, 100);
         String name;
@@ -75,6 +106,12 @@ public class PlayerGenerator {
 
 
         player.setName(name);
+        randomSkills(player);
+    }
+
+    private static void randomSkills(Player player){
+        Random random = new Random();
+
         player.setSkillOffense(random.nextInt(1, 11));
         player.setSkillDefense(random.nextInt(1, 11));
         player.setSkillTeamwork(random.nextInt(1, 11));
