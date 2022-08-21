@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2022. Cody Williams
  *
- * Keeper.java is part of Quidditch Season NameGenerator.
+ * Beater.java is part of Quidditch Season NameGenerator.
  *
  * Quidditch Season NameGenerator is free software: you can redistribute it and/or modify it under the terms of the GNU
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
@@ -15,12 +15,15 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package info.codywilliams.models.player;
+package info.codywilliams.qsg.models.player;
 
-public class Keeper extends Player {
+
+
+public class Beater extends Player {
 
     @Override
     public String toString() {
-        return "Keeper " + super.toString();
+        return "Beater " + super.toString();
     }
+
 }

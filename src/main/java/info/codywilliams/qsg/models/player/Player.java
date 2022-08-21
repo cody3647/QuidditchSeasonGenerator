@@ -15,7 +15,7 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package info.codywilliams.models.player;
+package info.codywilliams.qsg.models.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import javafx.beans.binding.NumberBinding;

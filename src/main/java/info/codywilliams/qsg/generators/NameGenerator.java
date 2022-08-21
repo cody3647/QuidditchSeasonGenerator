@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package info.codywilliams.generators;
+package info.codywilliams.qsg.generators;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class NameGenerator {
         names = new LinkedList<>();
         String line;
         try (
-                InputStreamReader isr = new InputStreamReader(getClass().getResourceAsStream("/info/codywilliams/names/" + filename));
+                InputStreamReader isr = new InputStreamReader(getClass().getResourceAsStream("/info/codywilliams/qsg/names/" + filename));
                 BufferedReader br = new BufferedReader(isr)
         ) {
             while ((line = br.readLine()) != null) {

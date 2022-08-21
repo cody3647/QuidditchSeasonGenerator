@@ -16,10 +16,10 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package info.codywilliams.generators;
+package info.codywilliams.qsg.generators;
 
-import info.codywilliams.models.Context;
-import info.codywilliams.models.player.*;
+import info.codywilliams.qsg.models.Context;
+import info.codywilliams.qsg.models.player.*;
 
 import java.util.Random;
 

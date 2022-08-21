@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2022. Cody Williams
  *
- * Seeker.java is part of Quidditch Season NameGenerator.
+ * Chaser.java is part of Quidditch Season NameGenerator.
  *
  * Quidditch Season NameGenerator is free software: you can redistribute it and/or modify it under the terms of the GNU
  * General Public License as published by the Free Software Foundation, either version 3 of the License, or
@@ -15,13 +15,15 @@
  * If not, see <https://www.gnu.org/licenses/>.
  */
 
-package info.codywilliams.models.player;
+package info.codywilliams.qsg.models.player;
 
-public class Seeker extends Player {
+
+public class Chaser extends Player {
 
     @Override
     public String toString() {
-        return "Seeker " + super.toString();
+        return "Chaser " + super.toString();
     }
+
 
 }
