@@ -86,6 +86,20 @@ public class PlayerGenerator {
     }
 
     private static void randomPlayer(Player player){
+        randomFullName(player);
+        randomSkills(player);
+    }
+
+    public static void randomSkills(Player player){
+        Random random = new Random();
+
+        player.setSkillOffense(random.nextInt(1, 11));
+        player.setSkillDefense(random.nextInt(1, 11));
+        player.setSkillTeamwork(random.nextInt(1, 11));
+        player.setFoulLikelihood((random.nextInt(1,15) % 10) + 1);
+    }
+
+    public static void randomFullName(Player player){
         Context context = Context.getInstance();
         NameGenerator femaleNames = context.getFemaleNames();
         NameGenerator maleNames = context.getMaleNames();
@@ -104,17 +118,8 @@ public class PlayerGenerator {
 
         name = name + ' ' + surnames.getNextName();
 
-
         player.setName(name);
-        randomSkills(player);
     }
 
-    private static void randomSkills(Player player){
-        Random random = new Random();
 
-        player.setSkillOffense(random.nextInt(1, 11));
-        player.setSkillDefense(random.nextInt(1, 11));
-        player.setSkillTeamwork(random.nextInt(1, 11));
-        player.setFoulLikelihood((random.nextInt(1,15) % 10) + 1);
-    }
 }
