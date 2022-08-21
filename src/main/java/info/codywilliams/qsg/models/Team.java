@@ -20,7 +20,9 @@ package info.codywilliams.qsg.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import info.codywilliams.qsg.models.player.*;
+import info.codywilliams.qsg.util.TeamDeserializer;
 import javafx.beans.property.ListProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -34,6 +36,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+@JsonDeserialize(using = TeamDeserializer.class)
 @JsonPropertyOrder({"name", "home"})
 public class Team implements Comparable<Team> {
     final static public int TOTAL_BEATERS = 4;
