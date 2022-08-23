@@ -57,7 +57,7 @@ public class Context {
         textBundle = ResourceBundle.getBundle("info.codywilliams.qsg.language.Text", locale);
 
         currentTeam = new SimpleObjectProperty<>(this, "currentTeam");
-        teams = new SimpleListProperty<>(FXCollections.observableList(new ArrayList<>(), team -> new Observable[]{team.nameProperty()}));
+        teams = new SimpleListProperty<>(this, "teams", FXCollections.observableList(new ArrayList<>(), team -> new Observable[]{team.nameProperty()}));
         leftStatus = new SimpleStringProperty(this, "leftStatus", textBundle.getString("app.newStatus"));
         rightStatus = new SimpleStringProperty(this, "rightStatus");
 
