@@ -6,6 +6,7 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.TreeTableColumn?>
 <?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -14,9 +15,8 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-
-<ScrollPane fitToHeight="true" fitToWidth="true" prefWidth="850.0" stylesheets="@../stylesheets/team.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="info.codywilliams.qsg.controllers.TeamController">
-   <content>
+<AnchorPane xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="info.codywilliams.qsg.controllers.TeamController">
+   <children>
       <HBox alignment="TOP_CENTER" spacing="5.0">
          <children>
             <VBox fx:id="teamVBox" spacing="5.0">
@@ -88,7 +88,7 @@
             </VBox>
             <ScrollPane fitToHeight="true" fitToWidth="true">
                <content>
-                  <VBox prefHeight="698.0" prefWidth="200.0">
+                  <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="783.0" prefWidth="200.0">
                      <children>
                         <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%team.desc.title" wrappingWidth="190.0">
                            <font>
@@ -171,5 +171,5 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </padding>
       </HBox>
-   </content>
-</ScrollPane>
+   </children>
+</AnchorPane>

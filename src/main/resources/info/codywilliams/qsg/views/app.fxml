@@ -46,21 +46,21 @@
 <?import javafx.scene.paint.Color?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefWidth="1050.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="info.codywilliams.qsg.controllers.AppController">
+<VBox prefWidth="1100.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="info.codywilliams.qsg.controllers.AppController">
   <children>
       <fx:include fx:id="menu" source="menu.fxml" />
-      <SplitPane dividerPositions="0.2" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+      <SplitPane dividerPositions="0.23" focusTraversable="true" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
       <items>
             <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0">
                <content>
-                  <VBox fx:id="leftPane" alignment="TOP_CENTER" spacing="5.0">
+                  <VBox fx:id="leftPane" alignment="TOP_CENTER" prefHeight="792.0" prefWidth="200.0" spacing="5.0">
                      <children>
                         <Label alignment="CENTER" text="%app.label.teams">
                            <font>
                               <Font size="24.0" />
                            </font>
                         </Label>
-                        <ListView fx:id="leftPaneListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="320.0" prefWidth="200.0" />
+                        <ListView fx:id="leftPaneListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="257.0" prefWidth="336.0" />
                         <FlowPane fx:id="buttonFlowPane" alignment="CENTER" hgap="10.0" prefHeight="25.0" prefWidth="231.0" vgap="10.0">
                            <children>
                               <Button mnemonicParsing="false" onAction="#createNewTeam" text="%app.button.newTeam" />
@@ -76,7 +76,11 @@
                   </VBox>
                </content>
             </ScrollPane>
-          <fx:include fx:id="team" source="team.fxml" />
+            <ScrollPane fx:id="rightPane" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+               <content>
+                <fx:include fx:id="team" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" source="team.fxml" />
+               </content>
+            </ScrollPane>
       </items>
     </SplitPane>
     <HBox id="HBox" alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
