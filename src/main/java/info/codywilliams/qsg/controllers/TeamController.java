@@ -22,10 +22,12 @@ import info.codywilliams.qsg.generators.PlayerGenerator;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.models.player.Player;
+import info.codywilliams.qsg.models.player.PlayerType;
 import javafx.beans.NamedArg;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeTableCell;
@@ -79,6 +81,16 @@ public class TeamController {
 
         for (TreeItem<Player> item : playerPositions.values())
             treeRoot.getChildren().add(item);
+        teamTable.setRowFactory(table -> new TreeTableRow<>(){
+            @Override
+            public void updateItem(Player player, boolean empty){
+                super.updateItem(player, empty);
+                if(!isEmpty() && player instanceof PlayerType)
+                    setEditable(false);
+                else
+                    setEditable(true);
+            }
+        });
 
         teamTable.setRoot(treeRoot);
 
@@ -151,14 +163,6 @@ public class TeamController {
                 }
             }
         }
-    }
-
-    static class PlayerType extends Player {
-        PlayerType(String type) {
-            super();
-            setName(type);
-        }
-
     }
 
     static class PlayerTypePropertyValueFactory<S, T> extends TreeItemPropertyValueFactory<S, T> {
