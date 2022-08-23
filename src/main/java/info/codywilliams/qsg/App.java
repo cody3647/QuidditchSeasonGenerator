@@ -20,6 +20,7 @@ package info.codywilliams.qsg;
 
 import info.codywilliams.qsg.models.Context;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -89,10 +90,25 @@ public class App extends Application {
                         actionEvent.getEventType(), actionEvent.getSource(), actionEvent.getTarget()));
     }
 
-    public static Parent loadFXML(String fxml) throws IOException {
-        Context context = Context.getInstance();
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("views/" + fxml + ".fxml"), context.getTextBundle());
-        return fxmlLoader.load();
+    public static Parent loadFXML(String fxml) {
+        return loadFXML(fxml, null);
     }
 
+    public static Parent loadFXML(String fxml, Object controller){
+        try {
+            Context context = Context.getInstance();
+            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("views/" + fxml + ".fxml"), context.getTextBundle());
+            if (controller != null)
+                fxmlLoader.setController(controller);
+            return fxmlLoader.load();
+        } catch (IOException e){
+            exceptionAlert(e);
+            close();
+            return null;
+        }
+    }
+
+    public static void close(){
+        //Platform.exit();
+    }
 }
