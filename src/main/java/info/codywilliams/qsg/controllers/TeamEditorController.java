@@ -42,7 +42,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.Function;
 
-public class TeamController {
+public class TeamEditorController {
     @FXML
     VBox teamVBox;
     @FXML

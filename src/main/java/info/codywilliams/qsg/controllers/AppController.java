@@ -36,9 +36,15 @@ public class AppController {
     @FXML
     MenuController menuController;
     @FXML
+    TournamentInfoController tournamentInfoController;
+    @FXML
+    TournamentEditorController tournamentEditorController;
+    @FXML
+    TeamEditorController teamEditorController;
+    @FXML
     VBox leftPane;
     @FXML
-    TeamController teamController;
+    ScrollPane rightPane;
     @FXML
     ListView<Team> leftPaneListView;
     @FXML

@@ -39,6 +39,8 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
@@ -78,7 +80,7 @@
             </ScrollPane>
             <ScrollPane fx:id="rightPane" fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
                <content>
-                <fx:include fx:id="team" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" source="team.fxml" />
+                <fx:include fx:id="team" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" source="teamEditor.fxml" />
                </content>
             </ScrollPane>
       </items>
