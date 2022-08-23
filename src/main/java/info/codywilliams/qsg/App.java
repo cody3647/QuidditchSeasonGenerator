@@ -28,6 +28,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -78,7 +79,7 @@ public class App extends Application {
     }
 
     @Override
-    public void start(Stage window) throws IOException {
+    public void start(Stage window) {
         Scene scene = new Scene(loadFXML("app"));
         window.setTitle("Quidditch Season Generator");
         window.setScene(scene);
@@ -103,8 +104,7 @@ public class App extends Application {
             return fxmlLoader.load();
         } catch (IOException e){
             exceptionAlert(e);
-            close();
-            return null;
+            return new AnchorPane();
         }
     }
 
