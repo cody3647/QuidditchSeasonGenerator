@@ -25,6 +25,7 @@ import info.codywilliams.qsg.models.player.Player;
 import info.codywilliams.qsg.models.player.PlayerType;
 import javafx.beans.NamedArg;
 import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WritableValue;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -92,6 +93,30 @@ public class TeamController {
             }
         });
 
+        EventHandler<TreeTableColumn.CellEditEvent<Player, Integer>> skillCommitHandler = integerCellEditEvent -> {
+            final TreeTableView<Player> treeTableView = integerCellEditEvent.getTreeTableView();
+            final TreeTableColumn<Player, Integer> treeTableColumn = integerCellEditEvent.getTableColumn();
+            final TreeItem<Player> item = integerCellEditEvent.getRowValue();
+
+            if (treeTableView == null || treeTableColumn == null || item == null)
+                return;
+
+            ObservableValue<Integer> cellObservableValue = treeTableColumn.getCellObservableValue(item);
+            if (cellObservableValue == null) return;
+
+            if (!(cellObservableValue instanceof WritableValue))
+                return;
+
+            Integer newInt = integerCellEditEvent.getNewValue();
+            if (newInt == null)
+                newInt = integerCellEditEvent.getOldValue();
+
+            newInt = Player.validateSkill(newInt);
+
+            ((WritableValue<Integer>) cellObservableValue).setValue(newInt);
+            treeTableView.refresh();
+        };
+
         teamTable.setRoot(treeRoot);
 
         nameCol.setCellValueFactory(new TreeItemPropertyValueFactory<>("name"));
@@ -99,15 +124,19 @@ public class TeamController {
 
         offenseCol.setCellValueFactory(new PlayerTypePropertyValueFactory<>("skillOffense"));
         offenseCol.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn(new IntegerStringConverter()));
+        offenseCol.setOnEditCommit(skillCommitHandler);
 
         defenseCol.setCellValueFactory(new PlayerTypePropertyValueFactory<>("skillDefense"));
         defenseCol.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn(new IntegerStringConverter()));
+        defenseCol.setOnEditCommit(skillCommitHandler);
 
         teamworkCol.setCellValueFactory(new PlayerTypePropertyValueFactory<>("skillTeamwork"));
         teamworkCol.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn(new IntegerStringConverter()));
+        teamworkCol.setOnEditCommit(skillCommitHandler);
 
         foulingCol.setCellValueFactory(new PlayerTypePropertyValueFactory<>("foulLikelihood"));
         foulingCol.setCellFactory(TextFieldTreeTableCell.forTreeTableColumn(new IntegerStringConverter()));
+        foulingCol.setOnEditCommit(skillCommitHandler);
 
         Function<Player, Player> randomNameFunction = (Player player) -> {
             PlayerGenerator.randomFullName(player);

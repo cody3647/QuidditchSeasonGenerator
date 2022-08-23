@@ -46,10 +46,10 @@ abstract public class Player implements Serializable, Comparable<Player> {
     public Player() {
         name = new SimpleStringProperty(this, "name", "");
         injuryHistory = new SimpleSetProperty<>(this, "injuryHistory", FXCollections.observableSet(new TreeSet<>()));
-        skillDefense = new SimpleIntegerProperty(this, "skillDefense");
-        skillOffense = new SimpleIntegerProperty(this, "skillOffense");
-        skillTeamwork = new SimpleIntegerProperty(this, "skillTeamwork");
-        foulLikelihood = new SimpleIntegerProperty(this, "foulLikelihood");
+        skillDefense = new SimpleIntegerProperty(this, "skillDefense", 1);
+        skillOffense = new SimpleIntegerProperty(this, "skillOffense", 1);
+        skillTeamwork = new SimpleIntegerProperty(this, "skillTeamwork", 1);
+        foulLikelihood = new SimpleIntegerProperty(this, "foulLikelihood", 1);
         skillLevel = skillDefense.add(skillOffense).add(skillTeamwork).subtract(foulLikelihood);
     }
 
@@ -85,8 +85,22 @@ abstract public class Player implements Serializable, Comparable<Player> {
         return injuryHistory.add(date);
     }
 
-    public static boolean validateSkill(int skillNumber){
-        return skillNumber >= MIN && skillNumber <= MAX;
+    public static int validateSkill(int skillNumber){
+        if(skillNumber < MIN)
+            skillNumber = MIN;
+        else if (skillNumber > MAX) {
+            skillNumber = MAX;
+        }
+
+        return skillNumber;
+    }
+
+    public static int validateSkill(Integer skillNumber){
+        if(skillNumber == null)
+            return 1;
+
+        return validateSkill(skillNumber.intValue());
+
     }
 
     public int getSkillDefense() {
