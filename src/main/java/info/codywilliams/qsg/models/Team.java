@@ -58,10 +58,10 @@ public class Team implements Comparable<Team> {
     public Team() {
         name = new SimpleStringProperty(this, "name", "");
         home = new SimpleStringProperty(this, "home", "");
-        beaters = new SimpleListProperty<>(FXCollections.observableArrayList());
-        chasers = new SimpleListProperty<>(FXCollections.observableList(new LinkedList<>()));
-        keepers = new SimpleListProperty<>(FXCollections.observableArrayList());
-        seekers = new SimpleListProperty<>(FXCollections.observableArrayList());
+        beaters = new SimpleListProperty<>(this, "beaters", FXCollections.observableArrayList());
+        chasers = new SimpleListProperty<>(this, "chasers", FXCollections.observableArrayList());
+        keepers = new SimpleListProperty<>(this, "keepers", FXCollections.observableArrayList());
+        seekers = new SimpleListProperty<>(this, "seekers", FXCollections.observableArrayList());
     }
 
     @JsonIgnore
