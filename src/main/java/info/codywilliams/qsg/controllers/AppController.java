@@ -18,19 +18,15 @@
 
 package info.codywilliams.qsg.controllers;
 
+import info.codywilliams.qsg.App;
 import info.codywilliams.qsg.generators.TeamGenerator;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.Team;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 public class AppController {
     @FXML
@@ -46,6 +42,8 @@ public class AppController {
     @FXML
     ScrollPane rightPane;
     @FXML
+    ToggleGroup editorToggleGroup;
+    @FXML
     ListView<Team> leftPaneListView;
     @FXML
     FlowPane buttonFlowPane;
@@ -53,8 +51,8 @@ public class AppController {
     Label leftStatus;
     @FXML
     Label rightStatus;
+    Node storedPane;
     private Context context;
-
     private int teamNumber = 0;
 
     public void initialize() {
@@ -75,6 +73,14 @@ public class AppController {
         });
 
         leftPaneListView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldTeam, newTeam) -> context.setCurrentTeam(newTeam));
+
+        storedPane = App.loadFXML("tournamentEditor");
+        editorToggleGroup.selectedToggleProperty().addListener(((observableValue, prevToggle, currentToggle) -> {
+            Node temp = rightPane.getContent();
+            rightPane.setContent(storedPane);
+            storedPane = temp;
+        }));
+
     }
 
     public void createNewTeam() {

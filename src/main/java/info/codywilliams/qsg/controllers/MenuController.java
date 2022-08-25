@@ -36,7 +36,6 @@ public class MenuController {
 
     @FXML
     void fileOpen(ActionEvent event) {
-        System.out.println(event);
         File settingsFile = selectFile(event, FileAction.OPEN);
 
         if (settingsFile != null) {
