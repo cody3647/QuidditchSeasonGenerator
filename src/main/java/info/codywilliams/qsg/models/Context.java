@@ -139,7 +139,6 @@ public class Context {
         tournamentOptions.roundsPerWeekProperty().addListener(changeListener);
         tournamentOptions.hoursBetweenMatchesProperty().addListener(changeListener);
         tournamentOptions.startDateProperty().addListener(changeListener);
-
     }
 
     public static Context getInstance() {
@@ -154,6 +153,8 @@ public class Context {
     public void clearContext() {
         currentTeam.set(null);
         teams.clear();
+        tournamentOptions.clear();
+        currentTournament.set(null);
     }
 
     public void loadContext(SaveSettings settings) {
