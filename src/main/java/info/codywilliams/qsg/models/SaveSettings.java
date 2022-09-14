@@ -18,6 +18,13 @@
 
 package info.codywilliams.qsg.models;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,4 +51,19 @@ public class SaveSettings {
         this.teams = teams;
     }
 
+    static public SaveSettings loadFromFile(File settingsFile) throws IOException {
+        ObjectMapper mapper = JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .build();
+
+        return mapper.readValue(settingsFile, SaveSettings.class);
+    }
+
+    public void saveToFile(File saveFile) throws IOException {
+        ObjectMapper mapper = JsonMapper.builder()
+                .addModule(new JavaTimeModule())
+                .build();
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        mapper.writeValue(saveFile, this);
+    }
 }

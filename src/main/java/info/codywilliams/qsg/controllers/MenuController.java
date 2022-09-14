@@ -1,7 +1,6 @@
 package info.codywilliams.qsg.controllers;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
+
 import info.codywilliams.qsg.App;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.SaveSettings;
@@ -40,8 +39,8 @@ public class MenuController {
 
         if (settingsFile != null) {
             try {
-                ObjectMapper mapper = new ObjectMapper();
-                SaveSettings settings = mapper.readValue(settingsFile, SaveSettings.class);
+                SaveSettings settings = SaveSettings.loadFromFile(settingsFile);
+
                 context.clearContext();
                 context.loadContext(settings);
                 context.setCurrentSaveFile(settingsFile);
@@ -92,9 +91,7 @@ public class MenuController {
             try {
                 SaveSettings settings = new SaveSettings(context);
 
-                ObjectMapper mapper = new ObjectMapper();
-                mapper.enable(SerializationFeature.INDENT_OUTPUT);
-                mapper.writeValue(saveFile, settings);
+                settings.saveToFile(saveFile);
 
                 updateLeftStatus(saveFile);
 
