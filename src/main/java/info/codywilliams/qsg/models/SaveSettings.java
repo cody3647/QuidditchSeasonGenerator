@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import info.codywilliams.qsg.models.tournament.TournamentOptions;
+import info.codywilliams.qsg.models.tournament.type.TournamentType;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,17 +32,23 @@ import java.util.List;
 
 public class SaveSettings {
     private List<Team> teams;
+    private TournamentOptions tournamentOptions;
+    private TournamentType tournamentType;
 
     public SaveSettings() {
     }
 
-    public SaveSettings(List<Team> teams) {
+    public SaveSettings(List<Team> teams, TournamentType tournamentType, TournamentOptions tournamentOptions) {
         this.teams = teams;
+        this.tournamentType = tournamentType;
+        this.tournamentOptions = tournamentOptions;
     }
 
     public SaveSettings(Context context) {
         teams = new ArrayList<>();
         teams.addAll(context.getTeams());
+        tournamentType = context.getCurrentTournament().getType();
+        tournamentOptions = context.getTournamentOptions();
     }
 
     public List<Team> getTeams() {
