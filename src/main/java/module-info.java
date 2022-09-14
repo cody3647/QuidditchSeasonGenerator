@@ -5,6 +5,7 @@ module QuidditchSeasonGenerator {
     requires javafx.graphics;
     requires com.fasterxml.jackson.annotation;
     requires com.fasterxml.jackson.databind;
+    requires com.fasterxml.jackson.datatype.jsr310;
     requires org.kordamp.ikonli.core;
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.ikonli.fontawesome5;
@@ -16,7 +17,7 @@ module QuidditchSeasonGenerator {
     opens info.codywilliams.qsg.controllers to javafx.fxml;
     opens info.codywilliams.qsg.models to com.fasterxml.jackson.databind;
     opens info.codywilliams.qsg.models.player to javafx.base, com.fasterxml.jackson.databind;
-    opens info.codywilliams.qsg.models.tournament to javafx.base;
+    opens info.codywilliams.qsg.models.tournament to javafx.base, com.fasterxml.jackson.databind;
     opens info.codywilliams.qsg.util to com.fasterxml.jackson.databind;
-    opens info.codywilliams.qsg.models.tournament.type to javafx.base;
+    opens info.codywilliams.qsg.models.tournament.type to javafx.base, com.fasterxml.jackson.databind;
 }
