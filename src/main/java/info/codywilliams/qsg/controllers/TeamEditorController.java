@@ -39,6 +39,7 @@ import javafx.util.converter.IntegerStringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.TreeMap;
 import java.util.function.Function;
 
@@ -65,13 +66,17 @@ public class TeamEditorController {
     TreeTableColumn<Player, Button> randomNameCol;
     @FXML
     TreeTableColumn<Player, Button> randomSkillsCol;
-    Context context;
+    @FXML
+    ResourceBundle resources;
+    private final Context context;
 
     private Map<String, TreeItem<Player>> playerPositions;
 
+    public TeamEditorController(Context context){
+        this.context = context;
+    }
 
     public void initialize() {
-        context = Context.getInstance();
         TreeItem<Player> treeRoot = new TreeItem<>(new PlayerType("Players"));
         playerPositions = new TreeMap<>();
 
@@ -86,13 +91,11 @@ public class TeamEditorController {
             @Override
             public void updateItem(Player player, boolean empty){
                 super.updateItem(player, empty);
-                if(!isEmpty() && player instanceof PlayerType)
-                    setEditable(false);
-                else
-                    setEditable(true);
+                setEditable(isEmpty() || !(player instanceof PlayerType));
             }
         });
 
+        @SuppressWarnings("unchecked")
         EventHandler<TreeTableColumn.CellEditEvent<Player, Integer>> skillCommitHandler = integerCellEditEvent -> {
             final TreeTableView<Player> treeTableView = integerCellEditEvent.getTreeTableView();
             final TreeTableColumn<Player, Integer> treeTableColumn = integerCellEditEvent.getTableColumn();
@@ -156,7 +159,7 @@ public class TeamEditorController {
     }
 
     private void setupPlayerPosition(String position) {
-        String playerHeader = context.getTextBundle().getString("team.playerHeader." + position);
+        String playerHeader = resources.getString("team.playerHeader." + position);
         TreeItem<Player> playerTreeItem = new TreeItem<>(new PlayerType(playerHeader));
         playerTreeItem.setExpanded(true);
         playerPositions.put(position, playerTreeItem);

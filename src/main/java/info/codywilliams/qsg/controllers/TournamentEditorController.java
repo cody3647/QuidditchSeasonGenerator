@@ -27,8 +27,6 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
@@ -36,6 +34,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 import javafx.util.converter.LocalDateStringConverter;
 import javafx.util.converter.LocalTimeStringConverter;
 import javafx.util.converter.NumberStringConverter;
@@ -47,6 +46,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.function.Consumer;
 
 public class TournamentEditorController {
@@ -85,30 +85,37 @@ public class TournamentEditorController {
     DatePicker blackoutEndDatePicker;
     @FXML
     Button blackoutAddButton;
-
-    Context context;
+    @FXML
+    ResourceBundle resources;
+    private final Context context;
     TournamentOptions tournamentOptions;
-    TextStyle textStyle = TextStyle.FULL;
 
+    public TournamentEditorController(Context context){
+        this.context = context;
+    }
 
     public void initialize() {
-        context = Context.getInstance();
         tournamentOptions = context.getTournamentOptions();
-
-        // Setup custom locale with first day of the week being Monday
-        Locale weekStart = new Locale.Builder()
-                .setLocale(context.getLocale())
-                .setExtension(Locale.UNICODE_LOCALE_EXTENSION, "fw-" + DayOfWeek.MONDAY.toString().substring(0, 3))
-                .build();
 
         // Comboboxes and TextFields
         tournamentTypeComboBox.getItems().setAll(TournamentType.values());
+        tournamentTypeComboBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(TournamentType tournamentType) {
+                if (tournamentType == null)
+                    return "";
+                return resources.getString(tournamentType.key);
+            }
+
+            @Override
+            public TournamentType fromString(String s) {
+                return null;
+            }
+        });
         roundsPerWeekTextField.textProperty().bindBidirectional(tournamentOptions.roundsPerWeekProperty(), new NumberStringConverter());
         hoursBetweenMatchesTextField.textProperty().bindBidirectional(tournamentOptions.hoursBetweenMatchesProperty(), new NumberStringConverter());
 
         // DatePickers
-        EventHandler<Event> useCustomLocaleFormat = e -> Locale.setDefault(Locale.Category.FORMAT, weekStart);
-
         tournamentOptions.getValidStartTimes().addListener((ListChangeListener<ValidStartTime>) change -> {
             change.next();
             for (ValidStartTime validStartTime : change.getList()) {
@@ -129,20 +136,17 @@ public class TournamentEditorController {
 
         startDatePicker.valueProperty().bindBidirectional(tournamentOptions.startDateProperty());
         startDatePicker.setOnAction(actionEvent -> tournamentOptions.setStartDate(startDatePicker.getValue()));
-        startDatePicker.setOnShowing(useCustomLocaleFormat);
         startDatePicker.setDayCellFactory(startDateDayCellFactory());
 
         blackoutStartDatePicker.setDayCellFactory(startDayCellFactory);
         blackoutEndDatePicker.setDayCellFactory(endDayCellFactory);
 
-        blackoutStartDatePicker.setOnShowing(useCustomLocaleFormat);
-        blackoutEndDatePicker.setOnShowing(useCustomLocaleFormat);
 
         // Valid Start Time Table Setup
         validStartTimeTableView.setItems(tournamentOptions.getValidStartTimes());
 
         dayCol.setCellValueFactory(
-                param -> new ReadOnlyObjectWrapper<>(param.getValue().getDayOfWeek().getDisplayName(textStyle, Locale.getDefault()))
+                param -> new ReadOnlyObjectWrapper<>(param.getValue().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()))
         );
 
         earliestCol.setCellValueFactory(new PropertyValueFactory<>("earliest"));
@@ -207,7 +211,7 @@ public class TournamentEditorController {
                 }
             }
             context.setCurrentTournament(context.getTournaments().get(type));
-
+            context.getCurrentTournament().recalculateTournament(context.getNumTeams());
         });
 
         blackoutStartDatePicker.setOnAction(actionEvent -> {

@@ -18,7 +18,6 @@
 
 package info.codywilliams.qsg.models;
 
-import info.codywilliams.qsg.generators.NameGenerator;
 import info.codywilliams.qsg.models.tournament.Tournament;
 import info.codywilliams.qsg.models.tournament.TournamentOptions;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
@@ -32,13 +31,9 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
 import java.io.File;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.*;
 
 public class Context {
-    volatile static private Context instance;
     private final ObjectProperty<Team> currentTeam;
     final private ListProperty<Team> teams;
     final private TournamentOptions tournamentOptions;
@@ -48,27 +43,11 @@ public class Context {
     final private IntegerProperty numLocations;
     final private StringProperty leftStatus;
     final private StringProperty rightStatus;
-    final private NameGenerator femaleNames;
-    final private NameGenerator maleNames;
-    final private NameGenerator nonBinaryNames;
-    final private NameGenerator surnames;
-    final private NameGenerator teamNames;
-    private final Locale locale;
-    private final ResourceBundle textBundle;
-    private final DateTimeFormatter dateTimeFormatter;
-    private final DateTimeFormatter dateFormatter;
-    private final DateTimeFormatter timeFormatter;
     private File currentSaveFile;
     private boolean listChangeAndChangeFlag = false;
 
 
-    private Context() {
-        locale = Locale.getDefault();
-        dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(locale).withZone(ZoneId.systemDefault());
-        dateFormatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(locale).withZone(ZoneId.systemDefault());
-        timeFormatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM).withLocale(locale).withZone(ZoneId.systemDefault());
-        textBundle = ResourceBundle.getBundle("info.codywilliams.qsg.language.Text", locale);
-
+    public Context() {
         currentTeam = new SimpleObjectProperty<>(this, "currentTeam");
         teams = new SimpleListProperty<>(this, "teams", FXCollections.observableList(new ArrayList<>(),
                 team -> new Observable[]{team.nameProperty(), team.homeProperty()}
@@ -81,25 +60,11 @@ public class Context {
         numTeams = new SimpleIntegerProperty(this, "numTeams", 0);
         numLocations = new SimpleIntegerProperty(this, "numLocations", 0);
 
-        numTeams.bind(Bindings.size(teams));
-
-        getTeams().addListener((ListChangeListener<Team>) change -> {
-            while (change.next()) {
-                if (change.wasAdded() || change.wasReplaced() || change.wasUpdated() || change.wasRemoved())
-                    calculateTeamLocations();
-            }
-        });
-
-        leftStatus = new SimpleStringProperty(this, "leftStatus", textBundle.getString("app.newStatus"));
+        leftStatus = new SimpleStringProperty(this, "leftStatus");
         rightStatus = new SimpleStringProperty(this, "rightStatus");
 
-        femaleNames = new NameGenerator("femaleNames");
-        maleNames = new NameGenerator("maleNames");
-        nonBinaryNames = new NameGenerator("nonBinaryNames");
-        surnames = new NameGenerator("surnames");
-        teamNames = new NameGenerator("teamNames");
-
-        tournamentOptionsListeners();
+        teamListenersAndBindings();
+        tournamentListeners();
     }
 
     public ObservableList<Team> getTeams() {
@@ -112,13 +77,28 @@ public class Context {
         setNumLocations(locations.size());
     }
 
-    private void tournamentOptionsListeners() {
+    private void teamListenersAndBindings(){
+        numTeams.bind(Bindings.size(teams));
+        numTeams.addListener((observableValue, oldNumTeams, newNumTeams) -> {
+            if(currentTournament.get() != null)
+                currentTournament.get().recalculateTournament(numTeams.get());
+        });
+
+        getTeams().addListener((ListChangeListener<Team>) change -> {
+            while (change.next()) {
+                if (change.wasAdded() || change.wasReplaced() || change.wasUpdated() || change.wasRemoved())
+                    calculateTeamLocations();
+            }
+        });
+    }
+
+    private void tournamentListeners() {
         ListChangeListener<Object> listChangeListener = change -> {
             if (currentTournament.getValue() != null) {
                 boolean flag = true;
                 while (change.next()) {
                     if (!change.wasPermutated() && flag) {
-                        currentTournament.getValue().recalculateTournament();
+                        currentTournament.getValue().recalculateTournament(numTeams.get());
                         flag = false;
                         listChangeAndChangeFlag = true;
                     }
@@ -128,7 +108,7 @@ public class Context {
 
         ChangeListener<Object> changeListener = (observableValue, oldObject, newObject) -> {
             if (currentTournament.getValue() != null  && !listChangeAndChangeFlag) {
-                currentTournament.getValue().recalculateTournament();
+                currentTournament.getValue().recalculateTournament(numTeams.get());
             }
             listChangeAndChangeFlag = false;
         };
@@ -139,15 +119,6 @@ public class Context {
         tournamentOptions.roundsPerWeekProperty().addListener(changeListener);
         tournamentOptions.hoursBetweenMatchesProperty().addListener(changeListener);
         tournamentOptions.startDateProperty().addListener(changeListener);
-    }
-
-    public static Context getInstance() {
-        if (instance == null) {
-            synchronized (Context.class) {
-                if (instance == null) instance = new Context();
-            }
-        }
-        return instance;
     }
 
     public void clearContext() {
@@ -246,46 +217,6 @@ public class Context {
 
     public IntegerProperty numLocationsProperty() {
         return numLocations;
-    }
-
-    public NameGenerator getFemaleNames() {
-        return femaleNames;
-    }
-
-    public NameGenerator getMaleNames() {
-        return maleNames;
-    }
-
-    public NameGenerator getNonBinaryNames() {
-        return nonBinaryNames;
-    }
-
-    public NameGenerator getSurnames() {
-        return surnames;
-    }
-
-    public NameGenerator getTeamNames() {
-        return teamNames;
-    }
-
-    public ResourceBundle getTextBundle() {
-        return textBundle;
-    }
-
-    public Locale getLocale() {
-        return locale;
-    }
-
-    public DateTimeFormatter getDateTimeFormatter() {
-        return dateTimeFormatter;
-    }
-
-    public DateTimeFormatter getDateFormatter() {
-        return dateFormatter;
-    }
-
-    public DateTimeFormatter getTimeFormatter() {
-        return timeFormatter;
     }
 
     public File getCurrentSaveFile() {

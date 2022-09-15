@@ -22,21 +22,21 @@ import info.codywilliams.qsg.App;
 import info.codywilliams.qsg.generators.TeamGenerator;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.Team;
+import info.codywilliams.qsg.util.DependencyInjector;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 
+import java.io.IOException;
+import java.util.ResourceBundle;
+
 public class AppController {
+
     @FXML
-    MenuController menuController;
-    @FXML
-    TournamentInfoController tournamentInfoController;
-    @FXML
-    TournamentEditorController tournamentEditorController;
-    @FXML
-    TeamEditorController teamEditorController;
+    VBox main;
     @FXML
     VBox leftPane;
     @FXML
@@ -51,14 +51,40 @@ public class AppController {
     Label leftStatus;
     @FXML
     Label rightStatus;
+    @FXML
+    ResourceBundle resources;
+    MenuBar menuBar;
+    AnchorPane teamEditorPane;
+    AnchorPane tournamentEditorPane;
+    VBox tournamentInfoBox;
     Node storedPane;
-    private Context context;
+    private final Context context;
     private int teamNumber = 0;
 
+    public AppController(Context context){
+        this.context = context;
+    }
     public void initialize() {
-        context = Context.getInstance();
+        try {
+            menuBar = (MenuBar) DependencyInjector.load("menu");
+            teamEditorPane = (AnchorPane) DependencyInjector.load("teamEditor");
+            tournamentEditorPane = (AnchorPane) DependencyInjector.load("tournamentEditor");
+            tournamentInfoBox = (VBox) DependencyInjector.load("tournamentInfo");
+            storedPane = tournamentEditorPane;
+        } catch (IOException e){
+            App.exceptionAlert(e, resources);
+        }
+
+
+
+        main.getChildren().add(0, menuBar);
+        leftPane.getChildren().add(tournamentInfoBox);
+        rightPane.setContent(teamEditorPane);
+
+
 
         leftStatus.textProperty().bind(context.leftStatusProperty());
+        context.leftStatusProperty().set(resources.getString("app.newStatus"));
         rightStatus.textProperty().bind(context.rightStatusProperty());
 
         leftPaneListView.setItems(context.getTeams());
@@ -74,7 +100,6 @@ public class AppController {
 
         leftPaneListView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldTeam, newTeam) -> context.setCurrentTeam(newTeam));
 
-        storedPane = App.loadFXML("tournamentEditor");
         editorToggleGroup.selectedToggleProperty().addListener(((observableValue, prevToggle, currentToggle) -> {
             Node temp = rightPane.getContent();
             rightPane.setContent(storedPane);
@@ -85,7 +110,7 @@ public class AppController {
 
     public void createNewTeam() {
         teamNumber++;
-        context.getTeams().add(TeamGenerator.newTeam(teamNumber));
+        context.getTeams().add(TeamGenerator.newTeam(teamNumber, resources));
     }
 
     public void createRandomTeam() {

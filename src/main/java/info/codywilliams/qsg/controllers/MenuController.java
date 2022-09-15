@@ -4,6 +4,7 @@ package info.codywilliams.qsg.controllers;
 import info.codywilliams.qsg.App;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.SaveSettings;
+import info.codywilliams.qsg.util.Formatters;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -19,13 +20,17 @@ import java.time.Instant;
 import java.util.ResourceBundle;
 
 public class MenuController {
-    private Context context;
-    private Logger logger;
+    private final Context context;
+    private final Logger logger;
+    @FXML
+    ResourceBundle resources;
+
+    public MenuController(Context context){
+        this.context = context;
+        logger = LoggerFactory.getLogger(AppController.class);
+    }
 
     public void initialize() {
-        context = Context.getInstance();
-        logger = LoggerFactory.getLogger(AppController.class);
-
     }
 
     @FXML
@@ -46,7 +51,7 @@ public class MenuController {
                 context.setCurrentSaveFile(settingsFile);
                 updateLeftStatus(settingsFile);
             } catch (IOException e) {
-                App.exceptionAlert(e);
+                App.exceptionAlert(e, resources);
                 logger.error("Error loading file", e);
             }
         }
@@ -58,7 +63,7 @@ public class MenuController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File("").getAbsoluteFile());
 
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(context.getTextBundle().getString("file.ext.json"), "*.json"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(resources.getString("file.ext.json"), "*.json"));
 
         switch (fileAction) {
             case OPEN -> {
@@ -74,7 +79,7 @@ public class MenuController {
 
     private void updateLeftStatus(File saveFile) {
         Instant timestamp = Instant.ofEpochMilli(saveFile.lastModified());
-        context.setLeftStatus(String.format("%s %s %s", context.getTextBundle().getString("app.lastSaved"), saveFile.getName(), context.getDateTimeFormatter().format(timestamp)));
+        context.setLeftStatus(String.format("%s %s %s", resources.getString("app.lastSaved"), saveFile.getName(), Formatters.dateTimeFormatter.format(timestamp)));
     }
 
     @FXML
@@ -97,7 +102,7 @@ public class MenuController {
 
                 logger.debug("Saved to file {}", saveFile);
             } catch (IOException e) {
-                App.exceptionAlert(e);
+                App.exceptionAlert(e, resources);
                 logger.error("Error saving file", e);
             }
         }
@@ -112,12 +117,10 @@ public class MenuController {
 
     @FXML
     void menuHelpAbout(ActionEvent ignoredEvent) {
-        ResourceBundle textBundle = context.getTextBundle();
-
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(textBundle.getString("alert.about.title"));
-        alert.setHeaderText(textBundle.getString("alert.about.header"));
-        alert.setContentText(textBundle.getString("alert.about.content"));
+        alert.setTitle(resources.getString("alert.about.title"));
+        alert.setHeaderText(resources.getString("alert.about.header"));
+        alert.setContentText(resources.getString("alert.about.content"));
 
         alert.show();
     }

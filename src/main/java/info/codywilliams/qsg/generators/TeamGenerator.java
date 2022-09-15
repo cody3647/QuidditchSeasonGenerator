@@ -18,16 +18,17 @@
 
 package info.codywilliams.qsg.generators;
 
-import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.Team;
 
+import java.util.ResourceBundle;
+
 public class TeamGenerator {
+    private static final NameGenerator teamNames = new NameGenerator("teamNames");
     private TeamGenerator(){}
     static public Team randomTeam(){
-        Context context = Context.getInstance();
         Team team = new Team();
 
-        team.setName(context.getTeamNames().getNextName());
+        team.setName(teamNames.getNextName());
         team.setHome(team.getName() + " Pitch");
 
         for(int i = 0; i < Team.TOTAL_BEATERS; i++)
@@ -45,32 +46,31 @@ public class TeamGenerator {
         return team;
     }
 
-    static public Team newTeam(int num){
-        Context context = Context.getInstance();
+    static public Team newTeam(int num, ResourceBundle resources){
         Team team = new Team();
-        String teamName = context.getTextBundle().getString("gen.team.newName") + ' ' + num;
+        String teamName = resources.getString("gen.team.newName") + ' ' + num;
 
         team.setName(teamName);
-        team.setHome(teamName + ' ' + context.getTextBundle().getString("gen.team.newHome"));
+        team.setHome(teamName + ' ' + resources.getString("gen.team.newHome"));
 
         String name;
         for(int i = 1; i <= Team.TOTAL_BEATERS; i++) {
-            name = context.getTextBundle().getString("player.beater") + ' ' + i;
+            name = resources.getString("player.beater") + ' ' + i;
             team.getBeaters().add(PlayerGenerator.newBeater(name));
         }
 
         for(int i = 1; i <= Team.TOTAL_CHASERS; i++) {
-            name = context.getTextBundle().getString("player.chaser") + ' ' + i;
+            name = resources.getString("player.chaser") + ' ' + i;
             team.getChasers().add(PlayerGenerator.newChaser(name));
         }
 
         for(int i = 1; i <= Team.TOTAL_KEEPERS; i++) {
-            name = context.getTextBundle().getString("player.keeper") + ' ' + i;
+            name = resources.getString("player.keeper") + ' ' + i;
             team.getKeepers().add(PlayerGenerator.newKeeper(name));
         }
 
         for(int i = 1; i <= Team.TOTAL_SEEKERS; i++) {
-            name = context.getTextBundle().getString("player.seeker") + ' ' + i;
+            name = resources.getString("player.seeker") + ' ' + i;
             team.getSeekers().add(PlayerGenerator.newSeeker(name));
         }
         return team;

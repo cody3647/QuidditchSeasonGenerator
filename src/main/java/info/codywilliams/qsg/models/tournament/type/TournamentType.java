@@ -18,22 +18,23 @@
 
 package info.codywilliams.qsg.models.tournament.type;
 
-import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.tournament.Tournament;
+import info.codywilliams.qsg.models.tournament.TournamentOptions;
 
 import java.lang.reflect.Constructor;
 
 public enum TournamentType {
-    STRAIGHT_ROUND_ROBIN("tournament.type.straightRoundRobin", "info.codywilliams.qsg.models.tournament.type.StraightRoundRobin"),
-    STRAIGHT_ROUND_ROBIN_HOME_AWAY("tournament.type.straightRoundRobinHomeAway","info.codywilliams.qsg.models.tournament.type.StraightRoundRobinHomeAway");
+    STRAIGHT_ROUND_ROBIN("tournament.type.StraightRoundRobin"),
+    STRAIGHT_ROUND_ROBIN_HOME_AWAY("tournament.type.StraightRoundRobinHomeAway");
 
-    private final String nameKey;
+    public final String key;
     private final Constructor<Tournament> constructor;
 
-    TournamentType(String nameKey, String nameClass) {
-        this.nameKey = nameKey;
+    @SuppressWarnings("unchecked")
+    TournamentType(String className) {
+        this.key = className;
         try {
-            constructor = (Constructor<Tournament>) Class.forName(nameClass).getConstructor(Class.forName("info.codywilliams.qsg.models.tournament.TournamentOptions"));
+            constructor = (Constructor<Tournament>) Class.forName("info.codywilliams.qsg.models." + className).getConstructor(TournamentOptions.class);
         } catch (NoSuchMethodException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
@@ -41,10 +42,5 @@ public enum TournamentType {
 
     public Constructor<Tournament> getConstructor(){
         return constructor;
-    }
-
-    @Override
-    public String toString(){
-        return Context.getInstance().getTextBundle().getString(nameKey);
     }
 }

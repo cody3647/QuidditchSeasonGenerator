@@ -18,13 +18,16 @@
 
 package info.codywilliams.qsg.generators;
 
-import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.player.*;
 
 import java.util.Random;
 
 public class PlayerGenerator {
     private PlayerGenerator(){}
+    private static final NameGenerator femaleNames = new NameGenerator("femaleNames");
+    private static final NameGenerator maleNames = new NameGenerator("maleNames");
+    private static final NameGenerator nonBinaryNames = new NameGenerator("nonBinaryNames");
+    private static final NameGenerator surnames = new NameGenerator("surnames");
     public static Beater randomBeater(){
         Beater beater = new Beater();
         randomPlayer(beater);
@@ -100,11 +103,6 @@ public class PlayerGenerator {
     }
 
     public static void randomFullName(Player player){
-        Context context = Context.getInstance();
-        NameGenerator femaleNames = context.getFemaleNames();
-        NameGenerator maleNames = context.getMaleNames();
-        NameGenerator nonBinaryNames = context.getNonBinaryNames();
-        NameGenerator surnames = context.getSurnames();
         Random random = new Random();
 
         int i = random.nextInt(0, 100);

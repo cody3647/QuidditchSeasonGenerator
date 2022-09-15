@@ -18,17 +18,15 @@
 
 package info.codywilliams.qsg;
 
+import info.codywilliams.qsg.controllers.*;
 import info.codywilliams.qsg.models.Context;
+import info.codywilliams.qsg.util.DependencyInjector;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -38,21 +36,21 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.time.DayOfWeek;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
  * JavaFX App
  */
 public class App extends Application {
-
     public static void main(String[] args) {
         launch();
     }
 
-    public static void exceptionAlert(Exception e) {
-        ResourceBundle textBundle = Context.getInstance().getTextBundle();
+    public static void exceptionAlert(Exception e, ResourceBundle resources) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(textBundle.getString("alert.exception.title"));
+        alert.setTitle(resources.getString("alert.exception.title"));
         alert.setHeaderText(e.getClass().getSimpleName());
         alert.setContentText(e.getMessage());
 
@@ -62,7 +60,7 @@ public class App extends Application {
         e.printStackTrace(printWriter);
         String stacktrace = stringWriter.toString();
 
-        Label label = new Label(textBundle.getString("alert.exception.stacktrace"));
+        Label label = new Label(resources.getString("alert.exception.stacktrace"));
         TextArea textArea = new TextArea(stacktrace);
         textArea.setEditable(false);
         textArea.setWrapText(true);
@@ -79,8 +77,11 @@ public class App extends Application {
     }
 
     @Override
-    public void start(Stage window) {
-        Scene scene = new Scene(loadFXML("app"));
+    public void start(Stage window) throws IOException {
+        setupLocale();
+        setupDependencyInjector();
+
+        Scene scene = new Scene(DependencyInjector.load("app"));
         window.setTitle("Quidditch Season Generator");
         window.setScene(scene);
         window.show();
@@ -91,21 +92,27 @@ public class App extends Application {
                         actionEvent.getEventType(), actionEvent.getSource(), actionEvent.getTarget()));
     }
 
-    public static Parent loadFXML(String fxml) {
-        return loadFXML(fxml, null);
+    private void setupDependencyInjector(){
+        Locale locale = Locale.getDefault();
+        ResourceBundle resources = ResourceBundle.getBundle("info.codywilliams.qsg.language.Text", locale);
+
+        Context context = new Context();
+        DependencyInjector.setBundle(resources);
+
+        DependencyInjector.addInjectionMethod(AppController.class, type -> new AppController(context));
+        DependencyInjector.addInjectionMethod(MenuController.class, type -> new MenuController(context));
+        DependencyInjector.addInjectionMethod(TeamEditorController.class, type -> new TeamEditorController(context));
+        DependencyInjector.addInjectionMethod(TournamentEditorController.class, type-> new TournamentEditorController(context));
+        DependencyInjector.addInjectionMethod(TournamentInfoController.class, type-> new TournamentInfoController(context));
+
     }
 
-    public static Parent loadFXML(String fxml, Object controller){
-        try {
-            Context context = Context.getInstance();
-            FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("views/" + fxml + ".fxml"), context.getTextBundle());
-            if (controller != null)
-                fxmlLoader.setController(controller);
-            return fxmlLoader.load();
-        } catch (IOException e){
-            exceptionAlert(e);
-            return new AnchorPane();
-        }
+    private void setupLocale(){
+    // Setup custom locale with first day of the week being Monday
+        Locale.setDefault(Locale.Category.FORMAT, new Locale.Builder()
+                .setLocale(Locale.getDefault())
+                .setExtension(Locale.UNICODE_LOCALE_EXTENSION, "fw-" + DayOfWeek.MONDAY.toString().substring(0, 3))
+                .build());
     }
 
     public static void close(){

@@ -17,8 +17,8 @@
 
 package info.codywilliams.qsg.models.tournament;
 
-import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
+import info.codywilliams.qsg.util.Formatters;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.*;
@@ -41,7 +41,7 @@ public abstract class Tournament {
     protected ObjectProperty<LocalDate> endDate;
     protected StringBinding endDateStringBinding;
     protected TournamentOptions tournamentOptions;
-    protected Context context;
+
 
     public Tournament(TournamentOptions tournamentOptions, TournamentType type) {
 
@@ -54,26 +54,21 @@ public abstract class Tournament {
         endDate = new SimpleObjectProperty<>(this, "endDate");
         this.tournamentOptions = tournamentOptions;
 
-        context = Context.getInstance();
 
-        context.numTeamsProperty().addListener((observableValue, oldNumTeams, newNumTeams) -> recalculateTournament());
         endDateStringBinding = Bindings.createStringBinding(() -> {
                     if(endDateProperty().getValue() == null)
                         return "";
-                    return endDateProperty().getValue().format(context.getDateFormatter());
+                    return endDateProperty().getValue().format(Formatters.dateFormatter);
         }, endDateProperty());
-
-        recalculateTournament();
     }
 
 
 
-    public void recalculateTournament() {
-        System.out.print("Will we recalculate?");
-        if(context.getNumTeams() <2)
+    public void recalculateTournament(int numTeams) {
+        if(numTeams <2)
             return;
-        System.out.println("Yes we are Recalculating...");
-        calculateNums(context.getNumTeams());
+
+        calculateNums(numTeams);
         LocalDateTime lastMatchDate = calculateMatchDates();
         setEndDate(lastMatchDate.toLocalDate());
     }

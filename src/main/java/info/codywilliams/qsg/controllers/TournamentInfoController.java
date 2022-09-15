@@ -21,6 +21,7 @@ package info.codywilliams.qsg.controllers;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.tournament.Tournament;
 import info.codywilliams.qsg.models.tournament.TournamentOptions;
+import info.codywilliams.qsg.util.Formatters;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.fxml.FXML;
@@ -43,25 +44,26 @@ public class TournamentInfoController {
     Label numRoundsLabel;
     @FXML
     Label numMatchesLabel;
+    @FXML
+    ResourceBundle resources;
+    Context context;
 
-
-
+    public TournamentInfoController(Context context){
+        this.context = context;
+    }
 
     public void initialize(){
-        Context context = Context.getInstance();
-        ResourceBundle textBundle = context.getTextBundle();
         TournamentOptions tournamentOptions = context.getTournamentOptions();
 
-        numTeamsLabel.textProperty().bind(Bindings.format("%s %d", textBundle.getString("info.tournament.numTeams"), context.numTeamsProperty()));
-        numLocationsLabel.textProperty().bind(Bindings.format("%s %d", textBundle.getString("info.tournament.numLocations"), context.numLocationsProperty()));
+        numTeamsLabel.textProperty().bind(Bindings.format("%s %d", resources.getString("info.tournament.numTeams"), context.numTeamsProperty()));
+        numLocationsLabel.textProperty().bind(Bindings.format("%s %d", resources.getString("info.tournament.numLocations"), context.numLocationsProperty()));
 
-        StringBinding startDate = Bindings.createStringBinding(() -> tournamentOptions.startDateProperty().getValue().format(context.getDateFormatter()), tournamentOptions.startDateProperty());
-        startDateLabel.textProperty().bind(Bindings.format("%s %s", textBundle.getString("info.tournament.startDate"), startDate));
+        StringBinding startDate = Bindings.createStringBinding(() -> tournamentOptions.startDateProperty().getValue().format(Formatters.dateFormatter), tournamentOptions.startDateProperty());
+        startDateLabel.textProperty().bind(Bindings.format("%s %s", resources.getString("info.tournament.startDate"), startDate));
 
         context.currentTournamentProperty().addListener(((observableValue, oldTournament, newTournament) -> {
             if(context.getCurrentTournament() != null){
                 if (oldTournament != null) {
-                    typeLabel.textProperty().unbind();
                     endDateLabel.textProperty().unbind();
                     numRoundsLabel.textProperty().unbind();
                     numMatchesLabel.textProperty().unbind();
@@ -69,10 +71,10 @@ public class TournamentInfoController {
 
                 if (newTournament != null) {
                     Tournament tournament = context.getCurrentTournament();
-                    typeLabel.textProperty().bind(Bindings.format("%s %s", context.getTextBundle().getString("info.tournament.type") ,tournament.typeProperty()));
-                    numRoundsLabel.textProperty().bind(Bindings.format("%s %d", context.getTextBundle().getString("info.tournament.numRounds"), tournament.numRoundsProperty()));
-                    numMatchesLabel.textProperty().bind(Bindings.format("%s %d", context.getTextBundle().getString("info.tournament.numMatches"), tournament.numMatchesProperty()));
-                    endDateLabel.textProperty().bind(Bindings.format("%s %s", context.getTextBundle().getString("info.tournament.endDate"), tournament.endDateStringBinding()));
+                    typeLabel.textProperty().set(String.format("%s %s", resources.getString("info.tournament.type") , resources.getString(tournament.getType().key)));
+                    numRoundsLabel.textProperty().bind(Bindings.format("%s %d", resources.getString("info.tournament.numRounds"), tournament.numRoundsProperty()));
+                    numMatchesLabel.textProperty().bind(Bindings.format("%s %d", resources.getString("info.tournament.numMatches"), tournament.numMatchesProperty()));
+                    endDateLabel.textProperty().bind(Bindings.format("%s %s", resources.getString("info.tournament.endDate"), tournament.endDateStringBinding()));
                 }
             }
 
