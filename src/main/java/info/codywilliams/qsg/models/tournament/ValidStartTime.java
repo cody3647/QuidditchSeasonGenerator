@@ -31,13 +31,23 @@ public class ValidStartTime{
     final private BooleanProperty enableDay;
     final private ObjectProperty<LocalTime> earliest;
     final private ObjectProperty<LocalTime> latest;
+    static final public LocalTime defaultEarliest = LocalTime.of(10,0);
+    static final public LocalTime defaultLatest = LocalTime.of(20,0);
 
     public ValidStartTime(){
         dayOfWeek = new SimpleObjectProperty<>(this, "dayOfWeek");
         enableDay = new SimpleBooleanProperty(this, "enableDay");
-        earliest = new SimpleObjectProperty<>(this, "earliest", LocalTime.of(10,0));
-        latest = new SimpleObjectProperty<>(this, "latest", LocalTime.of(20,0));
+        earliest = new SimpleObjectProperty<>(this, "earliest", defaultEarliest);
+        latest = new SimpleObjectProperty<>(this, "latest", defaultLatest);
     }
+
+    public void copyValues(ValidStartTime other){
+        dayOfWeek.setValue(other.getDayOfWeek());
+        enableDay.setValue(other.getEnableDay());
+        earliest.setValue(other.getEarliest());
+        latest.setValue(other.getLatest());
+    }
+
 
     public DayOfWeek getDayOfWeek() {
         return dayOfWeek.get();

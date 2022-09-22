@@ -25,7 +25,6 @@ import info.codywilliams.qsg.models.tournament.ValidStartTime;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -40,7 +39,6 @@ import javafx.util.converter.LocalTimeStringConverter;
 import javafx.util.converter.NumberStringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
 
-import java.lang.reflect.InvocationTargetException;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -112,25 +110,19 @@ public class TournamentEditorController {
                 return null;
             }
         });
+
+        context.currentTournamentProperty().addListener(((observableValue, oldTournament, newTournament) -> {
+            if(context.getCurrentTournament() != null){
+                if (newTournament != null && (oldTournament == null || oldTournament.getType() != newTournament.getType())) {
+                    tournamentTypeComboBox.getSelectionModel().select(newTournament.getType());
+                }
+            }
+        }));
+
         roundsPerWeekTextField.textProperty().bindBidirectional(tournamentOptions.roundsPerWeekProperty(), new NumberStringConverter());
         hoursBetweenMatchesTextField.textProperty().bindBidirectional(tournamentOptions.hoursBetweenMatchesProperty(), new NumberStringConverter());
 
         // DatePickers
-        tournamentOptions.getValidStartTimes().addListener((ListChangeListener<ValidStartTime>) change -> {
-            change.next();
-            for (ValidStartTime validStartTime : change.getList()) {
-                if (validStartTime.getEnableDay()) {
-                    tournamentOptions.validStartDayProperty().setValue(validStartTime.getDayOfWeek());
-                    break;
-                }
-            }
-
-            if (tournamentOptions.getStartDate().getDayOfWeek() != tournamentOptions.validStartDayProperty().getValue()) {
-                int daysDiff = tournamentOptions.validStartDayProperty().getValue().getValue() - tournamentOptions.getStartDate().getDayOfWeek().getValue();
-                tournamentOptions.startDateProperty().setValue(tournamentOptions.getStartDate().plusDays(daysDiff));
-            }
-        });
-
         Callback<DatePicker, DateCell> startDayCellFactory = blackoutDateDayCellFactory(DayOfWeek.MONDAY);
         Callback<DatePicker, DateCell> endDayCellFactory = blackoutDateDayCellFactory(DayOfWeek.SUNDAY);
 
@@ -203,15 +195,7 @@ public class TournamentEditorController {
     private void setupActions() {
         tournamentTypeComboBox.setOnAction(actionEvent -> {
             TournamentType type = tournamentTypeComboBox.getValue();
-            if (!context.getTournaments().containsKey(type)) {
-                try {
-                    context.getTournaments().put(type, type.getConstructor().newInstance(context.getTournamentOptions()));
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            context.setCurrentTournament(context.getTournaments().get(type));
-            context.getCurrentTournament().recalculateTournament(context.getNumTeams());
+            context.changeCurrentTournament(type);
         });
 
         blackoutStartDatePicker.setOnAction(actionEvent -> {

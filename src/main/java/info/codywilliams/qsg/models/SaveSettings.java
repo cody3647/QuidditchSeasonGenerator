@@ -22,18 +22,27 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import info.codywilliams.qsg.models.tournament.BlackoutDates;
 import info.codywilliams.qsg.models.tournament.TournamentOptions;
+import info.codywilliams.qsg.models.tournament.ValidStartTime;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class SaveSettings {
     private List<Team> teams;
-    private TournamentOptions tournamentOptions;
+
     private TournamentType tournamentType;
+    // Tournament Options
+    private double roundsPerWeek;
+    private int hoursBetweenMatches;
+    private List<ValidStartTime> validStartTimes;
+    private List<BlackoutDates> blackoutDates;
+    private LocalDate startDate;
 
     public SaveSettings() {
     }
@@ -41,14 +50,17 @@ public class SaveSettings {
     public SaveSettings(List<Team> teams, TournamentType tournamentType, TournamentOptions tournamentOptions) {
         this.teams = teams;
         this.tournamentType = tournamentType;
-        this.tournamentOptions = tournamentOptions;
+        roundsPerWeek = tournamentOptions.getRoundsPerWeek();
+        hoursBetweenMatches = tournamentOptions.getHoursBetweenMatches();
+
+        validStartTimes = new ArrayList<>(tournamentOptions.getValidStartTimes());
+        blackoutDates = new ArrayList<>(tournamentOptions.getBlackoutDates());
+
+        startDate = tournamentOptions.getStartDate();
     }
 
     public SaveSettings(Context context) {
-        teams = new ArrayList<>();
-        teams.addAll(context.getTeams());
-        tournamentType = context.getCurrentTournament().getType();
-        tournamentOptions = context.getTournamentOptions();
+        this(new ArrayList<>(context.getTeams()), context.getCurrentTournament().getType(), context.getTournamentOptions());
     }
 
     public List<Team> getTeams() {
@@ -57,6 +69,54 @@ public class SaveSettings {
 
     public void setTeams(List<Team> teams) {
         this.teams = teams;
+    }
+
+    public TournamentType getTournamentType() {
+        return tournamentType;
+    }
+
+    public void setTournamentType(TournamentType tournamentType) {
+        this.tournamentType = tournamentType;
+    }
+
+    public double getRoundsPerWeek() {
+        return roundsPerWeek;
+    }
+
+    public void setRoundsPerWeek(double roundsPerWeek) {
+        this.roundsPerWeek = roundsPerWeek;
+    }
+
+    public int getHoursBetweenMatches() {
+        return hoursBetweenMatches;
+    }
+
+    public void setHoursBetweenMatches(int hoursBetweenMatches) {
+        this.hoursBetweenMatches = hoursBetweenMatches;
+    }
+
+    public List<ValidStartTime> getValidStartTimes() {
+        return validStartTimes;
+    }
+
+    public void setValidStartTimes(List<ValidStartTime> validStartTimes) {
+        this.validStartTimes = validStartTimes;
+    }
+
+    public List<BlackoutDates> getBlackoutDates() {
+        return blackoutDates;
+    }
+
+    public void setBlackoutDates(List<BlackoutDates> blackoutDates) {
+        this.blackoutDates = blackoutDates;
+    }
+
+    public LocalDate getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(LocalDate startDate) {
+        this.startDate = startDate;
     }
 
     static public SaveSettings loadFromFile(File settingsFile) throws IOException {

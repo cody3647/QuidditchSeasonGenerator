@@ -31,6 +31,7 @@ import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
 import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class Context {
@@ -53,7 +54,7 @@ public class Context {
                 team -> new Observable[]{team.nameProperty(), team.homeProperty()}
         ));
 
-        tournamentOptions = TournamentOptions.getInstance();
+        tournamentOptions = new TournamentOptions();
         currentTournament = new SimpleObjectProperty<>(this, "tournament");
         tournaments = new SimpleMapProperty<>(this, "tournaments", FXCollections.observableHashMap());
 
@@ -125,10 +126,15 @@ public class Context {
         currentTeam.set(null);
         teams.clear();
         currentTournament.set(null);
+        tournaments.clear();
+        tournamentOptions.clear();
     }
 
     public void loadContext(SaveSettings settings) {
         teams.addAll(settings.getTeams());
+        tournamentOptions.loadSettings(settings);
+        changeCurrentTournament(settings.getTournamentType());
+
     }
 
     public Team getCurrentTeam() {
@@ -225,5 +231,17 @@ public class Context {
 
     public void setCurrentSaveFile(File currentSaveFile) {
         this.currentSaveFile = currentSaveFile;
+    }
+
+    public void changeCurrentTournament(TournamentType type){
+        if (!getTournaments().containsKey(type)) {
+            try {
+                getTournaments().put(type, type.getConstructor().newInstance(getTournamentOptions()));
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        setCurrentTournament(getTournaments().get(type));
+        getCurrentTournament().recalculateTournament(getNumTeams());
     }
 }

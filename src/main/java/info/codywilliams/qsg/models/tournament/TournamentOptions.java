@@ -17,10 +17,11 @@
 
 package info.codywilliams.qsg.models.tournament;
 
-import info.codywilliams.qsg.models.Context;
+import info.codywilliams.qsg.models.SaveSettings;
 import javafx.beans.Observable;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
 import java.time.DayOfWeek;
@@ -29,17 +30,14 @@ import java.time.Month;
 import java.time.temporal.TemporalAdjusters;
 
 public class TournamentOptions {
-    volatile private static TournamentOptions instance;
     private final DoubleProperty roundsPerWeek;
     private final IntegerProperty hoursBetweenMatches;
     private final ListProperty<ValidStartTime> validStartTimes;
-    private final ObjectProperty<LocalDate> startDate;
     private final ListProperty<BlackoutDates> blackoutDates;
+    private final ObjectProperty<LocalDate> startDate;
     private final ObjectProperty<DayOfWeek> validStartDay;
 
-    private TournamentOptions() {
-        LocalDate date = firstFridayOctober;
-
+    public TournamentOptions() {
         roundsPerWeek = new SimpleDoubleProperty(this, "roundsPerWeek", 1);
         hoursBetweenMatches = new SimpleIntegerProperty(this, "hoursBetweenMatches", 0);
         validStartTimes = new SimpleListProperty<>(this, "acceptableTimes",
@@ -47,23 +45,55 @@ public class TournamentOptions {
         for (DayOfWeek day: DayOfWeek.values()) {
             ValidStartTime validStartTime = new ValidStartTime();
             validStartTime.setDayOfWeek(day);
-            if(day.getValue() >= 5)
-                validStartTime.setEnableDay(true);
+            validStartTime.setEnableDay(day.getValue() >= 5);
             validStartTimes.add(validStartTime);
         }
-        startDate = new SimpleObjectProperty<>(this, "startDate", date);
+        startDate = new SimpleObjectProperty<>(this, "startDate", firstFridayOctober);
         blackoutDates = new SimpleListProperty<>(this, "blackoutDates", FXCollections.observableArrayList(blackoutDate -> new Observable[]{blackoutDate.startProperty(), blackoutDate.endProperty()}));
         validStartDay = new SimpleObjectProperty<>();
         validStartDay.setValue(getStartDate().getDayOfWeek());
+
+        // Add listener to valid start times to change valid start day whenever there is a change to the list
+        validStartTimes.addListener((ListChangeListener<ValidStartTime>) change -> {
+            change.next();
+            for (ValidStartTime validStartTime : change.getList()) {
+                if (validStartTime.getEnableDay()) {
+                    validStartDayProperty().setValue(validStartTime.getDayOfWeek());
+                    break;
+                }
+            }
+
+            if (getStartDate().getDayOfWeek() != validStartDayProperty().getValue()) {
+                int daysDiff = validStartDayProperty().getValue().getValue() - getStartDate().getDayOfWeek().getValue();
+                startDateProperty().setValue(getStartDate().plusDays(daysDiff));
+            }
+        });
     }
 
-    public static TournamentOptions getInstance() {
-        if (instance == null) {
-            synchronized (Context.class) {
-                if (instance == null) instance = new TournamentOptions();
-            }
+    public void clear(){
+        roundsPerWeek.set(1);
+        hoursBetweenMatches.set(0);
+        for(ValidStartTime startTime : validStartTimes.get()){
+            startTime.setEnableDay(startTime.getDayOfWeek().getValue() >= 5);
+            startTime.setEarliest(ValidStartTime.defaultEarliest);
+            startTime.setLatest(ValidStartTime.defaultLatest);
         }
-        return instance;
+        startDate.setValue(firstFridayOctober);
+        blackoutDates.clear();
+        validStartDay.setValue(getStartDate().getDayOfWeek());
+
+    }
+
+    public void loadSettings(SaveSettings settings){
+        roundsPerWeek.setValue(settings.getRoundsPerWeek());
+        hoursBetweenMatches.setValue(settings.getHoursBetweenMatches());
+        for(int i = 0; i < validStartTimes.size(); i++){
+            validStartTimes.get(i).copyValues(settings.getValidStartTimes().get(i));
+        }
+        startDate.setValue(settings.getStartDate());
+        blackoutDates.addAll(settings.getBlackoutDates());
+        validStartDay.setValue(getStartDate().getDayOfWeek());
+
     }
 
     public double getRoundsPerWeek() {
@@ -138,5 +168,5 @@ public class TournamentOptions {
         this.validStartDay.set(validStartDay);
     }
 
-    private LocalDate firstFridayOctober = LocalDate.now().withMonth(Month.OCTOBER.getValue()).with(TemporalAdjusters.firstInMonth(DayOfWeek.FRIDAY));
+    static final private LocalDate firstFridayOctober = LocalDate.now().withMonth(Month.OCTOBER.getValue()).with(TemporalAdjusters.firstInMonth(DayOfWeek.FRIDAY));
 }
