@@ -19,6 +19,7 @@
 package info.codywilliams.qsg.models.tournament.type;
 
 import info.codywilliams.qsg.models.Match;
+import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.models.tournament.*;
 
 import java.time.DayOfWeek;
@@ -234,6 +235,106 @@ public class StraightRoundRobin extends Tournament {
             System.out.println(matches);
         }
         return new TreeSet<>(template.values());
+    }
+
+    @Override
+    public TreeSet<Match> assignTeamsToMatches(List<Team> teams, long seed) {
+        ArrayList<Team> teamArrayList = new ArrayList<>(teams);
+        Random rand = new Random(seed + "TeamShuffle".hashCode());
+
+        Collections.shuffle(teamArrayList, rand);
+
+        // Round Robin Circle Method
+        if (teamArrayList.size() % 2 != 0)
+            teamArrayList.add(null);
+
+        int round = 1;
+        int aIdx = 0;
+        int bIdx = teamArrayList.size() - 1;
+        int half = numRounds.get() / 2;
+        HashMap<String, Integer> homeTeamTimes = new HashMap<>();
+        boolean reset = false;
+        for (Match match : getMatches()) {
+            if (match.getRound() != round) {
+                round++;
+                aIdx = 0;
+                bIdx = teamArrayList.size() - 1;
+                Collections.rotate(teamArrayList.subList(1, teamArrayList.size()), 1);
+            }
+            if (teamArrayList.get(aIdx) == null || teamArrayList.get(bIdx) == null) {
+                aIdx++;
+                bIdx--;
+            }
+
+            // Balance out the home and away matches.  Reverse for the second half if home and away
+            if(getType() == TournamentType.STRAIGHT_ROUND_ROBIN || (round <= half && getType() == TournamentType.STRAIGHT_ROUND_ROBIN_HOME_AWAY)){
+                int aCount = homeTeamTimes.getOrDefault(teamArrayList.get(aIdx).getName(), 0);
+                int bCount = homeTeamTimes.getOrDefault(teamArrayList.get(bIdx).getName(), 0);
+
+                assignTeams(aCount < bCount, match, teamArrayList.get(aIdx), teamArrayList.get(bIdx), homeTeamTimes);
+            }
+            else {
+                if(!reset && round == half + 1){
+                    homeTeamTimes.clear();
+                    reset = true;
+                }
+                int aCount = homeTeamTimes.getOrDefault(teamArrayList.get(aIdx).getName(), 0);
+                int bCount = homeTeamTimes.getOrDefault(teamArrayList.get(bIdx).getName(), 0);
+
+                // Reverse comparison and teamA and teamB so that when counts are equal or different behavior is reversed from above
+                assignTeams(aCount > bCount, match, teamArrayList.get(bIdx), teamArrayList.get(aIdx), homeTeamTimes);
+            }
+
+            aIdx++;
+            bIdx--;
+        }
+
+        // The fixed team in the schedule will always play first match, randomize this some.
+        int randInt = 0;
+        Match firstMatch = null;
+        Match otherMatch;
+        for(Match match: getMatches()){
+            // Swap first match with random other match in round
+            if(match.getNumber() == 1){
+                firstMatch = match;
+                randInt = rand.nextInt(numMatchesPerRound) + 1;
+            }
+            if(match.getNumber() == randInt){
+                otherMatch = match;
+                swapMatchTeams(firstMatch, otherMatch);
+                randInt = 0;
+                firstMatch = null;
+            }
+        }
+        return new TreeSet<>(matches.getValue());
+    }
+
+    private void assignTeams(boolean flag, Match match, Team aTeam, Team bTeam, Map<String, Integer> homeTeamTimes){
+        if(flag){
+            match.setHomeTeam(aTeam);
+            match.setLocation(aTeam.getHome());
+            match.setAwayTeam(bTeam);
+            homeTeamTimes.merge(aTeam.getName(), 1, Integer::sum);
+        }
+        else {
+            match.setHomeTeam(bTeam);
+            match.setLocation(bTeam.getHome());
+            match.setAwayTeam(aTeam);
+            homeTeamTimes.merge(bTeam.getName(), 1, Integer::sum);
+        }
+    }
+
+    private void swapMatchTeams(Match first, Match other){
+        if(first == other)
+            return;
+        Team tempHome = first.getHomeTeam();
+        Team tempAway = first.getAwayTeam();
+        first.setHomeTeam(other.getHomeTeam());
+        first.setLocation(other.getHomeTeam().getHome());
+        first.setAwayTeam(other.getAwayTeam());
+        other.setHomeTeam(tempHome);
+        other.setLocation(tempHome.getHome());
+        other.setAwayTeam(tempAway);
     }
 
 

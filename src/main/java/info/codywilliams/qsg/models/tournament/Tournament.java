@@ -18,6 +18,7 @@
 package info.codywilliams.qsg.models.tournament;
 
 import info.codywilliams.qsg.models.Match;
+import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
 import info.codywilliams.qsg.util.Formatters;
 import javafx.beans.binding.Bindings;
@@ -28,7 +29,9 @@ import javafx.collections.ObservableSet;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class Tournament {
     protected ObjectProperty<TournamentType> type;
@@ -40,6 +43,7 @@ public abstract class Tournament {
     protected ObjectProperty<LocalDate> endDate;
     protected StringBinding endDateStringBinding;
     protected TournamentOptions tournamentOptions;
+    protected SimpleMapProperty<String, Integer> tournamentPoints;
 
 
     public Tournament(TournamentOptions tournamentOptions, TournamentType type) {
@@ -52,6 +56,7 @@ public abstract class Tournament {
         matches = new SimpleSetProperty<>(this, "matchDates", FXCollections.observableSet(new TreeSet<>()));
         endDate = new SimpleObjectProperty<>(this, "endDate");
         this.tournamentOptions = tournamentOptions;
+        tournamentPoints = new SimpleMapProperty<>(this, "tournamentPoints", FXCollections.observableMap(new ConcurrentHashMap<>()));
 
 
         endDateStringBinding = Bindings.createStringBinding(() -> {
@@ -96,6 +101,8 @@ public abstract class Tournament {
 
         return 0;
     }
+
+    public abstract TreeSet<Match> assignTeamsToMatches(List<Team> teams, long seed);
 
     public TournamentType getType() {
         return type.get();
