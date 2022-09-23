@@ -40,12 +40,14 @@ public class Context {
     final private TournamentOptions tournamentOptions;
     final private ObjectProperty<Tournament> currentTournament;
     final private MapProperty<TournamentType, Tournament> tournaments;
+    final private LongProperty seed;
     final private IntegerProperty numTeams;
     final private IntegerProperty numLocations;
     final private StringProperty leftStatus;
     final private StringProperty rightStatus;
     private File currentSaveFile;
     private boolean listChangeAndChangeFlag = false;
+
 
 
     public Context() {
@@ -57,6 +59,7 @@ public class Context {
         tournamentOptions = new TournamentOptions();
         currentTournament = new SimpleObjectProperty<>(this, "tournament");
         tournaments = new SimpleMapProperty<>(this, "tournaments", FXCollections.observableHashMap());
+        seed = new SimpleLongProperty(this, "seed", new Random().nextLong());
 
         numTeams = new SimpleIntegerProperty(this, "numTeams", 0);
         numLocations = new SimpleIntegerProperty(this, "numLocations", 0);
@@ -128,12 +131,14 @@ public class Context {
         currentTournament.set(null);
         tournaments.clear();
         tournamentOptions.clear();
+        seed.set(new Random().nextLong());
     }
 
     public void loadContext(SaveSettings settings) {
         teams.addAll(settings.getTeams());
         tournamentOptions.loadSettings(settings);
         changeCurrentTournament(settings.getTournamentType());
+        seed.set(settings.getSeed());
 
     }
 
@@ -199,6 +204,18 @@ public class Context {
 
     public MapProperty<TournamentType, Tournament> tournamentsProperty() {
         return tournaments;
+    }
+
+    public long getSeed() {
+        return seed.get();
+    }
+
+    public LongProperty seedProperty() {
+        return seed;
+    }
+
+    public void setSeed(long seed) {
+        this.seed.set(seed);
     }
 
     public int getNumTeams() {

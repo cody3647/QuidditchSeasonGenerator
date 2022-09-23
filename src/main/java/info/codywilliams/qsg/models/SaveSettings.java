@@ -43,11 +43,12 @@ public class SaveSettings {
     private List<ValidStartTime> validStartTimes;
     private List<BlackoutDates> blackoutDates;
     private LocalDate startDate;
+    private long seed;
 
     public SaveSettings() {
     }
 
-    public SaveSettings(List<Team> teams, TournamentType tournamentType, TournamentOptions tournamentOptions) {
+    public SaveSettings(List<Team> teams, TournamentType tournamentType, TournamentOptions tournamentOptions, long seed) {
         this.teams = teams;
         this.tournamentType = tournamentType;
         roundsPerWeek = tournamentOptions.getRoundsPerWeek();
@@ -60,7 +61,7 @@ public class SaveSettings {
     }
 
     public SaveSettings(Context context) {
-        this(new ArrayList<>(context.getTeams()), context.getCurrentTournament().getType(), context.getTournamentOptions());
+        this(new ArrayList<>(context.getTeams()), context.getCurrentTournament().getType(), context.getTournamentOptions(), context.getSeed());
     }
 
     public List<Team> getTeams() {
@@ -117,6 +118,14 @@ public class SaveSettings {
 
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
+    }
+
+    public long getSeed() {
+        return seed;
+    }
+
+    public void setSeed(long seed) {
+        this.seed = seed;
     }
 
     static public SaveSettings loadFromFile(File settingsFile) throws IOException {
