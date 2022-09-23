@@ -3,13 +3,21 @@ package info.codywilliams.qsg.controllers;
 
 import info.codywilliams.qsg.App;
 import info.codywilliams.qsg.models.Context;
+import info.codywilliams.qsg.models.Match;
 import info.codywilliams.qsg.models.SaveSettings;
+import info.codywilliams.qsg.models.tournament.TimeEntry;
 import info.codywilliams.qsg.util.Formatters;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -123,6 +131,33 @@ public class MenuController {
         alert.setContentText(resources.getString("alert.about.content"));
 
         alert.show();
+    }
+
+    @FXML
+    void displayMatchCalendar(ActionEvent ignoredEvent){
+        Stage calendarWindow = new Stage();
+        calendarWindow.initModality(Modality.NONE);
+        VBox calendarVbox = new VBox();
+        ScrollPane scrollPane = new ScrollPane(calendarVbox);
+        Scene calendarScene = new Scene(scrollPane, 1000, 1000);
+
+        if(context.getCurrentTournament() != null) {
+            for (TimeEntry entry : context.getCurrentTournament().getTemplate()) {
+                calendarVbox.getChildren().add(new Label(String.format("TimeEntry: %s %s\tCount: %d", entry.getDayOfWeek(), entry.getLocalTime().format(Formatters.timeFormatter), entry.getCount())));
+            }
+            calendarVbox.getChildren().add(new Label(""));
+            calendarVbox.getChildren().add(new Label("Calendar"));
+            for (Match match : context.getCurrentTournament().getMatches()) {
+                calendarVbox.getChildren().add(new Label(String.format("Round: %2d\tMatch: %2d\t\tDate: %s", match.getRound(), match.getNumber(), match.getStartDateTime().format(Formatters.dateTimeFormatter))));
+            }
+        }
+        else
+            calendarVbox.getChildren().add(new Label("No matches to show yet, please configure the tournament"));
+        calendarWindow.setScene(calendarScene);
+        calendarWindow.show();
+
+
+
     }
 
     private enum FileAction {

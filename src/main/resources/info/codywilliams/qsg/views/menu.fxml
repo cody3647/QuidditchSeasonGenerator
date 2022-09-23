@@ -20,6 +20,7 @@
       <Menu text="%app.menu.help">
          <items>
             <MenuItem mnemonicParsing="false" onAction="#menuHelpAbout" text="%app.menu.about" />
+            <MenuItem mnemonicParsing="false" onAction="#displayMatchCalendar" text="%app.menu.matchCalendar" />
          </items>
       </Menu>
    </menus>

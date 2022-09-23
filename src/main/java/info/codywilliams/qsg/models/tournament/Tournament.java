@@ -17,18 +17,17 @@
 
 package info.codywilliams.qsg.models.tournament;
 
+import info.codywilliams.qsg.models.Match;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
 import info.codywilliams.qsg.util.Formatters;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableMap;
+import javafx.collections.ObservableSet;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 public abstract class Tournament {
@@ -36,7 +35,7 @@ public abstract class Tournament {
     protected IntegerProperty numWeeks;
     protected IntegerProperty numMatches;
     protected IntegerProperty numRounds;
-    protected MapProperty<Integer, TreeSet<LocalDateTime>> matchDates;
+    protected SetProperty<Match> matches;
     protected TreeSet<TimeEntry> template;
     protected ObjectProperty<LocalDate> endDate;
     protected StringBinding endDateStringBinding;
@@ -50,7 +49,7 @@ public abstract class Tournament {
         numMatches = new SimpleIntegerProperty(this, "numMathces", 0);
         numRounds = new SimpleIntegerProperty(this, "numRounds", 0);
 
-        matchDates = new SimpleMapProperty<>(this, "matchDates", FXCollections.observableMap(new TreeMap<>()));
+        matches = new SimpleSetProperty<>(this, "matchDates", FXCollections.observableSet(new TreeSet<>()));
         endDate = new SimpleObjectProperty<>(this, "endDate");
         this.tournamentOptions = tournamentOptions;
 
@@ -86,45 +85,6 @@ public abstract class Tournament {
     }
 
     protected abstract LocalDateTime calculateMatchDates();
-
-    protected void checkBlackoutDates(){
-        for(BlackoutDates blackoutDates: tournamentOptions.getBlackoutDates()){
-            int diff = blackoutDates.getStart().getDayOfWeek().getValue() - DayOfWeek.MONDAY.getValue();
-            if(diff != 0){
-                blackoutDates.setStart(blackoutDates.getStart().minusDays(diff));
-            }
-            diff = DayOfWeek.SUNDAY.getValue() - blackoutDates.getStart().getDayOfWeek().getValue();
-            if(diff != 0){
-                blackoutDates.setEnd(blackoutDates.getEnd().plusDays(diff));
-            }
-        }
-
-    }
-
-    protected void checkStartDay() {
-        LocalDate startDate = tournamentOptions.getStartDate();
-        DayOfWeek day = tournamentOptions.getValidStartDay();
-
-        int i = 0;
-        for(; i < day.ordinal(); i++){
-            ValidStartTime validStartTime = tournamentOptions.getValidStartTimes().get(i);
-            if(validStartTime != null && validStartTime.getEnableDay()){
-                day = validStartTime.getDayOfWeek();
-                break;
-            }
-        }
-
-
-        int diff = startDate.getDayOfWeek().getValue() - day.getValue();
-        if(diff > 0){
-            day = startDate.getDayOfWeek();
-            tournamentOptions.setValidStartDay(day);
-        } else if (diff < 0) {
-            startDate = startDate.plusDays(diff * -1);
-            tournamentOptions.setStartDate(startDate);
-        }
-    }
-
     protected int isDateInBlackout(LocalDate date, BlackoutDates blackoutDates){
         if(blackoutDates == null)
             return 0;
@@ -185,12 +145,12 @@ public abstract class Tournament {
         this.numRounds.set(numRounds);
     }
 
-    public ObservableMap<Integer, TreeSet<LocalDateTime>> getMatchDates() {
-        return matchDates.get();
+    public ObservableSet<Match> getMatches() {
+        return matches.get();
     }
 
-    public MapProperty<Integer, TreeSet<LocalDateTime>> matchDatesProperty() {
-        return matchDates;
+    public SetProperty<Match> matchesProperty() {
+        return matches;
     }
 
     public LocalDate getEndDate() {
@@ -208,5 +168,9 @@ public abstract class Tournament {
     public StringBinding endDateStringBinding(){
         return endDateStringBinding;
 
+    }
+
+    public TreeSet<TimeEntry> getTemplate() {
+        return template;
     }
 }
