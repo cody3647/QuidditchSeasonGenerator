@@ -186,11 +186,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
 
         Player player = (Player) o;
 
-
-
         if (!Objects.equals(name, player.name)) return false;
-        if (!Objects.equals(injuryHistory, player.injuryHistory))
-            return false;
         if (!Objects.equals(skillDefense, player.skillDefense))
             return false;
         if (!Objects.equals(skillOffense, player.skillOffense))
@@ -203,7 +199,6 @@ abstract public class Player implements Serializable, Comparable<Player> {
     @Override
     public int hashCode() {
         int result = name.hashCode();
-        result = 31 * result + (injuryHistory.hashCode());
         result = 31 * result + (skillDefense.hashCode());
         result = 31 * result + (skillOffense.hashCode());
         result = 31 * result + (skillTeamwork.hashCode());
