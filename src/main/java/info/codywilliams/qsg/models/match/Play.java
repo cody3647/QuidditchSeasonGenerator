@@ -20,13 +20,20 @@ package info.codywilliams.qsg.models.match;
 
 import info.codywilliams.qsg.models.player.Beater;
 
+import java.util.ResourceBundle;
+
 public abstract class Play {
-    public enum BludgerOutcome {BLOCKED, HIT, MISS}
-    BludgerOutcome bludgerOutcome;
+    TeamType attackingTeamType;
+    public enum BludgerOutcome {NONE, BLOCKED, HIT, MISSED}
+    BludgerOutcome bludgerOutcome = BludgerOutcome.NONE;
     Beater beaterHitter;
     Beater beaterBlocker;
 
     int playDurationSeconds;
+
+    public TeamType getAttackingTeamType() {
+        return attackingTeamType;
+    }
 
     public BludgerOutcome getBludgerOutcome() {
         return bludgerOutcome;
@@ -60,5 +67,24 @@ public abstract class Play {
         this.playDurationSeconds = playDurationSeconds;
     }
 
+    protected abstract String getOutcomeString();
+
+    public abstract String outputWithDetails(ResourceBundle playProperties, String homeTeamName, String awayTeamName);
+    public abstract String outputWithoutDetails(ResourceBundle playProperties, String homeTeamName, String awayTeamName);
+
+    String outputTeams(String output, String homeTeamName, String awayTeamName) {
+        return switch(attackingTeamType) {
+            case HOME -> output.replace("${attackingTeam}", homeTeamName).replace("${defendingTeam}", awayTeamName);
+            case AWAY -> output.replace("${attackingTeam}", awayTeamName).replace("${defendingTeam}", homeTeamName);
+        };
+    }
+
+    String outputCommonNames(String output) {
+        if(beaterHitter != null)
+            output = output.replace("${beaterHitter}", beaterHitter.getName());
+        if(beaterBlocker != null)
+            output = output.replace("${beaterBlocker}", beaterBlocker.getName());
+        return output;
+    }
     public enum TeamType {HOME, AWAY}
 }

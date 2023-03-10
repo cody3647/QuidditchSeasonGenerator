@@ -20,28 +20,31 @@ package info.codywilliams.qsg.models.match;
 
 import info.codywilliams.qsg.models.player.Seeker;
 
+import java.util.ResourceBundle;
+
 public class PlaySeeker extends Play {
     public enum SnitchOutcome {FEINT, SEEN, MISSED, CAUGHT, STOLEN}
-    TeamType teamType;
     Seeker seeker;
+    Seeker otherSeeker;
     SnitchOutcome snitchOutcome;
 
 
 
-    public PlaySeeker(Seeker seeker, TeamType teamType) {
+    public PlaySeeker(Seeker seeker, Seeker otherSeeker, TeamType attackingTeamType) {
         this.seeker = seeker;
-        this.teamType = teamType;
+        this.otherSeeker = otherSeeker;
+        this.attackingTeamType = attackingTeamType;
     }
 
-    public void swapTeamType() {
-        if(teamType == TeamType.HOME)
-            teamType = TeamType.AWAY;
-        else
-            teamType = TeamType.HOME;
-    }
+    public void swapTeam() {
+        attackingTeamType = switch(attackingTeamType) {
+            case HOME -> TeamType.AWAY;
+            case AWAY -> TeamType.HOME;
+        };
 
-    public TeamType getTeamType() {
-        return teamType;
+        Seeker temp = seeker;
+        seeker = otherSeeker;
+        otherSeeker = temp;
     }
 
     public void setSeeker(Seeker seeker) {
@@ -62,11 +65,31 @@ public class PlaySeeker extends Play {
     public boolean isSnitchCaught(){
         return snitchOutcome == SnitchOutcome.CAUGHT || snitchOutcome == SnitchOutcome.STOLEN;
     }
+    @Override
+    protected String getOutcomeString(){
+        return snitchOutcome.name().toLowerCase() + "." + bludgerOutcome.name().toLowerCase();
+    }
+
+    @Override
+    public String outputWithDetails(ResourceBundle playProperties, String homeTeamName, String awayTeamName) {
+        String output = playProperties.getString("seeker." + getOutcomeString()  + ".player");
+        output = outputTeams(output, homeTeamName, awayTeamName);
+        output = outputCommonNames(output);
+
+        return output.replace("${seeker}", seeker.getName())
+                .replace("${otherSeeker}", otherSeeker.getName());
+    }
+
+    @Override
+    public String outputWithoutDetails(ResourceBundle playProperties, String homeTeamName, String awayTeamName) {
+        String output = playProperties.getString("seeker." + getOutcomeString());
+        return outputTeams(output, homeTeamName, awayTeamName);
+    }
 
     @Override
     public String toString() {
         return "PlaySeeker{" +
-                "teamType=" + teamType +
+                "teamType=" + attackingTeamType +
                 ", seeker=" + seeker.getName() +
                 ", snitchOutcome=" + snitchOutcome +
                 ", bludgerOutcome=" + bludgerOutcome +

@@ -71,24 +71,43 @@ public class MatchGenerator {
     }
 
     public static void main(String[] args) {
-        Match match = new Match(1, 1, LocalDateTime.now());
-        match.setHomeTeam(TeamGenerator.randomTeam());
-        match.setAwayTeam(TeamGenerator.randomTeam());
-        MatchGenerator matchGenerator = new MatchGenerator(new Random(0).nextLong());
-        matchGenerator.setUpMatch(match);
+        Locale locale = Locale.getDefault();
+        ResourceBundle playProperties = ResourceBundle.getBundle("info.codywilliams.qsg.language.Play", locale);
+
+        Team homeTeam1 = TeamGenerator.randomTeam();
+        Team awayTeam1 = TeamGenerator.randomTeam();
+        Team awayTeam2 = TeamGenerator.randomTeam();
+
         System.out.println("New Match");
-        match = new Match(2, 1, LocalDateTime.now());
-        match.setHomeTeam(TeamGenerator.randomTeam());
-        match.setAwayTeam(TeamGenerator.randomTeam());
+        Match match = new Match(1, 1, LocalDateTime.now());
+        match.setHomeTeam(homeTeam1);
+        match.setAwayTeam(awayTeam1);
+        MatchGenerator matchGenerator = new MatchGenerator(new Random(0).nextLong());
         matchGenerator.setUpMatch(match);
         matchGenerator.generate();
         System.out.println("Match Generation Done");
+        System.out.println("Home Team: " + homeTeam1.getName() + " \t\t Away Team: " + awayTeam1.getName());
         for(Play play: match.getPlays()) {
-            System.out.println(play);
+            System.out.println(play.outputWithDetails(playProperties, homeTeam1.getName(), awayTeam1.getName()));
         }
         System.out.println();
         System.out.println("Home Score: " + match.getScoreHome() + "\t\t Away Score: " + match.getScoreAway() +
-        "\t\t Duration: " + match.getMatchLength());
+                "\t\t Duration: " + match.getMatchLength());
+
+        System.out.println("New Match");
+        match = new Match(2, 1, LocalDateTime.now());
+        match.setHomeTeam(homeTeam1);
+        match.setAwayTeam(awayTeam2);
+        matchGenerator.setUpMatch(match);
+        matchGenerator.generate();
+        System.out.println("Match Generation Done");
+        System.out.println("Home Team: " + homeTeam1.getName() + " \t\t Away Team: " + awayTeam2.getName());
+        for(Play play: match.getPlays()) {
+            System.out.println(play.outputWithDetails(playProperties, homeTeam1.getName(), awayTeam2.getName()));
+        }
+        System.out.println();
+        System.out.println("Home Score: " + match.getScoreHome() + "\t\t Away Score: " + match.getScoreAway() +
+                "\t\t Duration: " + match.getMatchLength());
     }
 
     public void setUpMatch(Match match) {
@@ -113,7 +132,7 @@ public class MatchGenerator {
         // Snitch values
         snitchValue = randomNumber(SNITCH_VALUE_RANGE);
         // Combine the skills of the two teams seekers, offense - defense, and then take average
-        int snitchRangeAdjuster = Math.abs(homeTeam.getSeeker().getSkillOffense() + -awayTeam.getSeeker().getSkillDefense()
+        int snitchRangeAdjuster = Math.abs(homeTeam.getSeeker().getSkillOffense() - awayTeam.getSeeker().getSkillDefense()
                 + awayTeam.getSeeker().getSkillOffense() - homeTeam.getSeeker().getSkillDefense()) / 2;
         // Use above value to set the snitch range
         snitchInteractionRange = new int[]{snitchValue - snitchRangeAdjuster, snitchValue + snitchRangeAdjuster};
@@ -138,60 +157,18 @@ public class MatchGenerator {
 
         // Main game loop, continue until snitch is caught
         do {
-            chaserRound();
+            // ChaserRound
+            // Turnover loop
+            while(randomNumber(1,3) < 3){
+                turnover();
+            }
+            attemptGoal();
+
+            // Seeker Round
             seekerRound();
 
         } while (!snitchCaught);
 
-    }
-    void chaserRound() {
-        // Turnover loop
-        while(randomNumber(1,3) < 3){
-            // Get a chaser from the defending team
-            Chaser defender = getRandomChaser(defendingTeam);
-            // Create the play
-            PlayChaser play = new PlayChaser(attackingTeam.type, defendingTeam.type, attacker, defender);
-            // Does the attacker get hit by a bludger
-            bludgerHit(play, getRandomBeater(defendingTeam), attacker, defendingTeam, attackingTeam);
-
-            // Set the outcome, add the play to the list and update the duration.
-            play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.TURNOVER);
-            play.setPlayDurationSeconds(randomNumber(10,45));
-            match.addPlay(play);
-
-            // Swap the teams, the chosen defender gets the quaffle
-            swapTeams(defender);
-        }
-
-        attemptGoal();
-        swapTeams(getRandomChaser(defendingTeam));
-    }
-
-    void attemptGoal() {
-        // Select our chaser who will make the shot
-        attacker = getRandomChaser(attackingTeam);
-        Keeper keeper = defendingTeam.getKeeper();
-        PlayChaser play = new PlayChaser(attackingTeam.type, defendingTeam.type, attacker, keeper);
-
-        // Up to a third of the chance comes from the skill of the players
-        int chaserChance = randomNumbersSum(1,10, 2) + attacker.getSkillOffense();
-        int keeperChance = randomNumbersSum(1,10, 2) + keeper.getSkillDefense();
-
-
-        if(chaserChance > keeperChance) {
-            play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.SCORE);
-            switch(attackingTeam.type) {
-                case HOME -> match.homeScore();
-                case AWAY -> match.awayScore();
-            }
-        }
-        else if(keeperChance > chaserChance)
-            play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.BLOCK);
-        else
-            play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.MISS);
-
-        play.setPlayDurationSeconds(randomNumber(20,120));
-        match.addPlay(play);
     }
 
     Chaser getRandomChaser(MatchTeam team) {
@@ -211,7 +188,89 @@ public class MatchGenerator {
         attacker = newAttacker;
     }
 
+    /**
+     * @param play       the ongoing play
+     * @param beater     the beater who tries to hit the bludger
+     * @param target     the player the beater is trying to hit
+     * @param beaterTeam Team of the beater
+     * @param targetTeam Team of the targeted player
+     * @return whether the target was hit or not.
+     */
+    boolean bludgerHit(Play play, Beater beater, Player target, MatchTeam beaterTeam, MatchTeam targetTeam) {
+        play.setBeaterHitter(beater);
+        // Maximum chance is 50
+        int hitChance = randomNumbersSum(1, 10, 3) +
+                beater.getSkillOffense() + (beaterTeam.getBeatersSkills().getTeamwork() / 2);
 
+        if (hitChance > 25) {
+            play.setBeaterBlocker(beater);
+            int blockChance = randomNumbersSum(1, 10, 3) +
+                    (targetTeam.getBeatersSkills().getDefense() / 2) + (beaterTeam.getBeatersSkills().getTeamwork() / 2);
+
+            if (blockChance > hitChance) {
+                play.setBludgerOutcome(Play.BludgerOutcome.BLOCKED);
+                play.setBeaterBlocker(getRandomBeater(targetTeam));
+                return false;
+            }
+
+            int missChance = randomNumbersSum(2, 11, 3) + target.getSkillDefense() + target.getSkillTeamwork();
+            if (missChance > 25) {
+                play.setBludgerOutcome(Play.BludgerOutcome.MISSED);
+                return false;
+            }
+
+            play.setBludgerOutcome(Play.BludgerOutcome.HIT);
+            return true;
+        }
+        return false;
+    }
+
+    void turnover() {
+        attacker = getRandomChaser(attackingTeam);
+        // Get a chaser from the defending team
+        Chaser defender = getRandomChaser(defendingTeam);
+        // Create the play
+        PlayChaser play = new PlayChaser(attackingTeam.type, defendingTeam.type, attacker, defender, null);
+        // Does the attacker get hit by a bludger
+        bludgerHit(play, getRandomBeater(defendingTeam), attacker, defendingTeam, attackingTeam);
+
+        // Set the outcome, add the play to the list and update the duration.
+        play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.TURNOVER);
+        play.setPlayDurationSeconds(randomNumber(10,45));
+        match.addPlay(play);
+
+        // Swap the teams, the chosen defender gets the quaffle
+        swapTeams(defender);
+    }
+
+    void attemptGoal() {
+        // Select our chaser who will make the shot
+        attacker = getRandomChaser(attackingTeam);
+        Keeper keeper = defendingTeam.getKeeper();
+        Chaser defender = getRandomChaser(defendingTeam);
+        PlayChaser play = new PlayChaser(attackingTeam.type, defendingTeam.type, attacker, defender, keeper);
+
+        // Up to a third of the chance comes from the skill of the players
+        int chaserChance = randomNumbersSum(1,10, 2) + attacker.getSkillOffense();
+        int keeperChance = randomNumbersSum(1,10, 2) + keeper.getSkillDefense();
+
+
+        if(chaserChance > keeperChance) {
+            play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.SCORED);
+            switch(attackingTeam.type) {
+                case HOME -> match.homeScore();
+                case AWAY -> match.awayScore();
+            }
+        }
+        else if(keeperChance > chaserChance)
+            play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.BLOCKED);
+        else
+            play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.MISSED);
+
+        play.setPlayDurationSeconds(randomNumber(20,120));
+        match.addPlay(play);
+        swapTeams(defender);
+    }
 
     void seekerRound() {
         // If the snitch hasn't been released then there is nothing for seekers to do.
@@ -253,7 +312,7 @@ public class MatchGenerator {
             otherTeam = homeTeam;
         }
 
-        PlaySeeker playSeeker = new PlaySeeker(seeker, teamType);
+        PlaySeeker playSeeker = new PlaySeeker(seeker, otherTeam.getSeeker(), teamType);
 
         // If snitchChance equals snitch, an attempt is made and the snitch is either Caught, Stolen, or Missed
         if (snitchChance == snitchValue) {
@@ -261,7 +320,7 @@ public class MatchGenerator {
             playSeeker.setPlayDurationSeconds(randomNumber(20,90));
             match.addPlay(playSeeker);
             if(snitchCaught) {
-                switch (playSeeker.getTeamType()) {
+                switch (playSeeker.getAttackingTeamType()) {
                     case HOME -> match.homeCaughtSnitch();
                     case AWAY -> match.awayCaughtSnitch();
                 }
@@ -288,8 +347,7 @@ public class MatchGenerator {
 
         if (bludgerHit) {
             if (random.nextBoolean()) {
-                playSeeker.setSeeker(otherTeam.getSeeker());
-                playSeeker.swapTeamType();
+                playSeeker.swapTeam();
                 playSeeker.setSnitchOutcome(PlaySeeker.SnitchOutcome.STOLEN);
                 playSeeker.setPlayDurationSeconds(randomNumber(30,75));
                 snitchCaught = true;
@@ -337,43 +395,6 @@ public class MatchGenerator {
     }
     private boolean inRange(int number, int lowEnd, int highEnd) {
         return lowEnd <= number && number <= highEnd;
-    }
-
-    /**
-     * @param play       the ongoing play
-     * @param beater     the beater who tries to hit the bludger
-     * @param target     the player the beater is trying to hit
-     * @param beaterTeam Team of the beater
-     * @param targetTeam Team of the targeted player
-     * @return whether the target was hit or not.
-     */
-    boolean bludgerHit(Play play, Beater beater, Player target, MatchTeam beaterTeam, MatchTeam targetTeam) {
-        play.setBeaterHitter(beater);
-        // Maximum chance is 50
-        int hitChance = randomNumbersSum(1, 10, 3) +
-                beater.getSkillOffense() + (beaterTeam.getBeatersSkills().getTeamwork() / 2);
-
-        if (hitChance > 25) {
-            play.setBeaterBlocker(beater);
-            int blockChance = randomNumbersSum(1, 10, 3) +
-                    (targetTeam.getBeatersSkills().getDefense() / 2) + (beaterTeam.getBeatersSkills().getTeamwork() / 2);
-
-            if (blockChance > hitChance) {
-                play.setBludgerOutcome(Play.BludgerOutcome.BLOCKED);
-                play.setBeaterBlocker(getRandomBeater(targetTeam));
-                return false;
-            }
-
-            int missChance = randomNumbersSum(2, 11, 3) + target.getSkillDefense() + target.getSkillTeamwork();
-            if (missChance > 25) {
-                play.setBludgerOutcome(Play.BludgerOutcome.MISS);
-                return false;
-            }
-
-            play.setBludgerOutcome(Play.BludgerOutcome.HIT);
-            return true;
-        }
-        return false;
     }
 
     public void cleanUp() {
