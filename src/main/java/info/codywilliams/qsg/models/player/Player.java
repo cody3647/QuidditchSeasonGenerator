@@ -31,6 +31,8 @@ import java.util.TreeSet;
 abstract public class Player implements Serializable, Comparable<Player> {
     final static int MAX = 10;
     final static int MIN = 1;
+    
+    final static int INJURY_DIVISOR = 2;
     final private StringProperty name;
     @JsonIgnore
     final private SetProperty<LocalDate> injuryHistory;
@@ -42,6 +44,9 @@ abstract public class Player implements Serializable, Comparable<Player> {
 
     @JsonIgnore
     final private NumberBinding skillLevel;
+
+    @JsonIgnore
+    public boolean isCurrentlyInjured = false;
 
     public Player() {
         name = new SimpleStringProperty(this, "name", "");
@@ -104,7 +109,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
     }
 
     public int getSkillDefense() {
-        return skillDefense.get();
+        return isCurrentlyInjured ? skillDefense.get() / INJURY_DIVISOR : skillDefense.get();
     }
 
     public void setSkillDefense(int skillDefense) {
@@ -121,7 +126,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
     }
 
     public int getSkillOffense() {
-        return skillOffense.get();
+        return isCurrentlyInjured ? skillOffense.get() / INJURY_DIVISOR : skillOffense.get();
     }
 
     public void setSkillOffense(int skillOffense) {
@@ -138,7 +143,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
     }
 
     public int getSkillTeamwork() {
-        return skillTeamwork.get();
+        return isCurrentlyInjured ? skillTeamwork.get() / INJURY_DIVISOR : skillTeamwork.get();
     }
 
     public void setSkillTeamwork(int skillTeamwork) {
@@ -208,10 +213,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
 
     @Override
     public int compareTo(Player o) {
-        int diff = (getSkillDefense() + getSkillOffense() + getSkillTeamwork() - getFoulLikelihood()) -
+        return (getSkillDefense() + getSkillOffense() + getSkillTeamwork() - getFoulLikelihood()) -
                 (o.getSkillDefense() + o.getSkillOffense() + o.getSkillTeamwork() - o.getFoulLikelihood());
-        if(diff == 0)
-            return getName().compareTo(o.getName());
-        return diff;
     }
 }
