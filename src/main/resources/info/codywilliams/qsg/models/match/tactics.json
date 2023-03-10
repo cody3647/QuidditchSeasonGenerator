@@ -1,0 +1,159 @@
+[
+  {
+    "name": "Bludger Backbeat",
+    "description": "A Beater hitting a Bludger with a back-hand swing to confuse the opposition.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Bludger_Backbeat",
+    "playerType": "BEATER",
+    "bludgerOutcome": "BLOCKED",
+    "numBeaters": "1"
+  },
+  {
+    "name": "Bludger Backbeat",
+    "description": "A Beater hitting a Bludger with a back-hand swing to confuse the opposition.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Bludger_Backbeat",
+    "playerType": "BEATER",
+    "bludgerOutcome": "HIT",
+    "numBeaters": "1"
+  },
+  {
+    "name": "Bludger Backbeat",
+    "description": "A Beater hitting a Bludger with a back-hand swing to confuse the opposition.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Bludger_Backbeat",
+    "playerType": "BEATER",
+    "bludgerOutcome": "MISS",
+    "numBeaters": "1"
+  },
+  {
+    "name": "Dopplebeater Defence",
+    "description": "Both Beaters strike a Bludger at the same time, to double the force behind a swing.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Dopplebeater_Defence",
+    "playerType": "BEATER",
+    "bludgerOutcome": "BLOCKED",
+    "numBeaters": "2"
+  },
+  {
+    "name": "Dopplebeater Defence",
+    "description": "Both Beaters strike a Bludger at the same time, to double the force behind a swing.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Dopplebeater_Defence",
+    "playerType": "BEATER",
+    "bludgerOutcome": "HIT",
+    "numBeaters": "2"
+  },
+  {
+    "name": "Dopplebeater Defence",
+    "description": "Both Beaters strike a Bludger at the same time, to double the force behind a swing.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Dopplebeater_Defence",
+    "playerType": "BEATER",
+    "bludgerOutcome": "MISS",
+    "numBeaters": "2"
+  },
+  {
+    "name": "Body Blow",
+    "description": "Two Chasers close in on an opposing Chaser carrying the Quaffle, and press against him from either side physically forcing him to let go of the Quaffle",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Body_Blow",
+    "playerType": "CHASER",
+    "quaffleOutcome": "TURNOVER",
+    "numChasers": "2"
+  },
+  {
+    "name": "Checking",
+    "description": "Checking consists of intercepting the ball just when the opposing Chasers are about to make a pass.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Check",
+    "playerType": "CHASER",
+    "quaffleOutcome": "TURNOVER",
+    "numChasers": "1"
+  },
+  {
+    "name": "Wollongong Shimmy",
+    "description": "Chasers fly in a zig-zag motion to confuse opposing Chasers.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Wollongong_Shimmy",
+    "playerType": "CHASER",
+    "quaffleOutcome": "TURNOVER",
+    "numChasers": "4"
+  },
+  {
+    "name": "Chelmondiston Charge",
+    "description": "A Chaser stands on their broomstick and leaps, thrusting the Quaffle towards a goalpost.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Chelmondiston_Charge",
+    "playerType": "CHASER",
+    "quaffleOutcome": "SCORE",
+    "numChasers": "1"
+  },
+  {
+    "name": "Dionysus Dive",
+    "description": "A Chaser stands on their broomstick and leaps, punching the Quaffle towards a goalpost.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Dionysus_Dive",
+    "playerType": "CHASER",
+    "quaffleOutcome": "SCORE",
+    "numChasers": "1"
+  },
+  {
+    "name": "Finbourgh Flick",
+    "description": "A Chaser uses their broomstick to hit a Quaffle in midair into a goalpost.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Finbourgh_Flick",
+    "playerType": "CHASER",
+    "quaffleOutcome": "SCORE",
+    "numChasers": "1"
+  },
+  {
+    "name": "Hawkshead Attacking Formation",
+    "description": "Three Chasers fly in triangle shape to force other Chasers aside.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Hawkshead_Attacking_Formation",
+    "playerType": "CHASER",
+    "quaffleOutcome": "SCORE",
+    "numChasers": "3"
+  },
+  {
+    "name": "Double Eight Loop",
+    "description": "A Keeper flies in front of the three goals at high speed to block the Quaffle.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Double_Eight_Loop",
+    "playerType": "KEEPER",
+    "quaffleOutcome": "BLOCK"
+  },
+  {
+    "name": "Starfish And Stick",
+    "description": "A Keeper holds one hand and one foot onto the broomstick, while stretching his body out, to ensure maximum shielding against oncoming Quaffles.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Starfish_and_Stick",
+    "playerType": "KEEPER",
+    "quaffleOutcome": "BLOCK"
+  },
+  {
+    "name": "No Hands",
+    "description": "The Seeker takes both hands off the broom in order to catch the Golden Snitch.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/No_Hands",
+    "playerType": "SEEKER",
+    "snitchOutcome": "CAUGHT"
+  },
+  {
+    "name": "Spiral Dive",
+    "description": "Descend sharply, in a spiral fashion. Seekers can use this tactic to quickly intercept the Snitch.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Spiral_Dive",
+    "playerType": "SEEKER",
+    "snitchOutcome": "CAUGHT"
+  },
+  {
+    "name": "Wronski Feint",
+    "description": "A Seeker from high above dives down, sharply, as if to collect the Snitch, causing the opposing Seeker to chase after him, only to pull up at the last second, causing the opposing Seeker to crash into the ground below.",
+    "playText:": "",
+    "url:": "https://harrypotter.fandom.com/wiki/Wronski_Feint",
+    "playerType": "SEEKER",
+    "snitchOutcome": "FEINT"
+  }
+]
