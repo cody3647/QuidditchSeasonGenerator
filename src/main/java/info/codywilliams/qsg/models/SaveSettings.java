@@ -58,6 +58,7 @@ public class SaveSettings {
         blackoutDates = new ArrayList<>(tournamentOptions.getBlackoutDates());
 
         startDate = tournamentOptions.getStartDate();
+        this.seed = seed;
     }
 
     public SaveSettings(Context context) {
