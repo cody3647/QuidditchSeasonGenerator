@@ -3,7 +3,7 @@ package info.codywilliams.qsg.controllers;
 
 import info.codywilliams.qsg.App;
 import info.codywilliams.qsg.models.Context;
-import info.codywilliams.qsg.models.Match;
+import info.codywilliams.qsg.models.match.Match;
 import info.codywilliams.qsg.models.SaveSettings;
 import info.codywilliams.qsg.models.tournament.TimeEntry;
 import info.codywilliams.qsg.util.Formatters;
@@ -26,6 +26,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ResourceBundle;
+import java.util.SortedSet;
 
 public class MenuController {
     private final Context context;
@@ -156,6 +157,7 @@ public class MenuController {
         calendarWindow.setScene(calendarScene);
         calendarWindow.show();
 
+        SortedSet<Match> matches = context.getCurrentTournament().assignTeamsToMatches(context.getTeams(), context.getSeed());
 
 
     }

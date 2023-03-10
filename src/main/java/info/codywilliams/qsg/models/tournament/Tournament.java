@@ -17,7 +17,7 @@
 
 package info.codywilliams.qsg.models.tournament;
 
-import info.codywilliams.qsg.models.Match;
+import info.codywilliams.qsg.models.match.Match;
 import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
 import info.codywilliams.qsg.util.Formatters;

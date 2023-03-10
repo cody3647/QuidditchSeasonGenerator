@@ -20,4 +20,5 @@ module QuidditchSeasonGenerator {
     opens info.codywilliams.qsg.models.tournament to javafx.base, com.fasterxml.jackson.databind;
     opens info.codywilliams.qsg.util to com.fasterxml.jackson.databind;
     opens info.codywilliams.qsg.models.tournament.type to javafx.base, com.fasterxml.jackson.databind;
+    opens info.codywilliams.qsg.models.match to com.fasterxml.jackson.databind;
 }

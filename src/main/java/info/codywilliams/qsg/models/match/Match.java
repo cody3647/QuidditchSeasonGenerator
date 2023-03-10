@@ -16,10 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package info.codywilliams.qsg.models;
+package info.codywilliams.qsg.models.match;
+
+import info.codywilliams.qsg.models.Team;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.LinkedList;
 
 public class Match implements Comparable<Match>{
     private final int number;
@@ -28,19 +31,25 @@ public class Match implements Comparable<Match>{
     private Team homeTeam;
     private Team awayTeam;
     private String location;
-    private LocalDateTime currentDateTime;
     private Duration matchLength;
+    private boolean timeChanged;
+
+    private int scoreHome;
+    private int scoreAway;
+    private int foulsHome;
+    private int foulsAway;
+    private LinkedList<Play> plays;
 
     public Match(int number, int round, LocalDateTime startDateTime){
         this.number = number;
         this.round = round;
         this.startDateTime = startDateTime;
-    }
+        this.matchLength = Duration.ZERO;
+        plays = new LinkedList<>();
 
-    private void calculateMatchLength(){
-        matchLength = Duration.between(startDateTime, currentDateTime);
+        scoreHome = 0;
+        scoreAway = 0;
     }
-
     public int getNumber() {
         return number;
     }
@@ -77,20 +86,48 @@ public class Match implements Comparable<Match>{
         this.location = location;
     }
 
-    public LocalDateTime getCurrentDateTime() {
-        return currentDateTime;
-    }
-
-    public void setCurrentDateTime(LocalDateTime currentDateTime) {
-        this.currentDateTime = currentDateTime;
-    }
-
     public Duration getMatchLength() {
         return matchLength;
     }
 
-    public void setMatchLength(Duration matchLength) {
-        this.matchLength = matchLength;
+    public LinkedList<Play> getPlays() {
+        return plays;
+    }
+
+    public void addPlay(Play play) {
+        addTime(play.getPlayDurationSeconds());
+        this.plays.add(play);
+    }
+
+    public int getScoreHome() {
+        return scoreHome;
+    }
+
+    public int getScoreAway() {
+        return scoreAway;
+    }
+
+    public int homeScore(){
+        scoreHome += 10;
+        return scoreHome;
+    }
+    public int awayScore(){
+        scoreAway += 10;
+        return scoreAway;
+    }
+
+    public int homeCaughtSnitch(){
+        scoreHome += 150;
+        return scoreHome;
+    }
+
+    public int awayCaughtSnitch(){
+        scoreAway += 150;
+        return scoreAway;
+    }
+
+    private void addTime(int seconds){
+        matchLength = matchLength.plusSeconds(seconds);
     }
 
     @Override
@@ -122,7 +159,6 @@ public class Match implements Comparable<Match>{
                 "\n\tawayTeam=" + awayTeam.getName() +
                 "\n\tlocation='" + location + '\'' +
                 "\n\tstartDateTime=" + startDateTime +
-                "\n\tcurrentDateTime=" + currentDateTime +
                 "\n\tmatchLength=" + matchLength +
                 '}';
     }
