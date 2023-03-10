@@ -50,10 +50,10 @@ public abstract class Tournament {
 
         this.type = new SimpleObjectProperty<>(this, "type", type);
         numWeeks = new SimpleIntegerProperty(this, "numWeeks", 0);
-        numMatches = new SimpleIntegerProperty(this, "numMathces", 0);
+        numMatches = new SimpleIntegerProperty(this, "numMatches", 0);
         numRounds = new SimpleIntegerProperty(this, "numRounds", 0);
 
-        matches = new SimpleSetProperty<>(this, "matchDates", FXCollections.observableSet(new TreeSet<>()));
+        matches = new SimpleSetProperty<>(this, "matches", FXCollections.observableSet(new TreeSet<>()));
         endDate = new SimpleObjectProperty<>(this, "endDate");
         this.tournamentOptions = tournamentOptions;
         tournamentPoints = new SimpleMapProperty<>(this, "tournamentPoints", FXCollections.observableMap(new ConcurrentHashMap<>()));
