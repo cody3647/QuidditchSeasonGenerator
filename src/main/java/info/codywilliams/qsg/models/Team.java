@@ -31,10 +31,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 @JsonDeserialize(using = TeamDeserializer.class)
 @JsonPropertyOrder({"name", "home"})
@@ -43,10 +40,6 @@ public class Team implements Comparable<Team> {
     final static public int TOTAL_CHASERS = 6;
     final static public int TOTAL_KEEPERS = 2;
     final static public int TOTAL_SEEKERS = 2;
-    final static public int STARTING_BEATERS = 2;
-    final static public int STARTING_CHASERS = 3;
-    final static public int STARTING_KEEPERS = 1;
-    final static public int STARTING_SEEKERS = 1;
 
     final private StringProperty name;
     final private StringProperty home;
@@ -62,66 +55,6 @@ public class Team implements Comparable<Team> {
         chasers = new SimpleListProperty<>(this, "chasers", FXCollections.observableArrayList());
         keepers = new SimpleListProperty<>(this, "keepers", FXCollections.observableArrayList());
         seekers = new SimpleListProperty<>(this, "seekers", FXCollections.observableArrayList());
-    }
-
-    @JsonIgnore
-    public List<Beater> getStartingBeaters(LocalDate date) {
-        List<Beater> beaters = new ArrayList<>();
-        Beater beater;
-        Iterator<Beater> iter = this.beaters.iterator();
-        while (iter.hasNext() && beaters.size() <= STARTING_BEATERS) {
-            beater = iter.next();
-            if (beater.isInjured(date)) {
-                beaters.add(beater);
-            }
-        }
-
-        return beaters;
-    }
-
-    @JsonIgnore
-    public List<Chaser> getStartingChasers(LocalDate date) {
-        List<Chaser> chasers = new ArrayList<>();
-        Chaser chaser;
-        Iterator<Chaser> iter = this.chasers.iterator();
-        while (iter.hasNext() && chasers.size() <= STARTING_CHASERS) {
-            chaser = iter.next();
-            if (chaser.isInjured(date)) {
-                chasers.add(chaser);
-            }
-        }
-
-        return chasers;
-    }
-
-    @JsonIgnore
-    public List<Keeper> getStartingKeepers(LocalDate date) {
-        List<Keeper> keepers = new ArrayList<>();
-        Keeper keeper;
-        Iterator<Keeper> iter = this.keepers.iterator();
-        while (iter.hasNext() && keepers.size() <= STARTING_KEEPERS) {
-            keeper = iter.next();
-            if (keeper.isInjured(date)) {
-                keepers.add(keeper);
-            }
-        }
-
-        return keepers;
-    }
-
-    @JsonIgnore
-    public List<Seeker> getStartingSeeker(LocalDate date) {
-        List<Seeker> seekers = new ArrayList<>();
-        Seeker seeker;
-        Iterator<Seeker> iter = this.seekers.iterator();
-        while (iter.hasNext() && seekers.size() <= STARTING_SEEKERS) {
-            seeker = iter.next();
-            if (seeker.isInjured(date)) {
-                seekers.add(seeker);
-            }
-        }
-
-        return seekers;
     }
 
     public String getName() {
@@ -229,4 +162,29 @@ public class Team implements Comparable<Team> {
         return getName().compareTo(o.getName());
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Team team = (Team) o;
+
+        if (!Objects.equals(name, team.name)) return false;
+        if (!Objects.equals(home, team.home)) return false;
+        if (!Objects.equals(beaters, team.beaters)) return false;
+        if (!Objects.equals(chasers, team.chasers)) return false;
+        if (!Objects.equals(keepers, team.keepers)) return false;
+        return Objects.equals(seekers, team.seekers);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (home != null ? home.hashCode() : 0);
+        result = 31 * result + (beaters != null ? beaters.hashCode() : 0);
+        result = 31 * result + (chasers != null ? chasers.hashCode() : 0);
+        result = 31 * result + (keepers != null ? keepers.hashCode() : 0);
+        result = 31 * result + (seekers != null ? seekers.hashCode() : 0);
+        return result;
+    }
 }
