@@ -84,9 +84,8 @@ public class App extends Application {
         Scene scene = new Scene(DependencyInjector.load("app"));
         DependencyInjector.addStylesheet(scene, "styles.css");
 
-        window.setTitle("Quidditch Season Generator");
-        window.setScene(scene);
-        window.show();
+        DependencyInjector.setUpAndShowStage(window, scene, "Quidditch Season Generator");
+
         Logger logger = LoggerFactory.getLogger(App.class);
 
         window.addEventHandler(ActionEvent.ANY, actionEvent ->

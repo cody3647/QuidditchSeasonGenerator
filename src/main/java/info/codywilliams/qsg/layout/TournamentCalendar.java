@@ -61,8 +61,8 @@ public class TournamentCalendar extends GridPane {
         ScrollPane scrollPane = new ScrollPane();
         Scene calendarScene = new Scene(scrollPane, 1000, 1000);
         DependencyInjector.addStylesheet(calendarScene, "styles.css");
-        calendarWindow.setScene(calendarScene);
-        calendarWindow.show();
+
+        DependencyInjector.setUpAndShowStage(calendarWindow, calendarScene, "Tournament Calendar");
 
         if(context.getCurrentTournament() == null) {
             scrollPane.setContent(new Text("No matches to show yet, please configure the tournament"));
@@ -73,8 +73,6 @@ public class TournamentCalendar extends GridPane {
 
         TournamentCalendar tournamentCalendar = new TournamentCalendar(context.getCurrentTournament(), context.getTournamentOptions(), resourceBundle);
         scrollPane.setContent(tournamentCalendar);
-        calendarWindow.setScene(calendarScene);
-        calendarWindow.show();
     }
 
     public TournamentCalendar(Tournament tournament, TournamentOptions tournamentOptions, ResourceBundle resourceBundle) {

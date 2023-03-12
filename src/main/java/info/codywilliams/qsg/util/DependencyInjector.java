@@ -23,14 +23,21 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class DependencyInjector {
     private static final Map<Class<?>, Callback<Class<?>, Object>> injectionMethods = new HashMap<>();
+    private static final String[] defaultIconPaths = new String[]{
+            "/info/codywilliams/qsg/images/icon256.png", "/info/codywilliams/qsg/images/icon128.png",
+            "/info/codywilliams/qsg/images/icon64.png", "/info/codywilliams/qsg/images/icon32.png"
+    };
     private static ResourceBundle bundle = null;
 
     private static Object constructController(Class<?> controllerClass){
@@ -78,6 +85,24 @@ public class DependencyInjector {
         DependencyInjector.bundle = bundle;
     }
 
+    public static void setUpAndShowStage(Stage window, Scene scene, String title, String... iconPaths) {
+        window.setTitle(title);
+
+        if(iconPaths == null || iconPaths.length == 0)
+            iconPaths = defaultIconPaths;
+
+        List<Image> iconList = window.getIcons();
+        for(String iconPath: iconPaths) {
+            InputStream is = DependencyInjector.class.getResourceAsStream(iconPath);
+            if(is == null)
+                continue;
+            iconList.add(new Image(is));
+        }
+
+        window.setScene(scene);
+        window.show();
+    }
+
     public static void addStylesheet(Scene scene, String... stylesheet) {
         ArrayList<String> stylesheets = new ArrayList<>();
         for(String name: stylesheet) {
@@ -87,7 +112,6 @@ public class DependencyInjector {
         }
 
         scene.getStylesheets().addAll(stylesheets);
-
     }
 
 
