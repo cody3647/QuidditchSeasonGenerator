@@ -87,6 +87,7 @@
                     <runtimeImage>target/QSG</runtimeImage>
                     <destination>target/dist</destination>
                     <type>APP_IMAGE</type>
+                    <icon>src/main/resources/info/codywilliams/qsg/images/icon.ico</icon>
                     <javaOptions>
                         <option>-Dfile.encoding=UTF-8</option>
                     </javaOptions>
