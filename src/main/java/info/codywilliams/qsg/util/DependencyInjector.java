@@ -22,13 +22,12 @@ package info.codywilliams.qsg.util;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.JavaFXBuilderFactory;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.util.Callback;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class DependencyInjector {
     private static final Map<Class<?>, Callback<Class<?>, Object>> injectionMethods = new HashMap<>();
@@ -78,4 +77,19 @@ public class DependencyInjector {
     public static void setBundle(ResourceBundle bundle){
         DependencyInjector.bundle = bundle;
     }
+
+    public static void addStylesheet(Scene scene, String... stylesheet) {
+        ArrayList<String> stylesheets = new ArrayList<>();
+        for(String name: stylesheet) {
+            String stylesheetPath = DependencyInjector.class.getResource("/info/codywilliams/qsg/stylesheets/" + name).toExternalForm();
+
+            stylesheets.add(stylesheetPath);
+        }
+
+        scene.getStylesheets().addAll(stylesheets);
+
+    }
+
+
+
 }

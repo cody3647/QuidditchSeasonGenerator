@@ -82,6 +82,8 @@ public class App extends Application {
         setupDependencyInjector();
 
         Scene scene = new Scene(DependencyInjector.load("app"));
+        DependencyInjector.addStylesheet(scene, "styles.css");
+
         window.setTitle("Quidditch Season Generator");
         window.setScene(scene);
         window.show();
