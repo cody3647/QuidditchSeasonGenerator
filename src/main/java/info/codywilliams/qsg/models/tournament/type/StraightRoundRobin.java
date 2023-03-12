@@ -151,7 +151,7 @@ public class StraightRoundRobin extends Tournament {
                 totalMatchCount++;
                 matchDayCount++;
 
-                if(matchDayCount == numMatchesPerDay)
+                if(matchDayCount == numMatchesPerDay || roundMatchCount == numMatchesPerRound)
                     break;
             }
 
@@ -306,6 +306,8 @@ public class StraightRoundRobin extends Tournament {
                 firstMatch = null;
             }
         }
+
+        teamsAssigned.set(true);
         return new TreeSet<>(matches.getValue());
     }
 
