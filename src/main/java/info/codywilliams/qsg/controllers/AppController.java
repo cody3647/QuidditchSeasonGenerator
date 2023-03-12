@@ -20,9 +20,11 @@ package info.codywilliams.qsg.controllers;
 
 import info.codywilliams.qsg.App;
 import info.codywilliams.qsg.generators.TeamGenerator;
+import info.codywilliams.qsg.layout.TournamentCalendar;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.util.DependencyInjector;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -53,6 +55,12 @@ public class AppController {
     Label rightStatus;
     @FXML
     ResourceBundle resources;
+    @FXML
+    Separator buttonSeparator;
+    @FXML
+    Button viewTournamentCalendarButton;
+    @FXML
+    Button generateSeasonButton;
     MenuBar menuBar;
     AnchorPane teamEditorPane;
     AnchorPane tournamentEditorPane;
@@ -78,7 +86,10 @@ public class AppController {
 
 
         main.getChildren().add(0, menuBar);
-        leftPane.getChildren().add(tournamentInfoBox);
+
+        int index = leftPane.getChildren().indexOf(buttonSeparator);
+
+        leftPane.getChildren().add(index, tournamentInfoBox);
         rightPane.setContent(teamEditorPane);
 
 
@@ -105,6 +116,16 @@ public class AppController {
             rightPane.setContent(storedPane);
             storedPane = temp;
         }));
+
+    }
+
+    @FXML
+    void displayTournamentCalendar(ActionEvent ignoredEvent){
+        TournamentCalendar.displayTournamentCalendarWindow(context, resources);
+    }
+
+    @FXML
+    void generateSeason(ActionEvent ignoredEvent) {
 
     }
 

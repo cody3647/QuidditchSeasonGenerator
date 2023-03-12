@@ -27,3 +27,52 @@
 .desc-title {
     -fx-fill: #00089e;
 }
+
+.calendar-title {
+    -fx-font-size: 2.2em;
+}
+
+.calendar-month-title {
+    -fx-font-size: 1.8em;
+}
+
+.calendar-header {
+    -fx-alignment: center;
+    -fx-fill-width: true;
+}
+
+.calendar-header-title {
+    -fx-fill-width: true;
+    -fx-text-alignment: center;
+    -fx-font-size: 1.5em;
+    -fx-font-weight: bold;
+    -fx-label-padding: 0 0.5em 0 0.5em;
+}
+
+.calendar-entry {
+    -fx-fill-width:true;
+    -fx-padding: 0.2em;
+    -fx-min-width: 9em;
+    -fx-min-height: 6em;
+}
+
+.calendar-entry-even {
+    -fx-background-color: #9c9c9c;
+}
+
+.calendar-entry-odd {
+    -fx-background-color: #b7b7b7;
+}
+
+.calendar-entry-title {
+    -fx-font-size: 1.1em;
+}
+
+.calendar-entry-time {
+    -fx-font-size: 1.3em;
+}
+
+.calendar-entry-name {
+    -fx-font-size: 1.3em;
+    -fx-label-padding: 0 0 0 1em;
+}

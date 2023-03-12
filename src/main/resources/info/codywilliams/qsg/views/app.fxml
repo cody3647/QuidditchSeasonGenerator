@@ -81,6 +81,9 @@
                            </children>
                         </HBox>
                         <Separator prefWidth="200.0" />
+                        <Separator fx:id="buttonSeparator" prefWidth="200.0" />
+                        <Button fx:id="viewTournamentCalendarButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#displayTournamentCalendar" text="%app.button.viewTournamentCalendar" textAlignment="CENTER" />
+                        <Button fx:id="generateSeasonButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#generateSeason" text="%app.button.generateSeason" textAlignment="CENTER" />
                      </children>
                      <padding>
                         <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
