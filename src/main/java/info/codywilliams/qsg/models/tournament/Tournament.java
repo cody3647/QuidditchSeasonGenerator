@@ -44,6 +44,7 @@ public abstract class Tournament {
     protected StringBinding endDateStringBinding;
     protected TournamentOptions tournamentOptions;
     protected SimpleMapProperty<String, Integer> tournamentPoints;
+    protected SimpleBooleanProperty teamsAssigned;
 
 
     public Tournament(TournamentOptions tournamentOptions, TournamentType type) {
@@ -64,6 +65,8 @@ public abstract class Tournament {
                         return "";
                     return endDateProperty().getValue().format(Formatters.dateFormatter);
         }, endDateProperty());
+
+        teamsAssigned = new SimpleBooleanProperty(this, "teamsAssigned", false);
     }
 
 
@@ -75,6 +78,7 @@ public abstract class Tournament {
         calculateNums(numTeams);
         LocalDateTime lastMatchDate = calculateMatchDates();
         setEndDate(lastMatchDate.toLocalDate());
+        teamsAssigned.set(false);
     }
 
     protected abstract void calculateNums(Integer numTeams);
@@ -179,5 +183,13 @@ public abstract class Tournament {
 
     public TreeSet<TimeEntry> getTemplate() {
         return template;
+    }
+
+    public boolean isTeamsAssigned() {
+        return teamsAssigned.get();
+    }
+
+    public SimpleBooleanProperty teamsAssignedProperty() {
+        return teamsAssigned;
     }
 }
