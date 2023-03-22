@@ -192,4 +192,8 @@ public abstract class Tournament {
     public SimpleBooleanProperty teamsAssignedProperty() {
         return teamsAssigned;
     }
+
+    public TournamentOptions getTournamentOptions() {
+        return tournamentOptions;
+    }
 }
