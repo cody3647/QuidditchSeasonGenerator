@@ -30,6 +30,7 @@ import java.time.Month;
 import java.time.temporal.TemporalAdjusters;
 
 public class TournamentOptions {
+    private final StringProperty leagueName;
     private final DoubleProperty roundsPerWeek;
     private final IntegerProperty hoursBetweenMatches;
     private final ListProperty<ValidStartTime> validStartTimes;
@@ -38,6 +39,7 @@ public class TournamentOptions {
     private final ObjectProperty<DayOfWeek> validStartDay;
 
     public TournamentOptions() {
+        leagueName = new SimpleStringProperty(this, "leagueName", "");
         roundsPerWeek = new SimpleDoubleProperty(this, "roundsPerWeek", 1);
         hoursBetweenMatches = new SimpleIntegerProperty(this, "hoursBetweenMatches", 0);
         validStartTimes = new SimpleListProperty<>(this, "acceptableTimes",
@@ -71,6 +73,7 @@ public class TournamentOptions {
     }
 
     public void clear(){
+        leagueName.setValue("");
         roundsPerWeek.set(1);
         hoursBetweenMatches.set(0);
         for(ValidStartTime startTime : validStartTimes.get()){
@@ -85,6 +88,7 @@ public class TournamentOptions {
     }
 
     public void loadSettings(SaveSettings settings){
+        leagueName.setValue(settings.getLeagueName());
         roundsPerWeek.setValue(settings.getRoundsPerWeek());
         hoursBetweenMatches.setValue(settings.getHoursBetweenMatches());
         for(int i = 0; i < validStartTimes.size(); i++){
@@ -94,6 +98,18 @@ public class TournamentOptions {
         blackoutDates.addAll(settings.getBlackoutDates());
         validStartDay.setValue(getStartDate().getDayOfWeek());
 
+    }
+
+    public String getLeagueName() {
+        return leagueName.get();
+    }
+
+    public StringProperty leagueNameProperty() {
+        return leagueName;
+    }
+
+    public void setLeagueName(String leagueName) {
+        this.leagueName.set(leagueName);
     }
 
     public double getRoundsPerWeek() {

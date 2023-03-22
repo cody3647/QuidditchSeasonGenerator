@@ -35,9 +35,9 @@ import java.util.List;
 
 public class SaveSettings {
     private List<Team> teams;
-
     private TournamentType tournamentType;
     // Tournament Options
+    private String leagueName;
     private double roundsPerWeek;
     private int hoursBetweenMatches;
     private List<ValidStartTime> validStartTimes;
@@ -51,6 +51,7 @@ public class SaveSettings {
     public SaveSettings(List<Team> teams, TournamentType tournamentType, TournamentOptions tournamentOptions, long seed) {
         this.teams = teams;
         this.tournamentType = tournamentType;
+        leagueName = tournamentOptions.getLeagueName();
         roundsPerWeek = tournamentOptions.getRoundsPerWeek();
         hoursBetweenMatches = tournamentOptions.getHoursBetweenMatches();
 
@@ -79,6 +80,14 @@ public class SaveSettings {
 
     public void setTournamentType(TournamentType tournamentType) {
         this.tournamentType = tournamentType;
+    }
+
+    public String getLeagueName() {
+        return leagueName;
+    }
+
+    public void setLeagueName(String leagueName) {
+        this.leagueName = leagueName;
     }
 
     public double getRoundsPerWeek() {

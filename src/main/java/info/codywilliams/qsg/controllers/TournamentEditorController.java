@@ -54,6 +54,8 @@ public class TournamentEditorController {
     @FXML
     ComboBox<TournamentType> tournamentTypeComboBox;
     @FXML
+    TextField leagueNameTextField;
+    @FXML
     TextField hoursBetweenMatchesTextField;
     @FXML
     TextField roundsPerWeekTextField;
@@ -119,6 +121,7 @@ public class TournamentEditorController {
             }
         }));
 
+        leagueNameTextField.textProperty().bindBidirectional(tournamentOptions.leagueNameProperty());
         roundsPerWeekTextField.textProperty().bindBidirectional(tournamentOptions.roundsPerWeekProperty(), new NumberStringConverter());
         hoursBetweenMatchesTextField.textProperty().bindBidirectional(tournamentOptions.hoursBetweenMatchesProperty(), new NumberStringConverter());
 
