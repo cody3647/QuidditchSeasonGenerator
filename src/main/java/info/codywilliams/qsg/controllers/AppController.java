@@ -70,7 +70,9 @@ public class AppController {
     private int teamNumber = 0;
 
     public AppController(Context context){
+    public AppController(Context context, ResourceBundle outputBundle){
         this.context = context;
+        this.outputBundle = outputBundle;
     }
     public void initialize() {
         try {

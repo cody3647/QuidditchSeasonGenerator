@@ -72,7 +72,7 @@ public class MatchGenerator {
 
     public static void main(String[] args) {
         Locale locale = Locale.getDefault();
-        ResourceBundle playProperties = ResourceBundle.getBundle("info.codywilliams.qsg.language.Play", locale);
+        ResourceBundle playProperties = ResourceBundle.getBundle("info.codywilliams.qsg.language.Output", locale);
 
         Team homeTeam1 = TeamGenerator.randomTeam();
         Team awayTeam1 = TeamGenerator.randomTeam();

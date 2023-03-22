@@ -39,6 +39,7 @@ public class DependencyInjector {
             "/info/codywilliams/qsg/images/icon64.png", "/info/codywilliams/qsg/images/icon32.png"
     };
     private static ResourceBundle bundle = null;
+    private static ResourceBundle outputBundle = null;
 
     private static Object constructController(Class<?> controllerClass){
         if(injectionMethods.containsKey(controllerClass))
@@ -85,6 +86,13 @@ public class DependencyInjector {
         DependencyInjector.bundle = bundle;
     }
 
+    public static void setOutputBundle(ResourceBundle bundle) {
+        DependencyInjector.outputBundle = bundle;
+    }
+
+    public static ResourceBundle getOutputBundle() {
+        return outputBundle;
+    }
     public static void setUpAndShowStage(Stage window, Scene scene, String title, String... iconPaths) {
         window.setTitle(title);
 
