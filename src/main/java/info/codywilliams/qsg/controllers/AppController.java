@@ -67,9 +67,9 @@ public class AppController {
     VBox tournamentInfoBox;
     Node storedPane;
     private final Context context;
+    private ResourceBundle outputBundle;
     private int teamNumber = 0;
 
-    public AppController(Context context){
     public AppController(Context context, ResourceBundle outputBundle){
         this.context = context;
         this.outputBundle = outputBundle;
