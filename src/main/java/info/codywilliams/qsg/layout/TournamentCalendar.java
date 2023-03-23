@@ -62,7 +62,7 @@ public class TournamentCalendar extends GridPane {
         Scene calendarScene = new Scene(scrollPane, 1000, 1000);
         DependencyInjector.addStylesheet(calendarScene, "styles.css");
 
-        DependencyInjector.setUpAndShowStage(calendarWindow, calendarScene, "Tournament Calendar");
+        DependencyInjector.setUpAndShowStage(calendarWindow, calendarScene, "tournament.calendar.window.title");
 
         if(context.getCurrentTournament() == null) {
             scrollPane.setContent(new Text("No matches to show yet, please configure the tournament"));
