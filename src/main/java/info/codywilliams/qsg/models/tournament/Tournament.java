@@ -106,6 +106,21 @@ public abstract class Tournament {
         return 0;
     }
 
+    public void generateMatches(List<Team> teams, long seed) {
+        if(!isTeamsAssigned())
+            assignTeamsToMatches(teams, seed);
+
+        MatchGenerator matchGenerator = new MatchGenerator(seed);
+        long now = System.currentTimeMillis();
+        for (Match match : getMatches()) {
+            matchGenerator.setUpMatch(match);
+            matchGenerator.generate();
+            matchGenerator.cleanUp();
+        }
+        now = System.currentTimeMillis() - now;
+        System.out.println(now / 1000.0 + " seconds to generate matches");
+    }
+
     public abstract TreeSet<Match> assignTeamsToMatches(List<Team> teams, long seed);
 
     public TournamentType getType() {
