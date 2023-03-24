@@ -23,7 +23,9 @@ import info.codywilliams.qsg.generators.TeamGenerator;
 import info.codywilliams.qsg.layout.TournamentCalendar;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.Team;
+import info.codywilliams.qsg.output.Page;
 import info.codywilliams.qsg.util.DependencyInjector;
+import info.codywilliams.qsg.util.Formatters;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -33,6 +35,11 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class AppController {
@@ -67,7 +74,7 @@ public class AppController {
     VBox tournamentInfoBox;
     Node storedPane;
     private final Context context;
-    private ResourceBundle outputBundle;
+    private final ResourceBundle outputBundle;
     private int teamNumber = 0;
 
     public AppController(Context context, ResourceBundle outputBundle){
@@ -127,8 +134,22 @@ public class AppController {
     }
 
     @FXML
-    void generateSeason(ActionEvent ignoredEvent) {
+    void generateHTMLOutput(ActionEvent ignoredEvent) {
+        // Get the list of pages
+        List<Page> pages = context.getCurrentTournament().buildOutput(context.getTeams(), context.getSeed());
+        // Set up an output directory with a subdirectory named after the league and year
+        String tournamentTitle = context.getCurrentTournament().getTournamentTitle();
+        Path outputPath = Paths.get("output", Formatters.sanitizeFileNames(tournamentTitle));
 
+        try {
+            Files.createDirectories(outputPath);
+            for (Page page : pages) {
+                Path pageFile = outputPath.resolve(Formatters.sanitizeFileNames(page.getFileName()) + ".html");
+                Files.writeString(pageFile, page.toHtml(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            }
+        } catch (IOException e) {
+            System.err.println(e);
+        }
     }
 
     public void createNewTeam() {
