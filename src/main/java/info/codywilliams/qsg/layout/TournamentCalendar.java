@@ -69,7 +69,8 @@ public class TournamentCalendar extends GridPane {
             return;
         }
 
-        context.getCurrentTournament().assignTeamsToMatches(context.getTeams(), context.getSeed());
+        if(!context.getCurrentTournament().isTeamsAssigned())
+            context.getCurrentTournament().assignTeamsToMatches(context.getTeams(), context.getSeed());
 
         TournamentCalendar tournamentCalendar = new TournamentCalendar(context.getCurrentTournament(), context.getTournamentOptions(), resourceBundle);
         scrollPane.setContent(tournamentCalendar);
