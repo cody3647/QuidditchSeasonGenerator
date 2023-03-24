@@ -32,4 +32,8 @@ public class Formatters {
 
     public final static DateTimeFormatter timeFormatter =
             DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM).withLocale(Locale.getDefault()).withZone(ZoneId.systemDefault());
+
+    public static String sanitizeFileNames(String fileName) {
+        return fileName.replaceAll("[\\<\\>\\:\\\"\\/\\|\\?\\*\\\\ ]", "_");
+    }
 }
