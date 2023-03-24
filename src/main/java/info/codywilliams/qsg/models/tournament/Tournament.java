@@ -17,20 +17,28 @@
 
 package info.codywilliams.qsg.models.tournament;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import info.codywilliams.qsg.generators.MatchGenerator;
+import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.match.Match;
 import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
+import info.codywilliams.qsg.output.Element;
+import info.codywilliams.qsg.output.Page;
+import info.codywilliams.qsg.output.elements.*;
+import info.codywilliams.qsg.util.DependencyInjector;
 import info.codywilliams.qsg.util.Formatters;
+import info.codywilliams.qsg.util.OutputBundle;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class Tournament {
@@ -45,6 +53,8 @@ public abstract class Tournament {
     protected TournamentOptions tournamentOptions;
     protected SimpleMapProperty<String, Integer> tournamentPoints;
     protected SimpleBooleanProperty teamsAssigned;
+    @JsonIgnore
+    private String tournamentTitle;
 
 
     public Tournament(TournamentOptions tournamentOptions, TournamentType type) {
@@ -123,6 +133,90 @@ public abstract class Tournament {
 
     public abstract TreeSet<Match> assignTeamsToMatches(List<Team> teams, long seed);
 
+    public List<Page> buildOutput(List<Team> teams, long seed) {
+        generateMatches(teams, seed);
+
+        String yearRange = getTournamentOptions().getStartDate().getYear() + "-" + getEndDate().getYear();
+
+        OutputBundle bundle = new OutputBundle();
+        bundle.setTournamentString(tournamentOptions.getLeagueName(), yearRange);
+
+        tournamentTitle = bundle.getTournamentString("tournamentTitle");
+
+        List<Page> pages = new ArrayList<>();
+        pages.add(buildTournamentOutput(tournamentTitle, bundle));
+
+        return pages;
+    }
+
+    public Page buildTournamentOutput(String title, OutputBundle bundle) {
+        Page seasonPage = new Page(title, "index");
+        seasonPage.addMetadata("keywords", null, bundle.getTournamentString("meta.keywords"), null);
+
+        LinkedList<Element> descriptionParagraphs = new LinkedList<>();
+        for(String text: bundle.getTournamentString("description." + getType().key).split("\n"))
+            descriptionParagraphs.add(new Paragraph(text));
+        seasonPage.addBodyContent(descriptionParagraphs);
+
+        Header scheduleHeader = new Header(2, bundle.getTournamentString("header.schedule"));
+        seasonPage.addBodyContent(scheduleHeader);
+
+        DefinitionList openingDayDef = new DefinitionList();
+        seasonPage.addBodyContent(openingDayDef);
+        openingDayDef.addChildren(new DefinitionList.Term(bundle.getTournamentString("openingDay")));
+        openingDayDef.addChildren(new DefinitionList.Defintion(getTournamentOptions().getStartDate().format(Formatters.dateFormatter)));
+
+        Table matchTable = new Table();
+        matchTable.addClass("league-schedule");
+
+        int round = 0;
+        for (Match match : getMatches()) {
+            if (round != match.getRound()) {
+                round = match.getRound();
+                matchTable.addChildren(matchTableRoundHeader(round, bundle));
+            }
+
+            matchTable.addChildren(matchTableRow(match));
+        }
+
+        seasonPage.addBodyContent(matchTable);
+
+        Header rankingsHeader = new Header(2, bundle.getTournamentString("header.rankings"));
+        Paragraph rankingsDesc = new Paragraph(bundle.getTournamentString("rankings"));
+        seasonPage.addBodyContent(rankingsHeader, rankingsDesc);
+
+        return seasonPage;
+    }
+
+    public TableRow[] matchTableRoundHeader(int roundNum, OutputBundle bundle) {
+        TableData.Header roundHeader = new TableData.Header("Round: " + roundNum);
+        roundHeader.addAttribute("colspan", "6");
+
+        TableData.Header[] columnHeaders = new TableData.Header[]{
+                new TableData.Header(bundle.getString("header.date")),
+                new TableData.Header(bundle.getString("header.home")),
+                new TableData.Header(bundle.getString("header.away")),
+                new TableData.Header(bundle.getString("header.location")),
+                new TableData.Header(bundle.getString("header.length")),
+                new TableData.Header(bundle.getString("header.points"))
+        };
+
+        return new TableRow[]{new TableRow(roundHeader), new TableRow(columnHeaders)};
+    }
+
+    public TableRow matchTableRow(Match match) {
+        TableData[] matchColumns = new TableData[]{
+                new TableData(new Link(match.getStartDateTime().format(Formatters.dateFormatter) + " at " + match.getStartDateTime().format(Formatters.timeFormatter), "")),
+                new TableData(new Link(match.getHomeTeam().getName(), "")),
+                new TableData(new Link(match.getAwayTeam().getName(), "")),
+                new TableData(match.getLocation()),
+                new TableData(match.getMatchLength().toString()),
+                new TableData(match.getScoreHome() + " - " + match.getScoreAway()),
+        };
+
+        return new TableRow(matchColumns);
+    }
+
     public TournamentType getType() {
         return type.get();
     }
@@ -193,7 +287,6 @@ public abstract class Tournament {
 
     public StringBinding endDateStringBinding(){
         return endDateStringBinding;
-
     }
 
     public TreeSet<TimeEntry> getTemplate() {
@@ -210,5 +303,17 @@ public abstract class Tournament {
 
     public TournamentOptions getTournamentOptions() {
         return tournamentOptions;
+    }
+
+    public ObservableMap<String, Integer> getTournamentPoints() {
+        return tournamentPoints.get();
+    }
+
+    public SimpleMapProperty<String, Integer> tournamentPointsProperty() {
+        return tournamentPoints;
+    }
+
+    public String getTournamentTitle() {
+        return tournamentTitle;
     }
 }
