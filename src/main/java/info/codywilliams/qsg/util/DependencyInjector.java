@@ -86,6 +86,10 @@ public class DependencyInjector {
         DependencyInjector.bundle = bundle;
     }
 
+    public static ResourceBundle getBundle() {
+        return bundle;
+    }
+
     public static void setOutputBundle(ResourceBundle bundle) {
         DependencyInjector.outputBundle = bundle;
     }
@@ -93,8 +97,8 @@ public class DependencyInjector {
     public static ResourceBundle getOutputBundle() {
         return outputBundle;
     }
-    public static void setUpAndShowStage(Stage window, Scene scene, String title, String... iconPaths) {
-        window.setTitle(title);
+    public static void setUpAndShowStage(Stage window, Scene scene, String titleKey, String... iconPaths) {
+        window.setTitle(bundle.getString(titleKey));
 
         if(iconPaths == null || iconPaths.length == 0)
             iconPaths = defaultIconPaths;
