@@ -40,16 +40,6 @@ public class TableData extends Element{
         super(TD, new Text(text));
     }
 
-    @Override
-    public String toWikitext() {
-        return null;
-    }
-
-    @Override
-    public Node toNode() {
-        return null;
-    }
-
     static public class Header extends Element {
         public static String TH = "th";
         public Header() {
