@@ -96,13 +96,11 @@ public class App extends Application {
     private void setupDependencyInjector(){
         Locale locale = Locale.getDefault();
         ResourceBundle resources = ResourceBundle.getBundle("info.codywilliams.qsg.language.Text", locale);
-        ResourceBundle outputResources = ResourceBundle.getBundle("info.codywilliams.qsg.language.Output", locale);
 
         Context context = new Context();
         DependencyInjector.setBundle(resources);
-        DependencyInjector.setOutputBundle(outputResources);
 
-        DependencyInjector.addInjectionMethod(AppController.class, type -> new AppController(context, outputResources));
+        DependencyInjector.addInjectionMethod(AppController.class, type -> new AppController(context));
         DependencyInjector.addInjectionMethod(MenuController.class, type -> new MenuController(context));
         DependencyInjector.addInjectionMethod(TeamEditorController.class, type -> new TeamEditorController(context));
         DependencyInjector.addInjectionMethod(TournamentEditorController.class, type-> new TournamentEditorController(context));

@@ -19,7 +19,6 @@ package info.codywilliams.qsg.models.tournament;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import info.codywilliams.qsg.generators.MatchGenerator;
-import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.match.Match;
 import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
@@ -28,7 +27,6 @@ import info.codywilliams.qsg.output.Page;
 import info.codywilliams.qsg.output.elements.*;
 import info.codywilliams.qsg.util.DependencyInjector;
 import info.codywilliams.qsg.util.Formatters;
-import info.codywilliams.qsg.util.OutputBundle;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.*;
@@ -54,7 +52,11 @@ public abstract class Tournament {
     protected SimpleMapProperty<String, Integer> tournamentPoints;
     protected SimpleBooleanProperty teamsAssigned;
     @JsonIgnore
+    private ResourceBundle resources;
+    @JsonIgnore
     private String tournamentTitle;
+    @JsonIgnore
+    private String yearRange;
 
 
     public Tournament(TournamentOptions tournamentOptions, TournamentType type) {
@@ -136,34 +138,32 @@ public abstract class Tournament {
     public List<Page> buildOutput(List<Team> teams, long seed) {
         generateMatches(teams, seed);
 
-        String yearRange = getTournamentOptions().getStartDate().getYear() + "-" + getEndDate().getYear();
+        yearRange = getTournamentOptions().getStartDate().getYear() + "-" + getEndDate().getYear();
+        resources = DependencyInjector.getBundle();
 
-        OutputBundle bundle = new OutputBundle();
-        bundle.setTournamentString(tournamentOptions.getLeagueName(), yearRange);
-
-        tournamentTitle = bundle.getTournamentString("tournamentTitle");
+        tournamentTitle = getTournamentString("tournamentTitle");
 
         List<Page> pages = new ArrayList<>();
-        pages.add(buildTournamentOutput(tournamentTitle, bundle));
+        pages.add(buildTournamentOutput(tournamentTitle));
 
         return pages;
     }
 
-    public Page buildTournamentOutput(String title, OutputBundle bundle) {
+    public Page buildTournamentOutput(String title) {
         Page seasonPage = new Page(title, "index");
-        seasonPage.addMetadata("keywords", null, bundle.getTournamentString("meta.keywords"), null);
+        seasonPage.addMetadata("keywords", null, getTournamentString("meta.tournament.keywords"), null);
 
         LinkedList<Element> descriptionParagraphs = new LinkedList<>();
-        for(String text: bundle.getTournamentString("description." + getType().key).split("\n"))
+        for(String text: getTournamentString("description." + getType().key).split("\n"))
             descriptionParagraphs.add(new Paragraph(text));
         seasonPage.addBodyContent(descriptionParagraphs);
 
-        Header scheduleHeader = new Header(2, bundle.getTournamentString("header.schedule"));
+        Header scheduleHeader = new Header(2, getTournamentString("header.schedule"));
         seasonPage.addBodyContent(scheduleHeader);
 
         DefinitionList openingDayDef = new DefinitionList();
         seasonPage.addBodyContent(openingDayDef);
-        openingDayDef.addChildren(new DefinitionList.Term(bundle.getTournamentString("openingDay")));
+        openingDayDef.addChildren(new DefinitionList.Term(getTournamentString("openingDay")));
         openingDayDef.addChildren(new DefinitionList.Defintion(getTournamentOptions().getStartDate().format(Formatters.dateFormatter)));
 
         Table matchTable = new Table();
@@ -173,7 +173,7 @@ public abstract class Tournament {
         for (Match match : getMatches()) {
             if (round != match.getRound()) {
                 round = match.getRound();
-                matchTable.addChildren(matchTableRoundHeader(round, bundle));
+                matchTable.addChildren(matchTableRoundHeader(round));
             }
 
             matchTable.addChildren(matchTableRow(match));
@@ -181,24 +181,24 @@ public abstract class Tournament {
 
         seasonPage.addBodyContent(matchTable);
 
-        Header rankingsHeader = new Header(2, bundle.getTournamentString("header.rankings"));
-        Paragraph rankingsDesc = new Paragraph(bundle.getTournamentString("rankings"));
+        Header rankingsHeader = new Header(2, getTournamentString("header.rankings"));
+        Paragraph rankingsDesc = new Paragraph(getTournamentString("rankings"));
         seasonPage.addBodyContent(rankingsHeader, rankingsDesc);
 
         return seasonPage;
     }
 
-    public TableRow[] matchTableRoundHeader(int roundNum, OutputBundle bundle) {
-        TableData.Header roundHeader = new TableData.Header("Round: " + roundNum);
+    public TableRow[] matchTableRoundHeader(int roundNum) {
+        TableData.Header roundHeader = new TableData.Header(resources.getString("header.round") + roundNum);
         roundHeader.addAttribute("colspan", "6");
 
         TableData.Header[] columnHeaders = new TableData.Header[]{
-                new TableData.Header(bundle.getString("header.date")),
-                new TableData.Header(bundle.getString("header.home")),
-                new TableData.Header(bundle.getString("header.away")),
-                new TableData.Header(bundle.getString("header.location")),
-                new TableData.Header(bundle.getString("header.length")),
-                new TableData.Header(bundle.getString("header.points"))
+                new TableData.Header(resources.getString("header.date")),
+                new TableData.Header(resources.getString("header.home")),
+                new TableData.Header(resources.getString("header.away")),
+                new TableData.Header(resources.getString("header.location")),
+                new TableData.Header(resources.getString("header.length")),
+                new TableData.Header(resources.getString("header.points"))
         };
 
         return new TableRow[]{new TableRow(roundHeader), new TableRow(columnHeaders)};
@@ -215,6 +215,15 @@ public abstract class Tournament {
         };
 
         return new TableRow(matchColumns);
+    }
+
+    public String getTournamentString(String key) {
+        if(resources == null)
+            resources = DependencyInjector.getBundle();
+        String text = resources.getString(key);
+        text = text.replace("${leagueName}", tournamentOptions.getLeagueName());
+        text = text.replace("${yearRange}", yearRange);
+        return text;
     }
 
     public TournamentType getType() {
