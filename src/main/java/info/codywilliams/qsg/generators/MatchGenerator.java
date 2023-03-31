@@ -62,7 +62,6 @@ public class MatchGenerator {
      */
     int snitchReleaseSeconds;
     boolean snitchReleased;
-    boolean snitchCaught;
 
 
     public MatchGenerator(long seed) {
@@ -140,7 +139,6 @@ public class MatchGenerator {
         snitchChanceRange = Arrays.copyOf(SNITCH_CHANCE_RANGE_STARTING_VALUE, 2);
         snitchReleaseSeconds = randomNumber(SNITCH_RELEASE_SECONDS_RANGE);
         snitchReleased = false;
-        snitchCaught = false;
     }
 
     public void generate() {
@@ -154,6 +152,7 @@ public class MatchGenerator {
 
         // Set the chaser with the quaffle
         attacker = getRandomChaser(attackingTeam);
+        boolean snitchCaught = false;
 
         // Main game loop, continue until snitch is caught
         do {
@@ -165,7 +164,7 @@ public class MatchGenerator {
             attemptGoal();
 
             // Seeker Round
-            seekerRound();
+            snitchCaught = seekerRound();
 
         } while (!snitchCaught);
 
@@ -271,17 +270,17 @@ public class MatchGenerator {
         swapTeams(defender);
     }
 
-    void seekerRound() {
+    boolean seekerRound() {
         // If the snitch hasn't been released then there is nothing for seekers to do.
         if (!snitchReleased && match.getMatchLength().toSeconds() <= snitchReleaseSeconds)
-            return;
+            return false;
 
         // Get the chance of something happening this iteration
         int snitchChance = randomNumber(snitchChanceRange);
 
         // If this isn't in the snitch range,  nothing happens this round
         if (!inRange(snitchChance, snitchInteractionRange))
-            return;
+            return false;
 
         // Get the chance for each team's seeker to be the seeker to catch or see the snitch
         int homeSeekerChance;
@@ -314,16 +313,16 @@ public class MatchGenerator {
         // If snitchChance equals snitch, an attempt is made and the snitch is either Caught, Stolen, or Missed
         if (snitchChance == snitchValue) {
             PlaySeeker playSeeker = attemptCatchSnitch(seeker, seekerTeam, seekerTeamType, otherTeam);
+            match.addPlay(playSeeker);
+
             if(playSeeker.isSnitchCaught()) {
                 switch (playSeeker.getAttackingTeamType()) {
                     case HOME -> match.homeCaughtSnitch();
                     case AWAY -> match.awayCaughtSnitch();
                 }
-                snitchCaught = true;
             }
-            playSeeker.setPlayDurationSeconds(randomNumber(20,90));
-            match.addPlay(playSeeker);
-            return;
+
+            return playSeeker.isSnitchCaught();
         }
 
         // Snitch wasn't attempted, let's see if it was seen
@@ -335,6 +334,7 @@ public class MatchGenerator {
 
         // Snitch was not caught, shrink the chance window
         shrinkSnitchChanceRange(snitchChance);
+        return false;
     }
 
     PlaySeeker attemptCatchSnitch(Seeker seeker, MatchTeam seekerTeam, Play.TeamType seekerTeamType, MatchTeam otherTeam) {
