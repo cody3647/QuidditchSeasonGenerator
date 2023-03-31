@@ -20,6 +20,7 @@ package info.codywilliams.qsg.models.match;
 
 import info.codywilliams.qsg.models.player.Beater;
 
+import java.time.Duration;
 import java.util.ResourceBundle;
 
 public abstract class Play {
@@ -28,6 +29,9 @@ public abstract class Play {
     BludgerOutcome bludgerOutcome = BludgerOutcome.NONE;
     Beater beaterHitter;
     Beater beaterBlocker;
+    int scoreHome;
+    int scoreAway;
+    Duration matchLength;
 
     int playDurationSeconds;
 
@@ -65,6 +69,27 @@ public abstract class Play {
 
     public void setPlayDurationSeconds(int playDurationSeconds) {
         this.playDurationSeconds = playDurationSeconds;
+    }
+
+    public int getScoreHome() {
+        return scoreHome;
+    }
+
+    public int getScoreAway() {
+        return scoreAway;
+    }
+
+    public void setScores(int scoreHome, int scoreAway) {
+        this.scoreHome = scoreHome;
+        this.scoreAway = scoreAway;
+    }
+
+    public Duration getMatchLength() {
+        return matchLength;
+    }
+
+    public void setMatchLength(Duration matchLength) {
+        this.matchLength = matchLength;
     }
 
     protected abstract String getOutcomeString();

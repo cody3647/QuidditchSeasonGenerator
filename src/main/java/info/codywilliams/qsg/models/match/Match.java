@@ -96,6 +96,8 @@ public class Match implements Comparable<Match>{
 
     public void addPlay(Play play) {
         addTime(play.getPlayDurationSeconds());
+        play.setScores(getScoreHome(), getScoreAway());
+        play.setMatchLength(getMatchLength());
         this.plays.add(play);
     }
 
