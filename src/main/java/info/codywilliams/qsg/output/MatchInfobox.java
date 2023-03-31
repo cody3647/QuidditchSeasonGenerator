@@ -46,10 +46,10 @@ public class MatchInfobox extends Element implements Outputs{
     public String toHtml() {
         // Build the infobox header
         Link homeImageLink = new Link.Team(new Image(homeTeamName, homeTeamName + ".png"), homeTeamName, homeTeamName);
-        Link awayImageLink = new Link.Team(new Image(homeTeamName, homeTeamName + ".png"), awayTeamName, awayTeamName);
+        Link awayImageLink = new Link.Team(new Image(awayTeamName, awayTeamName + ".png"), awayTeamName, awayTeamName);
 
         Link homeLink = new Link.Team(homeTeamName, homeTeamName);
-        Link awayLink = new Link.Team(homeTeamName, awayTeamName);
+        Link awayLink = new Link.Team(awayTeamName, awayTeamName);
 
         TableData imageData = new TableData(homeImageLink, awayImageLink);
         imageData.addAttribute("colspan", "2");
