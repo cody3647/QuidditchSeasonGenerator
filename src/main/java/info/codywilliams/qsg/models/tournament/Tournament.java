@@ -206,9 +206,9 @@ public abstract class Tournament {
 
     public TableRow matchTableRow(Match match) {
         TableData[] matchColumns = new TableData[]{
-                new TableData(new Link(match.getStartDateTime().format(Formatters.dateFormatter) + " at " + match.getStartDateTime().format(Formatters.timeFormatter), "")),
-                new TableData(new Link(match.getHomeTeam().getName(), "")),
-                new TableData(new Link(match.getAwayTeam().getName(), "")),
+                new TableData(new Link.Match(match.getStartDateTime().format(Formatters.dateFormatter) + " at " + match.getStartDateTime().format(Formatters.timeFormatter), match.getTitle())),
+                new TableData(new Link.Team(match.getHomeTeam().getName(), match.getHomeTeam().getName())),
+                new TableData(new Link.Team(match.getAwayTeam().getName(), match.getAwayTeam().getName())),
                 new TableData(match.getLocation()),
                 new TableData(match.getMatchLength().toString()),
                 new TableData(match.getScoreHome() + " - " + match.getScoreAway()),

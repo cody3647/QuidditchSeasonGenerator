@@ -19,28 +19,44 @@
 package info.codywilliams.qsg.output.elements;
 
 import info.codywilliams.qsg.output.Element;
-import javafx.scene.Node;
-
-import java.util.Collection;
+import info.codywilliams.qsg.util.Formatters;
 
 public class Link extends Element {
     public static String A = "a";
-
-    public Link() {
-        super(A);
-    }
-
-    public Link(Element... elements) {
-        super(A, elements);
-    }
-
-    public Link(Collection<Element> elements) {
-        super(A, elements);
-    }
-
-    public Link(String text, String href) {
-        super(A, new Text(text));
+    private Link(Element element, String href, String title) {
+        super(A, element);
         addAttribute("href", href);
+        addAttribute("title", title);
+    }
+
+    public static class Team extends Link {
+        public Team(String text, String teamName) {
+            this(new Text(text), teamName, text);
+        }
+
+        public Team(Element element, String teamName, String title) {
+            super(element, "/teams/" + Formatters.sanitizeFileNames(teamName), title);
+        }
+    }
+
+    public static class Match extends Link {
+        public Match(String text, String matchTitle) {
+            this(new Text(text), matchTitle, text);
+        }
+
+        public Match(Element element, String matchTitle, String title) {
+            super(element, Formatters.sanitizeFileNames(matchTitle) + ".html", title);
+        }
+    }
+
+    public static class Tournament extends Link {
+        public Tournament(String text) {
+            this(new Text(text), text);
+        }
+
+        public Tournament(Element element, String title) {
+            super(element, "index.html", title);
+        }
     }
 
 }
