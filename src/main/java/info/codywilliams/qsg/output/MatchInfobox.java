@@ -60,17 +60,19 @@ public class MatchInfobox extends Element implements Outputs{
         Table table = new Table(new TableRow(imageData), new TableRow(vsData));
 
         // Add all the rows
-        table.addChildren(addInfoboxHeader(resources.getString("match.ib.title")));
-        table.addChildren(addInfoboxRow(resources.getString("match.ib.location"), match.getLocation()));
-        table.addChildren(addInfoboxRow(resources.getString("match.ib.start"), match.getStartDateTime().format(Formatters.dateTimeFormatter)));
-        table.addChildren(addInfoboxRow(resources.getString("match.ib.end"), endTime.format(Formatters.dateTimeFormatter)));
-        table.addChildren(addInfoboxRow(resources.getString("match.ib.length"), match.getMatchLength().toString()));
-        table.addChildren(addInfoboxHeader("match.ib.fouls"));
-        table.addChildren(addInfoboxRow(homeTeamName, String.valueOf(match.getFoulsHome())));
-        table.addChildren(addInfoboxRow(awayTeamName, String.valueOf(match.getFoulsAway())));
-        table.addChildren(addInfoboxHeader("match.ib.finalScore"));
-        table.addChildren(addInfoboxRow(homeTeamName, String.valueOf(match.getScoreHome())));
-        table.addChildren(addInfoboxRow(awayTeamName, String.valueOf(match.getScoreAway())));
+        table.addChildren(
+                addInfoboxHeader(resources.getString("match.ib.title")),
+                addInfoboxRow(resources.getString("match.ib.location"), match.getLocation()),
+                addInfoboxRow(resources.getString("match.ib.start"), match.getStartDateTime().format(Formatters.dateTimeFormatter)),
+                addInfoboxRow(resources.getString("match.ib.end"), endTime.format(Formatters.dateTimeFormatter)),
+                addInfoboxRow(resources.getString("match.ib.length"), match.getMatchLength().toString()),
+                addInfoboxHeader("match.ib.fouls"),
+                addInfoboxRow(homeTeamName, String.valueOf(match.getFoulsHome())),
+                addInfoboxRow(awayTeamName, String.valueOf(match.getFoulsAway())),
+                addInfoboxHeader("match.ib.finalScore"),
+                addInfoboxRow(homeTeamName, String.valueOf(match.getScoreHome())),
+                addInfoboxRow(awayTeamName, String.valueOf(match.getScoreAway()))
+        );
 
         // Create footer and add table and footer to infobox div
         Div footer = new Div(new Link.Tournament(resources.getString("match.ib.footerLink")));
