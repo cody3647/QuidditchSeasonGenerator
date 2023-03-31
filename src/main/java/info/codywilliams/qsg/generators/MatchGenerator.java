@@ -203,13 +203,12 @@ public class MatchGenerator {
                 beater.getSkillOffense() + (beaterTeam.getBeatersSkills().getTeamwork() / 2);
 
         if (hitChance > 25) {
-            play.setBeaterBlocker(beater);
+            play.setBeaterBlocker(getRandomBeater(targetTeam));
             int blockChance = randomNumbersSum(1, 10, 3) +
                     (targetTeam.getBeatersSkills().getDefense() / 2) + (beaterTeam.getBeatersSkills().getTeamwork() / 2);
 
             if (blockChance > hitChance) {
                 play.setBludgerOutcome(Play.BludgerOutcome.BLOCKED);
-                play.setBeaterBlocker(getRandomBeater(targetTeam));
                 return false;
             }
 
@@ -297,39 +296,39 @@ public class MatchGenerator {
 
         Seeker seeker;
         MatchTeam seekerTeam;
-        Play.TeamType teamType;
+        Play.TeamType seekerTeamType;
         MatchTeam otherTeam;
         // Select seeker and other team based on which seeker chance came out on top above
         if (difference > 0) {
             seeker = homeTeam.getSeeker();
             seekerTeam = homeTeam;
-            teamType = Play.TeamType.HOME;
+            seekerTeamType = Play.TeamType.HOME;
             otherTeam = awayTeam;
         } else {
             seeker = awayTeam.getSeeker();
             seekerTeam = awayTeam;
-            teamType = Play.TeamType.AWAY;
+            seekerTeamType = Play.TeamType.AWAY;
             otherTeam = homeTeam;
         }
 
-        PlaySeeker playSeeker = new PlaySeeker(seeker, otherTeam.getSeeker(), teamType);
-
         // If snitchChance equals snitch, an attempt is made and the snitch is either Caught, Stolen, or Missed
         if (snitchChance == snitchValue) {
-            attemptCatchSnitch(playSeeker, seeker, seekerTeam, otherTeam);
-            playSeeker.setPlayDurationSeconds(randomNumber(20,90));
-            match.addPlay(playSeeker);
-            if(snitchCaught) {
+            PlaySeeker playSeeker = attemptCatchSnitch(seeker, seekerTeam, seekerTeamType, otherTeam);
+            if(playSeeker.isSnitchCaught()) {
                 switch (playSeeker.getAttackingTeamType()) {
                     case HOME -> match.homeCaughtSnitch();
                     case AWAY -> match.awayCaughtSnitch();
                 }
+                snitchCaught = true;
             }
+            playSeeker.setPlayDurationSeconds(randomNumber(20,90));
+            match.addPlay(playSeeker);
             return;
         }
 
         // Snitch wasn't attempted, let's see if it was seen
         if (snitchChance % 4 == 0) {
+            PlaySeeker playSeeker = new PlaySeeker(seeker, otherTeam.getSeeker(), seekerTeamType);
             playSeeker.setSnitchOutcome(PlaySeeker.SnitchOutcome.SEEN);
             match.addPlay(playSeeker);
         }
@@ -338,31 +337,31 @@ public class MatchGenerator {
         shrinkSnitchChanceRange(snitchChance);
     }
 
-    void attemptCatchSnitch(PlaySeeker playSeeker, Seeker seeker, MatchTeam seekerTeam, MatchTeam otherTeam) {
+    PlaySeeker attemptCatchSnitch(Seeker seeker, MatchTeam seekerTeam, Play.TeamType seekerTeamType, MatchTeam otherTeam) {
+        PlaySeeker playSeeker = new PlaySeeker(seeker, otherTeam.getSeeker(), seekerTeamType);
         // The other teams beater might disrupt them
         Beater beater = getRandomBeater(otherTeam);
         boolean bludgerHit = false;
         if (random.nextBoolean())
             bludgerHit = bludgerHit(playSeeker, beater, seeker, otherTeam, seekerTeam);
 
-        if (bludgerHit) {
-            if (random.nextBoolean()) {
-                playSeeker.swapTeam();
-                playSeeker.setSnitchOutcome(PlaySeeker.SnitchOutcome.STOLEN);
-                playSeeker.setPlayDurationSeconds(randomNumber(30,75));
-                snitchCaught = true;
-                return;
-            }
-            if (random.nextBoolean()) {
-                playSeeker.setSnitchOutcome(PlaySeeker.SnitchOutcome.MISSED);
-                playSeeker.setPlayDurationSeconds(randomNumber(30,75));
-                return;
-            }
-        }
+        boolean stolen = bludgerHit && random.nextBoolean();
+        boolean missed = bludgerHit && random.nextBoolean();
 
-        playSeeker.setSnitchOutcome(PlaySeeker.SnitchOutcome.CAUGHT);
-        playSeeker.setPlayDurationSeconds(randomNumber(15,60));
-        snitchCaught = true;
+        if(stolen) {
+            playSeeker.swapTeam();
+            playSeeker.setSnitchOutcome(PlaySeeker.SnitchOutcome.STOLEN);
+            playSeeker.setPlayDurationSeconds(randomNumber(30,75));
+        }
+        else if (missed) {
+            playSeeker.setSnitchOutcome(PlaySeeker.SnitchOutcome.MISSED);
+            playSeeker.setPlayDurationSeconds(randomNumber(30,75));
+        }
+        else {
+            playSeeker.setSnitchOutcome(PlaySeeker.SnitchOutcome.CAUGHT);
+            playSeeker.setPlayDurationSeconds(randomNumber(15,60));
+        }
+        return playSeeker;
     }
 
     void shrinkSnitchChanceRange(int snitchChance) {
