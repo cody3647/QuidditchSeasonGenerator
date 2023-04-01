@@ -226,6 +226,7 @@ public class MatchGenerator {
             play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.MISSED);
 
         play.setPlayDurationSeconds(randomNumber(20,120));
+        // AddPlay finalizes scores and match length assigned to the play
         match.addPlay(play);
         swapTeams(defender);
     }
@@ -273,7 +274,6 @@ public class MatchGenerator {
         // If snitchChance equals snitch, an attempt is made and the snitch is either Caught, Stolen, or Missed
         if (snitchChance == snitchValue) {
             PlaySeeker playSeeker = attemptCatchSnitch(seeker, seekerTeam, seekerTeamType, otherTeam);
-            match.addPlay(playSeeker);
 
             if(playSeeker.isSnitchCaught()) {
                 switch (playSeeker.getAttackingTeamType()) {
@@ -282,6 +282,8 @@ public class MatchGenerator {
                 }
             }
 
+            // AddPlay finalizes scores and match length assigned to the play
+            match.addPlay(playSeeker);
             return playSeeker.isSnitchCaught();
         }
 
