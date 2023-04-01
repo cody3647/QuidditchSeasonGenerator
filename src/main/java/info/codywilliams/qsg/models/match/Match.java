@@ -19,6 +19,12 @@
 package info.codywilliams.qsg.models.match;
 
 import info.codywilliams.qsg.models.Team;
+import info.codywilliams.qsg.output.Element;
+import info.codywilliams.qsg.output.MatchInfobox;
+import info.codywilliams.qsg.output.Page;
+import info.codywilliams.qsg.output.elements.*;
+import info.codywilliams.qsg.util.Formatters;
+import info.codywilliams.qsg.util.ResourceBundleReplacer;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -39,6 +45,8 @@ public class Match implements Comparable<Match>{
     private int foulsHome;
     private int foulsAway;
     private LinkedList<Play> plays;
+    private String title;
+    private ResourceBundleReplacer resources;
 
     public Match(int number, int round, LocalDateTime startDateTime){
         this.number = number;
@@ -50,6 +58,71 @@ public class Match implements Comparable<Match>{
         scoreHome = 0;
         scoreAway = 0;
     }
+
+    public void setResources(ResourceBundleReplacer resources) {
+        this.resources = new ResourceBundleReplacer(resources);
+        this.resources.addToken("date", startDateTime.toLocalDate().format(Formatters.dateFormatter));
+        this.resources.addToken("homeTeam", homeTeam.getName());
+        this.resources.addToken("awayTeam", awayTeam.getName());
+    }
+
+    public ResourceBundleReplacer getResources() {
+        return resources;
+    }
+
+    public Page buildMatchPage() {
+        Page matchPage = new Page(getTitle(), getTitle());
+        matchPage.addMetadata("keywords", null, resources.getString("meta.match.keywords"), null);
+        matchPage.addBodyContent(new MatchInfobox(this));
+        LinkedList<Element> listItems = new LinkedList<>();
+
+        for(Play play: plays) {
+            ListItem li = new ListItem();
+            listItems.add(li);
+            if(play instanceof PlayChaser playChaser && playChaser.quaffleOutcome == PlayChaser.QuaffleOutcome.SCORED) {
+                li.addChildren(
+                        new Text(playChaser.outputWithDetails(resources, getHomeTeam().getName(), getAwayTeam().getName())),
+                        buildScoreDiv(playChaser, false));
+            }
+            else if (play instanceof PlaySeeker playSeeker && playSeeker.isSnitchCaught()) {
+                li.addChildren(
+                        new Text(playSeeker.outputWithDetails(resources, getHomeTeam().getName(), getAwayTeam().getName())),
+                        buildScoreDiv(playSeeker, true));
+            }
+            else
+                li.addChildren(new Text(play.outputWithDetails(resources, getHomeTeam().getName(), getAwayTeam().getName())));
+        }
+
+        matchPage.addBodyContent(new UnorderedList(listItems));
+
+        return matchPage;
+    }
+
+    private Div buildScoreDiv(Play play, boolean finalScore) {
+        Div div = new Div();
+        div.addClass("score");
+
+        String text = finalScore ? resources.getString("match.final") : resources.getString("match.score");
+        div.addChildren(new Paragraph(text));
+        UnorderedList ul = new UnorderedList();
+        div.addChildren(ul);
+        ul.addChildren(
+                new ListItem(getHomeTeam().getName() + ": " + play.getScoreHome()),
+                new ListItem(getAwayTeam().getName() + ": " + play.getScoreAway()),
+                new ListItem(resources.getString("match.time") + ": " + Formatters.formatDuration(play.getMatchLength()))
+        );
+
+        return div;
+    }
+
+    public String getTitle() {
+        if(title != null)
+            return title;
+        title = resources.getString("match.title");
+
+        return title;
+    }
+
     public int getNumber() {
         return number;
     }
@@ -107,6 +180,14 @@ public class Match implements Comparable<Match>{
 
     public int getScoreAway() {
         return scoreAway;
+    }
+
+    public int getFoulsHome() {
+        return foulsHome;
+    }
+
+    public int getFoulsAway() {
+        return foulsAway;
     }
 
     public int homeScore(){

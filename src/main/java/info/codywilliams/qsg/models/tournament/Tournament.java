@@ -149,6 +149,11 @@ public abstract class Tournament {
 
         List<Page> pages = new ArrayList<>();
 
+        for(Match match: matches) {
+            match.setResources(resources);
+            pages.add(match.buildMatchPage());
+        }
+
         pages.add(buildTournamentPage(tournamentTitle));
         now = System.currentTimeMillis() - now;
         System.out.println(now / 1000.0 + " seconds to generate pages");
