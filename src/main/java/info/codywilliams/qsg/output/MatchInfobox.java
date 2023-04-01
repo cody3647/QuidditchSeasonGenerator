@@ -65,11 +65,11 @@ public class MatchInfobox extends Element implements Outputs{
                 addInfoboxRow(resources.getString("match.ib.location"), match.getLocation()),
                 addInfoboxRow(resources.getString("match.ib.start"), match.getStartDateTime().format(Formatters.dateTimeFormatter)),
                 addInfoboxRow(resources.getString("match.ib.end"), endTime.format(Formatters.dateTimeFormatter)),
-                addInfoboxRow(resources.getString("match.ib.length"), match.getMatchLength().toString()),
-                addInfoboxHeader("match.ib.fouls"),
+                addInfoboxRow(resources.getString("match.ib.length"), Formatters.formatDuration(match.getMatchLength())),
+                addInfoboxHeader(resources.getString("match.ib.fouls")),
                 addInfoboxRow(homeTeamName, String.valueOf(match.getFoulsHome())),
                 addInfoboxRow(awayTeamName, String.valueOf(match.getFoulsAway())),
-                addInfoboxHeader("match.ib.finalScore"),
+                addInfoboxHeader(resources.getString("match.ib.finalScore")),
                 addInfoboxRow(homeTeamName, String.valueOf(match.getScoreHome())),
                 addInfoboxRow(awayTeamName, String.valueOf(match.getScoreAway()))
         );

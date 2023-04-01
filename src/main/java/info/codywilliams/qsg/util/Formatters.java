@@ -18,6 +18,7 @@
 
 package info.codywilliams.qsg.util;
 
+import java.time.Duration;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -35,5 +36,12 @@ public class Formatters {
 
     public static String sanitizeFileNames(String fileName) {
         return fileName.replaceAll("[\\<\\>\\:\\\"\\/\\|\\?\\*\\\\ ]", "_");
+    }
+
+    public static String formatDuration(Duration duration) {
+        long hours = duration.toHours();
+        int minutes = duration.toMinutesPart();
+        int seconds = duration.toSecondsPart();
+        return String.format("%d:%d:%d", hours, minutes, seconds);
     }
 }
