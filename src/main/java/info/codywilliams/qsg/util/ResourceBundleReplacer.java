@@ -19,7 +19,6 @@
 package info.codywilliams.qsg.util;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 import java.util.regex.MatchResult;

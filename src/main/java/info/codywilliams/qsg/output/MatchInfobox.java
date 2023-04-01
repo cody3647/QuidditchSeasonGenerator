@@ -20,15 +20,14 @@ package info.codywilliams.qsg.output;
 
 import info.codywilliams.qsg.models.match.Match;
 import info.codywilliams.qsg.output.elements.*;
-import info.codywilliams.qsg.util.DependencyInjector;
 import info.codywilliams.qsg.util.Formatters;
+import info.codywilliams.qsg.util.ResourceBundleReplacer;
 
 import java.time.LocalDateTime;
-import java.util.ResourceBundle;
 
 public class MatchInfobox extends Element implements Outputs{
     public Match match;
-    ResourceBundle resources;
+    ResourceBundleReplacer resources;
     LocalDateTime endTime;
     String homeTeamName;
     String awayTeamName;
@@ -36,7 +35,7 @@ public class MatchInfobox extends Element implements Outputs{
     public MatchInfobox(Match match) {
         super("infobox");
         this.match = match;
-        resources = DependencyInjector.getBundle();
+        resources = match.getResources();
         endTime = match.getStartDateTime().plus(match.getMatchLength());
         homeTeamName = match.getHomeTeam().getName();
         awayTeamName = match.getAwayTeam().getName();

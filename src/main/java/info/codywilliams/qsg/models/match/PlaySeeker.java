@@ -19,8 +19,7 @@
 package info.codywilliams.qsg.models.match;
 
 import info.codywilliams.qsg.models.player.Seeker;
-
-import java.util.ResourceBundle;
+import info.codywilliams.qsg.util.ResourceBundleReplacer;
 
 public class PlaySeeker extends Play {
     public enum SnitchOutcome {FEINT, SEEN, MISSED, CAUGHT, STOLEN}
@@ -71,19 +70,18 @@ public class PlaySeeker extends Play {
     }
 
     @Override
-    public String outputWithDetails(ResourceBundle playProperties, String homeTeamName, String awayTeamName) {
-        String output = playProperties.getString("seeker." + getOutcomeString()  + ".player");
-        output = outputTeams(output, homeTeamName, awayTeamName);
-        output = outputCommonNames(output);
+    public String outputWithDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName) {
+        addCommonTokens(resources);
+        resources.addToken("seeker", seeker.getName());
+        resources.addToken("otherSeeker", otherSeeker.getName());
 
-        return output.replace("${seeker}", seeker.getName())
-                .replace("${otherSeeker}", otherSeeker.getName());
+        return resources.getString("seeker." + getOutcomeString()  + ".player");
     }
 
     @Override
-    public String outputWithoutDetails(ResourceBundle playProperties, String homeTeamName, String awayTeamName) {
-        String output = playProperties.getString("seeker." + getOutcomeString());
-        return outputTeams(output, homeTeamName, awayTeamName);
+    public String outputWithoutDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName) {
+        addCommonTokens(resources);
+        return resources.getString("seeker." + getOutcomeString());
     }
 
     @Override

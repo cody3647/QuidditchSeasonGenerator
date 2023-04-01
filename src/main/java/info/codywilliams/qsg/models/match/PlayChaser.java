@@ -20,8 +20,7 @@ package info.codywilliams.qsg.models.match;
 
 import info.codywilliams.qsg.models.player.Chaser;
 import info.codywilliams.qsg.models.player.Keeper;
-
-import java.util.ResourceBundle;
+import info.codywilliams.qsg.util.ResourceBundleReplacer;
 
 public class PlayChaser extends Play {
     public enum QuaffleOutcome {TURNOVER, MISSED, BLOCKED, SCORED}
@@ -77,23 +76,20 @@ public class PlayChaser extends Play {
     }
 
     @Override
-    public String outputWithDetails(ResourceBundle playProperties, String homeTeamName, String awayTeamName) {
-
-        String output = playProperties.getString("chaser." + getOutcomeString()  + ".player");
-        output = outputTeams(output, homeTeamName, awayTeamName);
-        output = outputCommonNames(output);
-
+    public String outputWithDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName) {
+        addCommonTokens(resources);
+        resources.addToken("attacker", attacker.getName());
+        resources.addToken("defender", defender.getName());
         if(defendingKeeper != null)
-            output = output.replace("${keeper}", defendingKeeper.getName());
+            resources.addToken("keeper", defendingKeeper.getName());
 
-        return output.replace("${attacker}", attacker.getName())
-                .replace("${defender}", defender.getName());
+        return resources.getString("chaser." + getOutcomeString()  + ".player");
     }
 
     @Override
-    public String outputWithoutDetails(ResourceBundle playProperties, String homeTeamName, String awayTeamName) {
-        String output = playProperties.getString("chaser." + getOutcomeString());
-        return outputTeams(output, homeTeamName, awayTeamName);
+    public String outputWithoutDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName) {
+        addCommonTokens(resources);
+        return resources.getString("chaser." + getOutcomeString());
     }
 
     @Override

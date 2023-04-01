@@ -19,9 +19,9 @@
 package info.codywilliams.qsg.models.match;
 
 import info.codywilliams.qsg.models.player.Beater;
+import info.codywilliams.qsg.util.ResourceBundleReplacer;
 
 import java.time.Duration;
-import java.util.ResourceBundle;
 
 public abstract class Play {
     TeamType attackingTeamType;
@@ -94,22 +94,24 @@ public abstract class Play {
 
     protected abstract String getOutcomeString();
 
-    public abstract String outputWithDetails(ResourceBundle playProperties, String homeTeamName, String awayTeamName);
-    public abstract String outputWithoutDetails(ResourceBundle playProperties, String homeTeamName, String awayTeamName);
+    public abstract String outputWithDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName);
+    public abstract String outputWithoutDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName);
 
-    String outputTeams(String output, String homeTeamName, String awayTeamName) {
-        return switch(attackingTeamType) {
-            case HOME -> output.replace("${attackingTeam}", homeTeamName).replace("${defendingTeam}", awayTeamName);
-            case AWAY -> output.replace("${attackingTeam}", awayTeamName).replace("${defendingTeam}", homeTeamName);
-        };
-    }
-
-    String outputCommonNames(String output) {
+    void addCommonTokens(ResourceBundleReplacer resources) {
         if(beaterHitter != null)
-            output = output.replace("${beaterHitter}", beaterHitter.getName());
+            resources.addToken("beaterHitter", beaterHitter.getName());
         if(beaterBlocker != null)
-            output = output.replace("${beaterBlocker}", beaterBlocker.getName());
-        return output;
+            resources.addToken("beaterBlocker", beaterBlocker.getName());
+        switch(attackingTeamType) {
+            case HOME -> {
+                resources.addTeamToken("attackingTeam", "homeTeam");
+                resources.addTeamToken("defendingTeam", "awayTeam");
+            }
+            case AWAY -> {
+                resources.addTeamToken("attackingTeam", "awayTeam");
+                resources.addTeamToken("defendingTeam", "homeTeam");
+            }
+        }
     }
     public enum TeamType {HOME, AWAY}
 }
