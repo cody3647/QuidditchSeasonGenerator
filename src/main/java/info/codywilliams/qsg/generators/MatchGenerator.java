@@ -69,46 +69,6 @@ public class MatchGenerator {
         random = new Random();
     }
 
-    public static void main(String[] args) {
-        Locale locale = Locale.getDefault();
-        ResourceBundle playProperties = ResourceBundle.getBundle("info.codywilliams.qsg.language.Output", locale);
-
-        Team homeTeam1 = TeamGenerator.randomTeam();
-        Team awayTeam1 = TeamGenerator.randomTeam();
-        Team awayTeam2 = TeamGenerator.randomTeam();
-
-        System.out.println("New Match");
-        Match match = new Match(1, 1, LocalDateTime.now());
-        match.setHomeTeam(homeTeam1);
-        match.setAwayTeam(awayTeam1);
-        MatchGenerator matchGenerator = new MatchGenerator(new Random(0).nextLong());
-        matchGenerator.setUpMatch(match);
-        matchGenerator.generate();
-        System.out.println("Match Generation Done");
-        System.out.println("Home Team: " + homeTeam1.getName() + " \t\t Away Team: " + awayTeam1.getName());
-        for(Play play: match.getPlays()) {
-            System.out.println(play.outputWithDetails(playProperties, homeTeam1.getName(), awayTeam1.getName()));
-        }
-        System.out.println();
-        System.out.println("Home Score: " + match.getScoreHome() + "\t\t Away Score: " + match.getScoreAway() +
-                "\t\t Duration: " + match.getMatchLength());
-
-        System.out.println("New Match");
-        match = new Match(2, 1, LocalDateTime.now());
-        match.setHomeTeam(homeTeam1);
-        match.setAwayTeam(awayTeam2);
-        matchGenerator.setUpMatch(match);
-        matchGenerator.generate();
-        System.out.println("Match Generation Done");
-        System.out.println("Home Team: " + homeTeam1.getName() + " \t\t Away Team: " + awayTeam2.getName());
-        for(Play play: match.getPlays()) {
-            System.out.println(play.outputWithDetails(playProperties, homeTeam1.getName(), awayTeam2.getName()));
-        }
-        System.out.println();
-        System.out.println("Home Score: " + match.getScoreHome() + "\t\t Away Score: " + match.getScoreAway() +
-                "\t\t Duration: " + match.getMatchLength());
-    }
-
     public void setUpMatch(Match match) {
         this.match = match;
         LocalDateTime startDateTime = match.getStartDateTime();
