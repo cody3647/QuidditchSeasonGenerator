@@ -134,7 +134,7 @@ public class AppController {
     @FXML
     void generateHTMLOutput(ActionEvent ignoredEvent) {
         // Get the list of pages
-        List<Page> pages = context.getCurrentTournament().buildOutput(context.getTeams(), context.getSeed());
+        List<Page> pages = context.getCurrentTournament().buildPages(context.getTeams(), context.getSeed());
         // Set up an output directory with a subdirectory named after the league and year
         String tournamentTitle = context.getCurrentTournament().getTournamentTitle();
         Path outputPath = Paths.get("output", Formatters.sanitizeFileNames(tournamentTitle));

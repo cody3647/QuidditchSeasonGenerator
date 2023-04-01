@@ -136,9 +136,10 @@ public abstract class Tournament {
 
     public abstract TreeSet<Match> assignTeamsToMatches(List<Team> teams, long seed);
 
-    public List<Page> buildOutput(List<Team> teams, long seed) {
+    public List<Page> buildPages(List<Team> teams, long seed) {
         generateMatches(teams, seed);
 
+        long now = System.currentTimeMillis();
         yearRange = getTournamentOptions().getStartDate().getYear() + "-" + getEndDate().getYear();
         resources = new ResourceBundleReplacer(DependencyInjector.getBundle());
         resources.addToken("leagueName", tournamentOptions.getLeagueName());
@@ -147,12 +148,14 @@ public abstract class Tournament {
         tournamentTitle = resources.getString("tournamentTitle");
 
         List<Page> pages = new ArrayList<>();
-        pages.add(buildTournamentOutput(tournamentTitle));
 
+        pages.add(buildTournamentPage(tournamentTitle));
+        now = System.currentTimeMillis() - now;
+        System.out.println(now / 1000.0 + " seconds to generate pages");
         return pages;
     }
 
-    public Page buildTournamentOutput(String title) {
+    public Page buildTournamentPage(String title) {
         Page seasonPage = new Page(title, "index");
         seasonPage.addMetadata("keywords", null, resources.getString("meta.tournament.keywords"), null);
 
