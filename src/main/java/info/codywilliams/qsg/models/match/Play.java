@@ -113,5 +113,4 @@ public abstract class Play {
             }
         }
     }
-    public enum TeamType {HOME, AWAY}
 }

@@ -19,10 +19,7 @@
 package info.codywilliams.qsg.generators;
 
 import info.codywilliams.qsg.models.Team;
-import info.codywilliams.qsg.models.match.Match;
-import info.codywilliams.qsg.models.match.Play;
-import info.codywilliams.qsg.models.match.PlayChaser;
-import info.codywilliams.qsg.models.match.PlaySeeker;
+import info.codywilliams.qsg.models.match.*;
 import info.codywilliams.qsg.models.player.*;
 
 import java.time.LocalDate;
@@ -85,8 +82,8 @@ public class MatchGenerator {
         matchSeed ^= seed;
         random.setSeed(matchSeed);
 
-        homeTeam = new MatchTeam(match.getHomeTeam(), Play.TeamType.HOME, startDateTime.toLocalDate());
-        awayTeam = new MatchTeam(match.getAwayTeam(), Play.TeamType.AWAY, startDateTime.toLocalDate());
+        homeTeam = new MatchTeam(match.getHomeTeam(), TeamType.HOME, startDateTime.toLocalDate());
+        awayTeam = new MatchTeam(match.getAwayTeam(), TeamType.AWAY, startDateTime.toLocalDate());
 
         // Snitch values
         snitchValue = randomNumber(SNITCH_VALUE_RANGE);
@@ -256,18 +253,18 @@ public class MatchGenerator {
 
         Seeker seeker;
         MatchTeam seekerTeam;
-        Play.TeamType seekerTeamType;
+        TeamType seekerTeamType;
         MatchTeam otherTeam;
         // Select seeker and other team based on which seeker chance came out on top above
         if (difference > 0) {
             seeker = homeTeam.getSeeker();
             seekerTeam = homeTeam;
-            seekerTeamType = Play.TeamType.HOME;
+            seekerTeamType = TeamType.HOME;
             otherTeam = awayTeam;
         } else {
             seeker = awayTeam.getSeeker();
             seekerTeam = awayTeam;
-            seekerTeamType = Play.TeamType.AWAY;
+            seekerTeamType = TeamType.AWAY;
             otherTeam = homeTeam;
         }
 
@@ -299,7 +296,7 @@ public class MatchGenerator {
         return false;
     }
 
-    PlaySeeker attemptCatchSnitch(Seeker seeker, MatchTeam seekerTeam, Play.TeamType seekerTeamType, MatchTeam otherTeam) {
+    PlaySeeker attemptCatchSnitch(Seeker seeker, MatchTeam seekerTeam, TeamType seekerTeamType, MatchTeam otherTeam) {
         PlaySeeker playSeeker = new PlaySeeker(seeker, otherTeam.getSeeker(), seekerTeamType);
         // The other teams beater might disrupt them
         Beater beater = getRandomBeater(otherTeam);
@@ -365,7 +362,7 @@ public class MatchGenerator {
 
     static private class MatchTeam {
         private final Team team;
-        private final Play.TeamType type;
+        private final TeamType type;
         private final List<Beater> beaters;
         private final List<Chaser> chasers;
         private final Keeper keeper;
@@ -374,7 +371,7 @@ public class MatchGenerator {
         private final CollectiveSkills chasersSkills;
         private final CollectiveSkills teamSkills;
 
-        MatchTeam(Team team, Play.TeamType type, LocalDate date) {
+        MatchTeam(Team team, TeamType type, LocalDate date) {
             this.team = team;
             this.type = type;
             beaters = getPlayersForMatch(date, team.getBeaters()).subList(0, BEATERS);
