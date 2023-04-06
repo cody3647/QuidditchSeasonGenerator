@@ -269,10 +269,11 @@ public abstract class Tournament {
         length.addClass("match-length");
         score.addClass("match-score");
         points.addClass("match-points");
-        switch (match.getWinner()) {
-            case HOME -> {home.addClass("match-winner"); away.addClass("match-loser");}
-            case AWAY -> {home.addClass("match-loser"); away.addClass("match-winner");}
-        }
+        if(match.getWinner() != null)
+            switch (match.getWinner()) {
+                case HOME -> {home.addClass("match-winner"); away.addClass("match-loser");}
+                case AWAY -> {home.addClass("match-loser"); away.addClass("match-winner");}
+            }
         return new TableRow(date, home, away, location, length, score, points);
     }
 
