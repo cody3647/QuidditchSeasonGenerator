@@ -19,6 +19,7 @@
 package info.codywilliams.qsg.output.elements;
 
 import info.codywilliams.qsg.output.Element;
+import info.codywilliams.qsg.util.Formatters;
 
 import java.util.Collection;
 
@@ -31,7 +32,7 @@ public class Image extends Element{
 
     public Image(String alt, String imageName) {
         super(IMG);
-        addAttribute("src", "/images/" + imageName);
+        addAttribute("src", "/images/" + Formatters.sanitizeFileNames(imageName));
         addAttribute("alt", alt);
     }
 }
