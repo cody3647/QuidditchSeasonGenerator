@@ -123,6 +123,9 @@ public abstract class Tournament {
         if(!isTeamsAssigned())
             assignTeamsToMatches(teams, seed);
 
+        for(Team team: teams)
+            tournamentPoints.put(team.getName(), 0);
+
         MatchGenerator matchGenerator = new MatchGenerator(seed);
         long now = System.currentTimeMillis();
         for (Match match : getMatches()) {
@@ -131,6 +134,7 @@ public abstract class Tournament {
             matchGenerator.cleanUp();
         }
         now = System.currentTimeMillis() - now;
+        assignPoints();
         System.out.println(now / 1000.0 + " seconds to generate matches");
     }
 
@@ -227,6 +231,9 @@ public abstract class Tournament {
 
         return new TableRow(matchColumns);
     }
+
+    protected abstract void assignPoints();
+    public abstract int getPoints(Match match);
 
     public TournamentType getType() {
         return type.get();
