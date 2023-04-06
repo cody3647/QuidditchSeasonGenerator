@@ -168,6 +168,14 @@ public abstract class Tournament {
         Page seasonPage = new Page(title, "index");
         seasonPage.addMetadata("keywords", null, resources.getString("meta.tournament.keywords"), null);
 
+        Div key = new Div(
+                new Header(2, resources.getString("tournament.key.header")),
+                new Paragraph(resources.getString("tournament.key.winner"))
+        );
+        key.addClass("tournament-key");
+        seasonPage.addBodyContent(key);
+
+
         LinkedList<Element> descriptionParagraphs = new LinkedList<>();
         for(String text: resources.getString("description." + getType().key).split("\n"))
             descriptionParagraphs.add(new Paragraph(text));
