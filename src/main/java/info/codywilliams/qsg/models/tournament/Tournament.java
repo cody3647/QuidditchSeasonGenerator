@@ -206,7 +206,32 @@ public abstract class Tournament {
 
         Header rankingsHeader = new Header(2, resources.getString("header.rankings"));
         Paragraph rankingsDesc = new Paragraph(resources.getString("rankings"));
-        seasonPage.addBodyContent(rankingsHeader, rankingsDesc);
+
+        ArrayList<Map.Entry<String, Integer>> rankings = new ArrayList<>(tournamentPoints.entrySet());
+        rankings.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
+
+        Table rankingTable = new Table();
+        rankingTable.addClass("rankings");
+
+        rankingTable.addChildren(
+                new TableRow (
+                        new TableData.Header(resources.getString("header.rank.team")),
+                        new TableData.Header(resources.getString("header.rank.points"))
+                )
+        );
+
+        int i = 1;
+        for(Map.Entry<String, Integer> entry: rankings) {
+            rankingTable.addChildren(
+                    new TableRow(
+                            new TableData(i + ": " + entry.getKey()),
+                            new TableData(String.valueOf(entry.getValue()))
+                    )
+            );
+            i++;
+        }
+
+        seasonPage.addBodyContent(rankingsHeader, rankingsDesc, rankingTable);
 
         return seasonPage;
     }
