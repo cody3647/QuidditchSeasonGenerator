@@ -27,9 +27,11 @@ public class TeamGenerator {
     private TeamGenerator(){}
     static public Team randomTeam(){
         Team team = new Team();
+        String name = teamNames.getNextName();
+        String[] parts = name.split(" ");
+        team.setName(name);
+        team.setHome(parts[0]);
 
-        team.setName(teamNames.getNextName());
-        team.setHome(team.getName() + " Pitch");
 
         for(int i = 0; i < Team.TOTAL_BEATERS; i++)
             team.getBeaters().add(PlayerGenerator.randomBeater());
