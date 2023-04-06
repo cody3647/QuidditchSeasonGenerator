@@ -71,9 +71,9 @@ public class Match implements Comparable<Match>{
             this.resources.addToken("homeTeamShort", homeTeam.getShortName());
         this.resources.addToken("awayTeam", awayTeam.getName());
         if(awayTeam.getShortName().isEmpty())
-            this.resources.addToken("awayTeamShort", homeTeam.getName());
+            this.resources.addToken("awayTeamShort", awayTeam.getName());
         else
-            this.resources.addToken("awayTeamShort", homeTeam.getShortName());
+            this.resources.addToken("awayTeamShort", awayTeam.getShortName());
     }
 
     public ResourceBundleReplacer getResources() {
