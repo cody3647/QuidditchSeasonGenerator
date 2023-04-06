@@ -125,6 +125,14 @@ public class MatchGenerator {
 
         } while (!snitchCaught);
 
+        int scoreHome = match.getScoreHome();
+        int scoreAway = match.getScoreAway();
+
+        if(scoreHome > scoreAway)
+            match.setWinner(TeamType.HOME);
+        else if(scoreAway > scoreHome)
+            match.setWinner(TeamType.AWAY);
+
     }
 
     Chaser getRandomChaser(MatchTeam team) {

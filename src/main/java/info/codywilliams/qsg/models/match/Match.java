@@ -47,6 +47,7 @@ public class Match implements Comparable<Match>{
     private LinkedList<Play> plays;
     private String title;
     private ResourceBundleReplacer resources;
+    private TeamType winner;
 
     public Match(int number, int round, LocalDateTime startDateTime){
         this.number = number;
@@ -57,6 +58,7 @@ public class Match implements Comparable<Match>{
 
         scoreHome = 0;
         scoreAway = 0;
+        winner = null;
     }
 
     public void setResources(ResourceBundleReplacer resources) {
@@ -211,6 +213,14 @@ public class Match implements Comparable<Match>{
 
     private void addTime(int seconds){
         matchLength = matchLength.plusSeconds(seconds);
+    }
+
+    public TeamType getWinner() {
+        return winner;
+    }
+
+    public void setWinner(TeamType winner) {
+        this.winner = winner;
     }
 
     @Override
