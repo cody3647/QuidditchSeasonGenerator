@@ -29,25 +29,26 @@
                      <rowConstraints>
                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <TextField fx:id="teamNameTextField" prefHeight="51.0" prefWidth="371.0" promptText="%team.prompt.teamName" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <TextField fx:id="teamNameTextField" promptText="%team.prompt.teamName" GridPane.columnIndex="1" GridPane.rowIndex="1">
                            <font>
-                              <Font size="24.0" />
+                              <Font size="18.0" />
                            </font>
                         </TextField>
-                        <TextField fx:id="teamHomeTextField" promptText="%team.prompt.teamHome" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <TextField fx:id="teamHomeTextField" promptText="%team.prompt.teamHome" GridPane.columnIndex="1" GridPane.rowIndex="3">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </TextField>
                         <Label text="%team.label.teamName" GridPane.rowIndex="1">
                            <font>
-                              <Font size="24.0" />
+                              <Font size="18.0" />
                            </font>
                         </Label>
-                        <Label text="%team.label.teamHome" GridPane.rowIndex="2">
+                        <Label text="%team.label.teamHome" GridPane.rowIndex="3">
                            <font>
                               <Font size="18.0" />
                            </font>
@@ -60,6 +61,16 @@
                               <Insets />
                            </GridPane.margin>
                         </Text>
+                        <TextField fx:id="shortNameTextField" promptText="%team.prompt.shortName" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </TextField>
+                        <Label text="%team.label.shortName" GridPane.rowIndex="2">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
                      </children>
                   </GridPane>
                   <TreeTableView fx:id="teamTable" editable="true" prefHeight="650.0" prefWidth="600.0" showRoot="false">

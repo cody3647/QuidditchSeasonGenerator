@@ -29,8 +29,11 @@ public class TeamGenerator {
         Team team = new Team();
         String name = teamNames.getNextName();
         String[] parts = name.split(" ");
+        String shortName = parts[parts.length - 1];
+
         team.setName(name);
         team.setHome(parts[0]);
+        team.setShortName(shortName);
 
 
         for(int i = 0; i < Team.TOTAL_BEATERS; i++)
@@ -53,6 +56,7 @@ public class TeamGenerator {
         String teamName = resources.getString("gen.team.newName") + ' ' + num;
 
         team.setName(teamName);
+        team.setShortName(teamName);
         team.setHome(teamName + ' ' + resources.getString("gen.team.newHome"));
 
         String name;

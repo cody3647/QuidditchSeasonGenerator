@@ -60,7 +60,9 @@ public class ResourceBundleReplacer {
     }
 
     public void addTeamToken(String key, String team) {
+        String teamShort = team + "Short";
         tokenMap.put(key, tokenMap.getOrDefault(team, team));
+        tokenMap.put(key + "Short", tokenMap.getOrDefault(teamShort, teamShort));
     }
 
     private class Replacer implements Function<MatchResult, String> {

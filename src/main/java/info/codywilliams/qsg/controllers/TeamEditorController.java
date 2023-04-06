@@ -49,6 +49,8 @@ public class TeamEditorController {
     @FXML
     TextField teamNameTextField;
     @FXML
+    TextField shortNameTextField;
+    @FXML
     TextField teamHomeTextField;
     @FXML
     TreeTableView<Player> teamTable;
@@ -168,11 +170,13 @@ public class TeamEditorController {
     public void changeTeam(Team oldTeam, Team newTeam) {
         if (oldTeam != null) {
             teamNameTextField.textProperty().unbindBidirectional(oldTeam.nameProperty());
+            shortNameTextField.textProperty().unbindBidirectional(oldTeam.shortNameProperty());
             teamHomeTextField.textProperty().unbindBidirectional(oldTeam.homeProperty());
         }
 
         if (newTeam != null) {
             teamNameTextField.textProperty().bindBidirectional(newTeam.nameProperty());
+            shortNameTextField.textProperty().bindBidirectional(newTeam.shortNameProperty());
             teamHomeTextField.textProperty().bindBidirectional(newTeam.homeProperty());
         }
 

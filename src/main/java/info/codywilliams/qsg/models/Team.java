@@ -34,7 +34,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @JsonDeserialize(using = TeamDeserializer.class)
-@JsonPropertyOrder({"name", "home"})
+@JsonPropertyOrder({"name", "shortName", "home"})
 public class Team implements Comparable<Team> {
     final static public int TOTAL_BEATERS = 4;
     final static public int TOTAL_CHASERS = 6;
@@ -42,6 +42,7 @@ public class Team implements Comparable<Team> {
     final static public int TOTAL_SEEKERS = 2;
 
     final private StringProperty name;
+    final private StringProperty shortName;
     final private StringProperty home;
     final private ListProperty<Beater> beaters;
     final private ListProperty<Chaser> chasers;
@@ -50,6 +51,7 @@ public class Team implements Comparable<Team> {
 
     public Team() {
         name = new SimpleStringProperty(this, "name", "");
+        shortName = new SimpleStringProperty(this, "shortName", "");
         home = new SimpleStringProperty(this, "home", "");
         beaters = new SimpleListProperty<>(this, "beaters", FXCollections.observableArrayList());
         chasers = new SimpleListProperty<>(this, "chasers", FXCollections.observableArrayList());
@@ -67,6 +69,21 @@ public class Team implements Comparable<Team> {
 
     public void setName(String name) {
         this.name.set(name);
+    }
+
+    public String getShortName() {
+        if(shortName.get().isEmpty())
+            return getName();
+
+        return shortName.get();
+    }
+
+    public StringProperty shortNameProperty() {
+        return shortName;
+    }
+
+    public void setShortName(String shortName) {
+        this.shortName.set(shortName);
     }
 
     public String getHome() {
@@ -132,7 +149,9 @@ public class Team implements Comparable<Team> {
     @Override
     public String toString() {
 
-        return "Team {\n\tName: " + getName() + "\n\tHome: " + getHome() +
+        return "Team {\n\tName: " + getName() +
+                "\n\tShort Name: " + getShortName() +
+                "\n\tHome: " + getHome() +
                 "\n\tBeaters: [" +
                 playerListToString(getBeaters()) +
                 "\n\t]" +
