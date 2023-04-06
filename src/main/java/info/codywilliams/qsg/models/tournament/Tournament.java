@@ -213,6 +213,7 @@ public abstract class Tournament {
                 new TableData.Header(resources.getString("header.away")),
                 new TableData.Header(resources.getString("header.location")),
                 new TableData.Header(resources.getString("header.length")),
+                new TableData.Header(resources.getString("header.score")),
                 new TableData.Header(resources.getString("header.points"))
         };
 
@@ -220,16 +221,26 @@ public abstract class Tournament {
     }
 
     public TableRow matchTableRow(Match match) {
-        TableData[] matchColumns = new TableData[]{
-                new TableData(new Link.Match(match.getStartDateTime().format(Formatters.dateFormatter) + " at " + match.getStartDateTime().format(Formatters.timeFormatter), match.getTitle())),
-                new TableData(new Link.Team(match.getHomeTeam().getName(), match.getHomeTeam().getName())),
-                new TableData(new Link.Team(match.getAwayTeam().getName(), match.getAwayTeam().getName())),
-                new TableData(match.getLocation()),
-                new TableData(Formatters.formatDuration(match.getMatchLength())),
-                new TableData(match.getScoreHome() + " - " + match.getScoreAway()),
-        };
+        TableData date = new TableData(new Link.Match(match.getStartDateTime().format(Formatters.dateFormatter) + " at " + match.getStartDateTime().format(Formatters.timeFormatter), match.getTitle()));
+        TableData home = new TableData(new Link.Team(match.getHomeTeam().getName(), match.getHomeTeam().getName()));
+        TableData away = new TableData(new Link.Team(match.getAwayTeam().getName(), match.getAwayTeam().getName()));
+        TableData location = new TableData(match.getLocation());
+        TableData length = new TableData(Formatters.formatDuration(match.getMatchLength()));
+        TableData score = new TableData(match.getScoreHome() + " - " + match.getScoreAway());
+        TableData points = new TableData(String.valueOf(getPoints(match)));
 
-        return new TableRow(matchColumns);
+        date.addClass("match-date");
+        home.addClass("match-home");
+        away.addClass("match-away");
+        location.addClass("match-location");
+        length.addClass("match-length");
+        score.addClass("match-score");
+        points.addClass("match-points");
+        switch (match.getWinner()) {
+            case HOME -> {home.addClass("match-winner"); away.addClass("match-loser");}
+            case AWAY -> {home.addClass("match-loser"); away.addClass("match-winner");}
+        }
+        return new TableRow(date, home, away, location, length, score, points);
     }
 
     protected abstract void assignPoints();
