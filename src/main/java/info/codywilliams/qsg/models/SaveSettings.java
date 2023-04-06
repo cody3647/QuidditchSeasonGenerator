@@ -63,7 +63,7 @@ public class SaveSettings {
     }
 
     public SaveSettings(Context context) {
-        this(new ArrayList<>(context.getTeams()), context.getCurrentTournament().getType(), context.getTournamentOptions(), context.getSeed());
+        this(new ArrayList<>(context.getTeams()), (context.getCurrentTournament() != null) ? context.getCurrentTournament().getType() : null, context.getTournamentOptions(), context.getSeed());
     }
 
     public List<Team> getTeams() {
