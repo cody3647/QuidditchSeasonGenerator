@@ -67,7 +67,9 @@ public class AppController {
     @FXML
     Button viewTournamentCalendarButton;
     @FXML
-    Button generateSeasonButton;
+    Button generateSeasonHtmlButton;
+    @FXML
+    Button generateSeasonWikitextButton;
     MenuBar menuBar;
     AnchorPane teamEditorPane;
     AnchorPane tournamentEditorPane;
@@ -144,6 +146,24 @@ public class AppController {
             for (Page page : pages) {
                 Path pageFile = outputPath.resolve(Formatters.sanitizeFileNames(page.getFileName()) + ".html");
                 Files.writeString(pageFile, page.toHtml(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            }
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+    }
+
+    @FXML
+    void generateWikitextOutput(ActionEvent ignoreEvent) {
+        List<Page> pages = context.getCurrentTournament().buildPages(context.getTeams(), context.getSeed());
+        String tournamentTitle = context.getCurrentTournament().getTournamentTitle();
+        Path outputPath = Paths.get("output", Formatters.sanitizeFileNames(tournamentTitle));
+
+        try {
+            Files.createDirectories(outputPath);
+            Path wikitextFile = outputPath.resolve("wikitext.txt");
+            Files.deleteIfExists(wikitextFile);
+            for(Page page: pages) {
+                Files.writeString(wikitextFile, page.toWikitext(), StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
             }
         } catch (IOException e) {
             System.err.println(e);
