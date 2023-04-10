@@ -22,7 +22,7 @@ import java.util.*;
 
 public abstract class Element implements Outputs{
     final protected HashMap<String, String> attributes;
-    final protected ArrayList<String> classes;
+    final protected HashSet<String> classes;
     final protected LinkedList<Element> children;
     protected String id;
     protected String title;
@@ -31,7 +31,7 @@ public abstract class Element implements Outputs{
     public Element(String tagName) {
         this.tagName = tagName;
         attributes = new HashMap<>();
-        classes = new ArrayList<>();
+        classes = new HashSet<>();
         children = new LinkedList<>();
     }
 
@@ -90,7 +90,7 @@ public abstract class Element implements Outputs{
         return Collections.unmodifiableList(children);
     }
 
-    public ArrayList<String> getClasses() {
+    public HashSet<String> getClasses() {
         return classes;
     }
 
@@ -100,6 +100,7 @@ public abstract class Element implements Outputs{
 
     public void setId(String id) {
         this.id = id;
+        attributes.put("id", id);
     }
 
     public String getTitle() {
@@ -108,22 +109,15 @@ public abstract class Element implements Outputs{
 
     public void setTitle(String title) {
         this.title = title;
+        attributes.put("title", title);
     }
 
     protected String openHtmlTag() {
         StringBuilder stringBuilder = new StringBuilder("<");
         stringBuilder.append(tagName);
-        if(id != null)
-            stringBuilder.append(" id=\"").append(id).append("\"");
-        if(title != null)
-            stringBuilder.append(" title=\"").append(title).append("\"");
-        if(!classes.isEmpty())
-            stringBuilder.append(" class=\"").append(String.join(" ", classes)).append("\"");
-        if(!attributes.isEmpty()) {
-            for(Map.Entry<String, String> attribute: attributes.entrySet()) {
-                stringBuilder.append(" ").append(attribute.getKey()).append("=\"").append(attribute.getValue()).append("\"");
-            }
-        }
+
+        createClassesString(classes, stringBuilder);
+        createAttributeString(attributes, stringBuilder);
 
         stringBuilder.append(">");
         return stringBuilder.toString();
@@ -144,5 +138,18 @@ public abstract class Element implements Outputs{
         stringBuilder.append(closeHtmlTag());
 
         return stringBuilder.toString();
+    }
+
+    protected static void createClassesString(Set<String> classes, StringBuilder stringBuilder) {
+        if(!classes.isEmpty()) {
+            stringBuilder.append(" class=\"").append(String.join(" ", classes)).append('"');
+        }
+    }
+
+    protected static void createAttributeString(Map<String, String> attributes, StringBuilder stringBuilder) {
+        if(!attributes.isEmpty()) {
+            for(Map.Entry<String, String> attribute: attributes.entrySet())
+                stringBuilder.append(' ').append(attribute.getKey()).append("=\"").append(attribute.getValue()).append('"');
+        }
     }
 }
