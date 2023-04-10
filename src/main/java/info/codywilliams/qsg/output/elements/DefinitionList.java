@@ -37,6 +37,10 @@ public class DefinitionList extends Element {
         super(DL, elements);
     }
 
+    @Override
+    public String toWikitext() {
+        return toHtml();
+    }
 
     public static class Term extends Element {
         public static String DT = "dt";
@@ -60,6 +64,10 @@ public class DefinitionList extends Element {
             super(DT, new Text(text));
         }
 
+        @Override
+        public String toWikitext() {
+            return toHtml();
+        }
     }
 
     public static class Defintion extends  Element {
@@ -84,5 +92,9 @@ public class DefinitionList extends Element {
             super(DD, new Text(text));
         }
 
+        @Override
+        public String toWikitext() {
+            return toHtml();
+        }
     }
 }
