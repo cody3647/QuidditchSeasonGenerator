@@ -64,25 +64,25 @@ public class TableData extends Element{
         return stringBuilder.toString();
     }
 
-    static public class Header extends Element {
+    static public class HeaderCell extends Element {
         public static String TH = "th";
-        public Header() {
+        public HeaderCell() {
             super(TH);
         }
 
-        public Header(Element element) {
+        public HeaderCell(Element element) {
             super(TH, element);
         }
 
-        public Header(Element... elements) {
+        public HeaderCell(Element... elements) {
             super(TH, elements);
         }
 
-        public Header(Collection<Element> elements) {
+        public HeaderCell(Collection<Element> elements) {
             super(TH, elements);
         }
 
-        public Header(String text) {
+        public HeaderCell(String text) {
             super(TH, new Text(text));
         }
 

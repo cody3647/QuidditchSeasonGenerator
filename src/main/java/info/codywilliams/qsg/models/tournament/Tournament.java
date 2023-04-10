@@ -215,8 +215,8 @@ public abstract class Tournament {
 
         rankingTable.addChildren(
                 new TableRow (
-                        new TableData.Header(resources.getString("header.rank.team")),
-                        new TableData.Header(resources.getString("header.rank.points"))
+                        new TableData.HeaderCell(resources.getString("header.rank.team")),
+                        new TableData.HeaderCell(resources.getString("header.rank.points"))
                 )
         );
 
@@ -237,20 +237,20 @@ public abstract class Tournament {
     }
 
     public TableRow[] matchTableRoundHeader(int roundNum) {
-        TableData.Header roundHeader = new TableData.Header(resources.getString("header.round") + roundNum);
-        roundHeader.addAttribute("colspan", "6");
+        TableData.HeaderCell roundHeaderCell = new TableData.HeaderCell(resources.getString("header.round") + roundNum);
+        roundHeaderCell.addAttribute("colspan", "6");
 
-        TableData.Header[] columnHeaders = new TableData.Header[]{
-                new TableData.Header(resources.getString("header.date")),
-                new TableData.Header(resources.getString("header.home")),
-                new TableData.Header(resources.getString("header.away")),
-                new TableData.Header(resources.getString("header.location")),
-                new TableData.Header(resources.getString("header.length")),
-                new TableData.Header(resources.getString("header.score")),
-                new TableData.Header(resources.getString("header.points"))
+        TableData.HeaderCell[] columnHeaderCells = new TableData.HeaderCell[]{
+                new TableData.HeaderCell(resources.getString("header.date")),
+                new TableData.HeaderCell(resources.getString("header.home")),
+                new TableData.HeaderCell(resources.getString("header.away")),
+                new TableData.HeaderCell(resources.getString("header.location")),
+                new TableData.HeaderCell(resources.getString("header.length")),
+                new TableData.HeaderCell(resources.getString("header.score")),
+                new TableData.HeaderCell(resources.getString("header.points"))
         };
 
-        return new TableRow[]{new TableRow(roundHeader), new TableRow(columnHeaders)};
+        return new TableRow[]{new TableRow(roundHeaderCell), new TableRow(columnHeaderCells)};
     }
 
     public TableRow matchTableRow(Match match) {

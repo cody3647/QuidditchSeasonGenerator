@@ -91,11 +91,11 @@ public class MatchInfobox extends Element implements Outputs{
     }
 
     private TableRow addInfoboxHeader(String header) {
-        TableData.Header dataHeader = new TableData.Header(header);
-        dataHeader.addClass("ib-subheader");
-        dataHeader.addAttribute("colspan", "2");
+        TableData.HeaderCell dataHeaderCell = new TableData.HeaderCell(header);
+        dataHeaderCell.addClass("ib-subheader");
+        dataHeaderCell.addAttribute("colspan", "2");
 
-        return new TableRow(dataHeader);
+        return new TableRow(dataHeaderCell);
     }
 
     @Override
