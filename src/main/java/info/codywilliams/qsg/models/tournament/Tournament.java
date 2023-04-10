@@ -214,18 +214,18 @@ public abstract class Tournament {
         rankingTable.addClass("rankings");
 
         rankingTable.addChildren(
-                new TableRow (
-                        new TableData.HeaderCell(resources.getString("header.rank.team")),
-                        new TableData.HeaderCell(resources.getString("header.rank.points"))
+                new Table.Row(
+                        new Table.HeaderCell(resources.getString("header.rank.team")),
+                        new Table.HeaderCell(resources.getString("header.rank.points"))
                 )
         );
 
         int i = 1;
         for(Map.Entry<String, Integer> entry: rankings) {
             rankingTable.addChildren(
-                    new TableRow(
-                            new TableData(i + ": " + entry.getKey()),
-                            new TableData(String.valueOf(entry.getValue()))
+                    new Table.Row(
+                            new Table.Cell(i + ": " + entry.getKey()),
+                            new Table.Cell(String.valueOf(entry.getValue()))
                     )
             );
             i++;
@@ -236,31 +236,31 @@ public abstract class Tournament {
         return seasonPage;
     }
 
-    public TableRow[] matchTableRoundHeader(int roundNum) {
-        TableData.HeaderCell roundHeaderCell = new TableData.HeaderCell(resources.getString("header.round") + roundNum);
+    public Table.Row[] matchTableRoundHeader(int roundNum) {
+        Table.HeaderCell roundHeaderCell = new Table.HeaderCell(resources.getString("header.round") + roundNum);
         roundHeaderCell.addAttribute("colspan", "6");
 
-        TableData.HeaderCell[] columnHeaderCells = new TableData.HeaderCell[]{
-                new TableData.HeaderCell(resources.getString("header.date")),
-                new TableData.HeaderCell(resources.getString("header.home")),
-                new TableData.HeaderCell(resources.getString("header.away")),
-                new TableData.HeaderCell(resources.getString("header.location")),
-                new TableData.HeaderCell(resources.getString("header.length")),
-                new TableData.HeaderCell(resources.getString("header.score")),
-                new TableData.HeaderCell(resources.getString("header.points"))
+        Table.HeaderCell[] columnHeaderCells = new Table.HeaderCell[]{
+                new Table.HeaderCell(resources.getString("header.date")),
+                new Table.HeaderCell(resources.getString("header.home")),
+                new Table.HeaderCell(resources.getString("header.away")),
+                new Table.HeaderCell(resources.getString("header.location")),
+                new Table.HeaderCell(resources.getString("header.length")),
+                new Table.HeaderCell(resources.getString("header.score")),
+                new Table.HeaderCell(resources.getString("header.points"))
         };
 
-        return new TableRow[]{new TableRow(roundHeaderCell), new TableRow(columnHeaderCells)};
+        return new Table.Row[]{new Table.Row(roundHeaderCell), new Table.Row(columnHeaderCells)};
     }
 
-    public TableRow matchTableRow(Match match) {
-        TableData date = new TableData(new Link.Match(match.getStartDateTime().format(Formatters.dateFormatter) + " at " + match.getStartDateTime().format(Formatters.timeFormatter), match.getTitle()));
-        TableData home = new TableData(new Link.Team(match.getHomeTeam().getName(), match.getHomeTeam().getName()));
-        TableData away = new TableData(new Link.Team(match.getAwayTeam().getName(), match.getAwayTeam().getName()));
-        TableData location = new TableData(match.getLocation());
-        TableData length = new TableData(Formatters.formatDuration(match.getMatchLength()));
-        TableData score = new TableData(match.getScoreHome() + " - " + match.getScoreAway());
-        TableData points = new TableData(String.valueOf(getPoints(match)));
+    public Table.Row matchTableRow(Match match) {
+        Table.Cell date = new Table.Cell(new Link.Match(match.getStartDateTime().format(Formatters.dateFormatter) + " at " + match.getStartDateTime().format(Formatters.timeFormatter), match.getTitle()));
+        Table.Cell home = new Table.Cell(new Link.Team(match.getHomeTeam().getName(), match.getHomeTeam().getName()));
+        Table.Cell away = new Table.Cell(new Link.Team(match.getAwayTeam().getName(), match.getAwayTeam().getName()));
+        Table.Cell location = new Table.Cell(match.getLocation());
+        Table.Cell length = new Table.Cell(Formatters.formatDuration(match.getMatchLength()));
+        Table.Cell score = new Table.Cell(match.getScoreHome() + " - " + match.getScoreAway());
+        Table.Cell points = new Table.Cell(String.valueOf(getPoints(match)));
 
         date.addClass("match-date");
         home.addClass("match-home");
@@ -274,7 +274,7 @@ public abstract class Tournament {
                 case HOME -> {home.addClass("match-winner"); away.addClass("match-loser");}
                 case AWAY -> {home.addClass("match-loser"); away.addClass("match-winner");}
             }
-        return new TableRow(date, home, away, location, length, score, points);
+        return new Table.Row(date, home, away, location, length, score, points);
     }
 
     protected abstract void assignPoints();

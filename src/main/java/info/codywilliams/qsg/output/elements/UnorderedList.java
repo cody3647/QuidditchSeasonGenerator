@@ -19,7 +19,6 @@
 package info.codywilliams.qsg.output.elements;
 
 import info.codywilliams.qsg.output.Element;
-import javafx.scene.Node;
 
 import java.util.Collection;
 
@@ -40,5 +39,29 @@ public class UnorderedList extends Element {
     @Override
     public String toWikitext() {
         return toHtml();
+    }
+
+    public static class Item extends Element {
+        public static String LI = "li";
+        public Item() {
+            super(LI);
+        }
+
+        public Item(Element... elements) {
+            super(LI, elements);
+        }
+
+        public Item(Collection<Element> elements) {
+            super(LI, elements);
+        }
+
+        public Item(String text) {
+            super(LI, new Text(text));
+        }
+
+        @Override
+        public String toWikitext() {
+            return toHtml();
+        }
     }
 }

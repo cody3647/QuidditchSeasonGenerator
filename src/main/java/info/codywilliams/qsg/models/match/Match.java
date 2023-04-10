@@ -87,7 +87,7 @@ public class Match implements Comparable<Match>{
         LinkedList<Element> listItems = new LinkedList<>();
 
         for(Play play: plays) {
-            ListItem li = new ListItem();
+            UnorderedList.Item li = new UnorderedList.Item();
             listItems.add(li);
             if(play instanceof PlayChaser playChaser && playChaser.quaffleOutcome == PlayChaser.QuaffleOutcome.SCORED) {
                 li.addChildren(
@@ -117,9 +117,9 @@ public class Match implements Comparable<Match>{
         UnorderedList ul = new UnorderedList();
         div.addChildren(ul);
         ul.addChildren(
-                new ListItem(getHomeTeam().getName() + ": " + play.getScoreHome()),
-                new ListItem(getAwayTeam().getName() + ": " + play.getScoreAway()),
-                new ListItem(resources.getString("match.time") + ": " + Formatters.formatDuration(play.getMatchLength()))
+                new UnorderedList.Item(getHomeTeam().getName() + ": " + play.getScoreHome()),
+                new UnorderedList.Item(getAwayTeam().getName() + ": " + play.getScoreAway()),
+                new UnorderedList.Item(resources.getString("match.time") + ": " + Formatters.formatDuration(play.getMatchLength()))
         );
 
         return div;

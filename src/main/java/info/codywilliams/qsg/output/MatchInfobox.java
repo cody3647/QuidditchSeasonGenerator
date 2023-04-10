@@ -50,13 +50,13 @@ public class MatchInfobox extends Element implements Outputs{
         Link homeLink = new Link.Team(homeTeamName, homeTeamName);
         Link awayLink = new Link.Team(awayTeamName, awayTeamName);
 
-        TableData imageData = new TableData(homeImageLink, awayImageLink);
+        Table.Cell imageData = new Table.Cell(homeImageLink, awayImageLink);
         imageData.addAttribute("colspan", "2");
-        TableData vsData = new TableData(homeLink, new Text(resources.getString("match.versus.abbr")), awayLink);
+        Table.Cell vsData = new Table.Cell(homeLink, new Text(resources.getString("match.versus.abbr")), awayLink);
         vsData.addAttribute("colspan", "2");
         
         // Create the table with the header
-        Table table = new Table(new TableRow(imageData), new TableRow(vsData));
+        Table table = new Table(new Table.Row(imageData), new Table.Row(vsData));
 
         // Add all the rows
         table.addChildren(
@@ -81,21 +81,21 @@ public class MatchInfobox extends Element implements Outputs{
         return infobox.toHtml();
     }
 
-    private TableRow addInfoboxRow(String label, String value) {
-        TableData dataLabel = new TableData(label);
+    private Table.Row addInfoboxRow(String label, String value) {
+        Table.Cell dataLabel = new Table.Cell(label);
         dataLabel.addClass("ib-label");
-        TableData dataValue = new TableData(value);
+        Table.Cell dataValue = new Table.Cell(value);
         dataValue.addClass("ib-value");
 
-        return new TableRow(dataLabel, dataValue);
+        return new Table.Row(dataLabel, dataValue);
     }
 
-    private TableRow addInfoboxHeader(String header) {
-        TableData.HeaderCell dataHeaderCell = new TableData.HeaderCell(header);
+    private Table.Row addInfoboxHeader(String header) {
+        Table.HeaderCell dataHeaderCell = new Table.HeaderCell(header);
         dataHeaderCell.addClass("ib-subheader");
         dataHeaderCell.addAttribute("colspan", "2");
 
-        return new TableRow(dataHeaderCell);
+        return new Table.Row(dataHeaderCell);
     }
 
     @Override

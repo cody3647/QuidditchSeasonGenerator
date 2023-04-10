@@ -21,6 +21,9 @@ package info.codywilliams.qsg.output.elements;
 import info.codywilliams.qsg.output.Element;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Table extends Element{
     public static String TABLE = "table";
@@ -50,5 +53,108 @@ public class Table extends Element{
         stringBuilder.append("\n|}");
 
         return stringBuilder.toString();
+    }
+
+    public static class Cell extends Element{
+        public static String TD = "td";
+        public Cell() {
+            super(TD);
+        }
+        public Cell(Element... elements) {
+            super(TD, elements);
+        }
+
+        public Cell(Collection<Element> elements) {
+            super(TD, elements);
+        }
+
+        public Cell(String text) {
+            super(TD, new Text(text));
+        }
+
+        @Override
+        public String toWikitext() {
+            return createWikiCellString(classes, attributes, children, '|');
+        }
+
+        private static String createWikiCellString(Set<String> classes, Map<String, String> attributes,
+                                                   List<Element> children, char firstChar) {
+            StringBuilder stringBuilder = new StringBuilder("\n").append(firstChar);
+
+            if(!classes.isEmpty() || !attributes.isEmpty()) {
+                createClassesString(classes, stringBuilder);
+                createAttributeString(attributes, stringBuilder);
+                stringBuilder.append("| ");
+            }
+
+            for(Element child: children) {
+                stringBuilder.append(child.toWikitext());
+            }
+
+            return stringBuilder.toString();
+        }
+
+    }
+
+    static public class HeaderCell extends Element {
+        public static String TH = "th";
+        public HeaderCell() {
+            super(TH);
+        }
+
+        public HeaderCell(Element element) {
+            super(TH, element);
+        }
+
+        public HeaderCell(Element... elements) {
+            super(TH, elements);
+        }
+
+        public HeaderCell(Collection<Element> elements) {
+            super(TH, elements);
+        }
+
+        public HeaderCell(String text) {
+            super(TH, new Text(text));
+        }
+
+        @Override
+        public String toWikitext() {
+            return Cell.createWikiCellString(classes, attributes, children,'!');
+        }
+    }
+
+    public static class Row extends Element{
+        public static String TR = "tr";
+
+        public Row(Element element) {
+            super(TR, element);
+        }
+
+        public Row(Element... elements) {
+            super(TR, elements);
+        }
+
+        public Row(Collection<Element> elements) {
+            super(TR, elements);
+        }
+
+        @Override
+        public String toWikitext() {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("\n|-");
+
+            if(!classes.isEmpty() || !attributes.isEmpty()) {
+                createClassesString(classes, stringBuilder);
+                createAttributeString(attributes, stringBuilder);
+            }
+
+            for(Element child: children) {
+                stringBuilder.append(child.toWikitext());
+            }
+
+
+            return stringBuilder.toString();
+        }
     }
 }
