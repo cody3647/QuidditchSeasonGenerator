@@ -62,4 +62,8 @@ public class Text extends Element {
         return text;
     }
 
+    @Override
+    public String toWikitext() {
+        return toHtml();
+    }
 }

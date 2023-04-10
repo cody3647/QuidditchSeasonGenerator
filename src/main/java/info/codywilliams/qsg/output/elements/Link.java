@@ -23,10 +23,33 @@ import info.codywilliams.qsg.util.Formatters;
 
 public class Link extends Element {
     public static String A = "a";
-    private Link(Element element, String href, String title) {
+    String href;
+    String title;
+    private Link(Element element, String dir, String href, String title) {
         super(A, element);
-        addAttribute("href", href);
+        addAttribute("href", dir + Formatters.sanitizeFileNames(href));
         addAttribute("title", title);
+
+        this.href = href;
+        this.title = title;
+    }
+
+    @Override
+    public String toWikitext() {
+        Element child = children.getFirst();
+        if(child instanceof Text) {
+            String ret = "[[" + href;
+            if(title != null)
+                ret += "|" + title;
+
+            return ret + "]]";
+        }
+        else if (child instanceof Image) {
+            child.addAttribute("link", href);
+            return child.toWikitext();
+        }
+
+        return "";
     }
 
     public static class Team extends Link {
@@ -35,8 +58,12 @@ public class Link extends Element {
         }
 
         public Team(Element element, String teamName, String title) {
-            super(element, "/teams/" + Formatters.sanitizeFileNames(teamName), title);
+            super(element, "../teams/",  teamName + ".html", title);
+            href = teamName;
+            this.title = title;
         }
+
+
     }
 
     public static class Match extends Link {
@@ -45,7 +72,9 @@ public class Link extends Element {
         }
 
         public Match(Element element, String matchTitle, String title) {
-            super(element, Formatters.sanitizeFileNames(matchTitle) + ".html", title);
+            super(element, "", matchTitle + ".html", title);
+            href = matchTitle;
+            this.title = title;
         }
     }
 
@@ -55,7 +84,9 @@ public class Link extends Element {
         }
 
         public Tournament(Element element, String title) {
-            super(element, "index.html", title);
+            super(element, "", "index.html", title);
+            href = title;
+            this.title = title;
         }
     }
 

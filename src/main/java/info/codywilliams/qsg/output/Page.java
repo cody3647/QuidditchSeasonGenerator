@@ -69,7 +69,7 @@ public class Page implements Outputs{
 
         stringBuilder.append("<!DOCTYPE html><html><head>");
         if(pageTitle != null)
-            stringBuilder.append("<title>").append(pageTitle).append("</title>");
+            stringBuilder.append("<title>").append(pageTitle).append("</title>\n");
         if(!metadata.isEmpty())
             for(Metadata meta: metadata)
                 stringBuilder.append(meta.toHtml());
@@ -85,7 +85,21 @@ public class Page implements Outputs{
         return stringBuilder.toString();
     }
 
+    @Override
+    public String toWikitext() {
+        StringBuilder stringBuilder = new StringBuilder();
 
+        stringBuilder.append("\n{{{start page=").append(pageTitle).append("}}}\n");
+
+        if(!body.isEmpty()) {
+            for(Element element: body)
+                stringBuilder.append(element.toWikitext());
+        }
+
+        stringBuilder.append("\n{{{end}}}\n");
+
+        return stringBuilder.toString();
+    }
 
     static public class Metadata {
         private String name;

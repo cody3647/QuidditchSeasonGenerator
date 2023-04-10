@@ -41,4 +41,14 @@ public class Paragraph extends Element {
         super(P, new Text(text));
     }
 
+    @Override
+    public String toWikitext() {
+        StringBuilder stringBuilder = new StringBuilder("\n\n");
+
+        for(Element child: children) {
+            stringBuilder.append(child.toWikitext());
+        }
+
+        return stringBuilder.toString();
+    }
 }

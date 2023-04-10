@@ -19,9 +19,11 @@
 package info.codywilliams.qsg.output.elements;
 
 import info.codywilliams.qsg.output.Element;
-import javafx.scene.Node;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class TableData extends Element{
     public static String TD = "td";
@@ -38,6 +40,28 @@ public class TableData extends Element{
 
     public TableData(String text) {
         super(TD, new Text(text));
+    }
+
+    @Override
+    public String toWikitext() {
+        return createWikiCellString(classes, attributes, children, '|');
+    }
+
+    private static String createWikiCellString(Set<String> classes, Map<String, String> attributes,
+                                               List<Element> children, char firstChar) {
+        StringBuilder stringBuilder = new StringBuilder("\n").append(firstChar);
+
+        if(!classes.isEmpty() || !attributes.isEmpty()) {
+            createClassesString(classes, stringBuilder);
+            createAttributeString(attributes, stringBuilder);
+            stringBuilder.append("| ");
+        }
+
+        for(Element child: children) {
+            stringBuilder.append(child.toWikitext());
+        }
+
+        return stringBuilder.toString();
     }
 
     static public class Header extends Element {
@@ -60,6 +84,11 @@ public class TableData extends Element{
 
         public Header(String text) {
             super(TH, new Text(text));
+        }
+
+        @Override
+        public String toWikitext() {
+            return createWikiCellString(classes, attributes, children,'!');
         }
     }
 }

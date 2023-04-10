@@ -28,4 +28,6 @@ public interface Outputs {
      */
     String toHtml();
 
+    String toWikitext();
+
 }

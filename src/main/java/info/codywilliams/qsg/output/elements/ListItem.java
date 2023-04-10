@@ -41,4 +41,8 @@ public class ListItem extends Element {
         super(LI, new Text(text));
     }
 
+    @Override
+    public String toWikitext() {
+        return toHtml();
+    }
 }

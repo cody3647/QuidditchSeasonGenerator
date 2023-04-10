@@ -97,4 +97,29 @@ public class MatchInfobox extends Element implements Outputs{
 
         return new TableRow(dataHeader);
     }
+
+    @Override
+    public String toWikitext() {
+        StringBuilder stringBuilder = new StringBuilder("{{Quidditch match infobox");
+        stringBuilder
+                .append("\n|homeTeam=").append(match.getHomeTeam().getName())
+                .append("\n|awayTeam=").append(match.getAwayTeam().getName())
+                .append("\n|location=").append(match.getLocation())
+                .append("\n|start=").append(match.getStartDateTime().format(Formatters.dateTimeFormatter))
+                .append("\n|end=").append(endTime.format(Formatters.dateTimeFormatter))
+                .append("\n|length=").append(Formatters.formatDuration(match.getMatchLength()))
+                .append("\n|homeFouls=").append(match.getFoulsHome())
+                .append("\n|awayFouls=").append(match.getFoulsAway())
+                .append("\n|homeScore=").append(match.getScoreHome())
+                .append("\n|awayScore=").append(match.getScoreAway())
+                .append("\n|leagueYear=").append(resources.getString("yearRange"))
+                .append("\n|leagueName=").append(resources.getString("leagueName"));
+
+        stringBuilder.append("\n}}\n");
+        return stringBuilder.toString();
+    }
+
+    public String wikitextTemplate() {
+        return null;
+    }
 }

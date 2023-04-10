@@ -19,7 +19,6 @@
 package info.codywilliams.qsg.output.elements;
 
 import info.codywilliams.qsg.output.Element;
-import javafx.scene.Node;
 
 import java.util.Collection;
 
@@ -35,5 +34,21 @@ public class Table extends Element{
 
     public Table(Collection<Element> elements) {
         super(TABLE, elements);
+    }
+
+    @Override
+    public String toWikitext() {
+        StringBuilder stringBuilder = new StringBuilder("\n{|");
+
+        createClassesString(classes, stringBuilder);
+        createAttributeString(attributes, stringBuilder);
+
+        for(Element element: children) {
+            stringBuilder.append(element.toWikitext());
+        }
+
+        stringBuilder.append("\n|}");
+
+        return stringBuilder.toString();
     }
 }

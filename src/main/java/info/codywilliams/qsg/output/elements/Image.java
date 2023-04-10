@@ -21,18 +21,62 @@ package info.codywilliams.qsg.output.elements;
 import info.codywilliams.qsg.output.Element;
 import info.codywilliams.qsg.util.Formatters;
 
-import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
 
 public class Image extends Element{
     public static String IMG = "img";
+    private static Set<String> specialClasses = Set.of("border", "frameless", "frame", "thumb");
+    private static Set<String> specialAttributes = Set.of("height", "width");
 
-    public Image() {
-        super(IMG);
-    }
+    public String imageName;
 
     public Image(String alt, String imageName) {
         super(IMG);
         addAttribute("src", "/images/" + Formatters.sanitizeFileNames(imageName));
         addAttribute("alt", alt);
+        this.imageName = imageName;
+    }
+
+    @Override
+    public String toWikitext() {
+        StringBuilder stringBuilder = new StringBuilder("[[");
+        wikitextImage(stringBuilder);
+        stringBuilder.append("]]");
+
+        return stringBuilder.toString();
+    }
+
+    private StringBuilder wikitextImage(StringBuilder stringBuilder) {
+        stringBuilder.append("File:")
+                .append(imageName);
+
+        StringBuilder wikitextClass = new StringBuilder();
+        for(String c: classes) {
+            if (specialClasses.contains(c))
+                stringBuilder.append("|").append(c);
+            else
+                wikitextClass.append(c);
+        }
+
+        if(!wikitextClass.isEmpty()){
+            stringBuilder.append("|class=").append(wikitextClass);
+        }
+
+        for(Map.Entry<String, String> attribute: attributes.entrySet()) {
+            if(specialAttributes.contains(attribute.getKey())) {
+                stringBuilder.append('|');
+
+                if(attribute.getKey().equals("height"))
+                    stringBuilder.append('x');
+
+                stringBuilder.append(attribute.getValue());
+            }
+            else {
+                stringBuilder.append('|').append(attribute.getKey()).append('=').append(attribute.getValue());
+            }
+        }
+
+        return stringBuilder;
     }
 }

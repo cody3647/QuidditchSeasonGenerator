@@ -37,4 +37,8 @@ public class UnorderedList extends Element {
         super(UL, elements);
     }
 
+    @Override
+    public String toWikitext() {
+        return toHtml();
+    }
 }

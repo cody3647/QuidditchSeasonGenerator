@@ -37,4 +37,8 @@ public class Div extends Element {
         super(DIV, elements);
     }
 
+    @Override
+    public String toWikitext() {
+        return toWikitextHtml();
+    }
 }

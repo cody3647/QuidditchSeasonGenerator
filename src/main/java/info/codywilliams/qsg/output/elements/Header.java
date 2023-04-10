@@ -25,20 +25,17 @@ import java.util.Collection;
 
 public class Header extends Element {
     public static String H = "h";
-    public Header(int level) {
-        super(H + level);
-    }
-
-    public Header(int level, Element... elements) {
-        super(H + level, elements);
-    }
-
-    public Header(int level, Collection<Element> elements) {
-        super(H + level, elements);
-    }
+    public int level;
 
     public Header(int level, String text) {
         super(H + level, new Text(text));
+        this.level = level;
     }
 
+    @Override
+    public String toWikitext() {
+        String equalSign = "=";
+        equalSign = equalSign.repeat(level);
+        return '\n' + equalSign + children.get(0).toWikitext() + equalSign + '\n';
+    }
 }

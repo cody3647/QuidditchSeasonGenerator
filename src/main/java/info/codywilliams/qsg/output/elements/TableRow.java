@@ -19,15 +19,11 @@
 package info.codywilliams.qsg.output.elements;
 
         import info.codywilliams.qsg.output.Element;
-        import javafx.scene.Node;
 
         import java.util.Collection;
 
 public class TableRow extends Element{
     public static String TR = "tr";
-    public TableRow() {
-        super(TR);
-    }
 
     public TableRow(Element element) {
         super(TR, element);
@@ -41,4 +37,21 @@ public class TableRow extends Element{
         super(TR, elements);
     }
 
+    @Override
+    public String toWikitext() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("\n|-");
+
+        if(!classes.isEmpty() || !attributes.isEmpty()) {
+            createClassesString(classes, stringBuilder);
+            createAttributeString(attributes, stringBuilder);
+        }
+
+        for(Element child: children) {
+            stringBuilder.append(child.toWikitext());
+        }
+
+
+        return stringBuilder.toString();
+    }
 }

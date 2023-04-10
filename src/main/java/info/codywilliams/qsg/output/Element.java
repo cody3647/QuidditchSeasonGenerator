@@ -140,6 +140,18 @@ public abstract class Element implements Outputs{
         return stringBuilder.toString();
     }
 
+    public String toWikitextHtml() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(openHtmlTag());
+
+        for(Element child: children) {
+            stringBuilder.append(child.toWikitext());
+        }
+
+        stringBuilder.append(closeHtmlTag());
+        return stringBuilder.toString();
+    }
+
     protected static void createClassesString(Set<String> classes, StringBuilder stringBuilder) {
         if(!classes.isEmpty()) {
             stringBuilder.append(" class=\"").append(String.join(" ", classes)).append('"');
