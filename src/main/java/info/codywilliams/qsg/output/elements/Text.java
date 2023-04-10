@@ -27,12 +27,13 @@ import java.util.HashMap;
 
 public class Text extends Element {
     private String text;
+    public static String SPAN = "span";
     public Text() {
-        super(null);
+        super(SPAN);
     }
 
     public Text(String text) {
-        super(null);
+        super(SPAN);
         this.text = text;
     }
 
@@ -53,53 +54,11 @@ public class Text extends Element {
     public void addChildren(Collection<Element> elements) {
         System.err.println("Text cannot have children.");
     }
-
-    @Override
-    public void addAttribute(String name, String value) {
-        System.err.println("Text cannot have attributes.");
-    }
-
-    @Override
-    public void addClass(String... names) {
-        System.err.println("Text cannot have classes.");
-    }
-
-    @Override
-    public HashMap<String, String> getAttributes() {
-        System.err.println("Text does not have attributes.");
-        return super.getAttributes();
-    }
-
-    @Override
-    public ArrayList<String> getClasses() {
-        System.err.println("Text does not have classes.");
-        return super.getClasses();
-    }
-
-    @Override
-    public String getId() {
-        System.err.println("Text does not have an id.");
-        return super.getId();
-    }
-
-    @Override
-    public void setId(String id) {
-        System.err.println("Text cannot have an id.");
-    }
-
-    @Override
-    public String getTitle() {
-        System.err.println("Text does not have a title.");
-        return null;
-    }
-
-    @Override
-    public void setTitle(String title) {
-        System.err.println("Text cannot have a title.");
-    }
-
     @Override
     public String toHtml() {
+        if(id != null || title != null || !classes.isEmpty() || !attributes.isEmpty()) {
+            return openHtmlTag() + text + closeHtmlTag();
+        }
         return text;
     }
 

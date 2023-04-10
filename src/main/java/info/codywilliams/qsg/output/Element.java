@@ -24,9 +24,9 @@ public abstract class Element implements Outputs{
     final protected HashMap<String, String> attributes;
     final protected ArrayList<String> classes;
     final protected LinkedList<Element> children;
-    String id;
-    String title;
-    final String tagName;
+    protected String id;
+    protected String title;
+    final protected String tagName;
 
     public Element(String tagName) {
         this.tagName = tagName;
