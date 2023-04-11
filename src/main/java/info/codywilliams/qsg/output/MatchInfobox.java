@@ -19,13 +19,16 @@
 package info.codywilliams.qsg.output;
 
 import info.codywilliams.qsg.models.match.Match;
-import info.codywilliams.qsg.output.elements.*;
+import info.codywilliams.qsg.output.elements.Div;
+import info.codywilliams.qsg.output.elements.Link;
+import info.codywilliams.qsg.output.elements.Table;
+import info.codywilliams.qsg.output.elements.Text;
 import info.codywilliams.qsg.util.Formatters;
 import info.codywilliams.qsg.util.ResourceBundleReplacer;
 
 import java.time.LocalDateTime;
 
-public class MatchInfobox extends Element implements Outputs{
+public class MatchInfobox extends Element implements ElementOutputs {
     public Match match;
     ResourceBundleReplacer resources;
     LocalDateTime endTime;
@@ -33,7 +36,6 @@ public class MatchInfobox extends Element implements Outputs{
     String awayTeamName;
 
     public MatchInfobox(Match match) {
-        super("infobox");
         this.match = match;
         resources = match.getResources();
         endTime = match.getStartDateTime().plus(match.getMatchLength());
@@ -42,19 +44,29 @@ public class MatchInfobox extends Element implements Outputs{
     }
 
     @Override
-    public String toHtml() {
+    public String getTagName() {
+        return "DIV";
+    }
+
+    @Override
+    public boolean isTagClosedOnNewLine() {
+        return false;
+    }
+
+    @Override
+    public String toHtml(int tabs) {
         // Build the infobox header
-        Link homeImageLink = new Link.Team(new Image(homeTeamName, homeTeamName + ".png"), homeTeamName, homeTeamName);
-        Link awayImageLink = new Link.Team(new Image(awayTeamName, awayTeamName + ".png"), awayTeamName, awayTeamName);
+        Link.ImageLink homeImageImageLink = Link.ImageLink.createTeamLink(homeTeamName);
+        Link.ImageLink awayImageImageLink = Link.ImageLink.createTeamLink(awayTeamName);
 
-        Link homeLink = new Link.Team(homeTeamName, homeTeamName);
-        Link awayLink = new Link.Team(awayTeamName, awayTeamName);
+        Link.TextLink homeLink = Link.TextLink.createTeamLink(homeTeamName);
+        Link.TextLink awayLink = Link.TextLink.createTeamLink(awayTeamName);
 
-        Table.Cell imageData = new Table.Cell(homeImageLink, awayImageLink);
+        Table.Cell imageData = new Table.Cell(homeImageImageLink, awayImageImageLink);
         imageData.addAttribute("colspan", "2");
         Table.Cell vsData = new Table.Cell(homeLink, new Text(resources.getString("match.versus.abbr")), awayLink);
         vsData.addAttribute("colspan", "2");
-        
+
         // Create the table with the header
         Table table = new Table(new Table.Row(imageData), new Table.Row(vsData));
 
@@ -74,11 +86,11 @@ public class MatchInfobox extends Element implements Outputs{
         );
 
         // Create footer and add table and footer to infobox div
-        Div footer = new Div(new Link.Tournament(resources.getString("match.ib.footerLink")));
+        Div footer = new Div(Link.TextLink.createTournamentLink(resources.getString("match.ib.footerText"), resources.getString("tournamentTitle")));
         Div infobox = new Div(table, footer);
         infobox.addClass("ib ib-quidditch-match");
 
-        return infobox.toHtml();
+        return infobox.toHtml(tabs);
     }
 
     private Table.Row addInfoboxRow(String label, String value) {
@@ -100,23 +112,21 @@ public class MatchInfobox extends Element implements Outputs{
 
     @Override
     public String toWikitext() {
-        StringBuilder stringBuilder = new StringBuilder("{{Quidditch match infobox");
-        stringBuilder
-                .append("\n|homeTeam=").append(match.getHomeTeam().getName())
-                .append("\n|awayTeam=").append(match.getAwayTeam().getName())
-                .append("\n|location=").append(match.getLocation())
-                .append("\n|start=").append(match.getStartDateTime().format(Formatters.dateTimeFormatter))
-                .append("\n|end=").append(endTime.format(Formatters.dateTimeFormatter))
-                .append("\n|length=").append(Formatters.formatDuration(match.getMatchLength()))
-                .append("\n|homeFouls=").append(match.getFoulsHome())
-                .append("\n|awayFouls=").append(match.getFoulsAway())
-                .append("\n|homeScore=").append(match.getScoreHome())
-                .append("\n|awayScore=").append(match.getScoreAway())
-                .append("\n|leagueYear=").append(resources.getString("yearRange"))
-                .append("\n|leagueName=").append(resources.getString("leagueName"));
 
-        stringBuilder.append("\n}}\n");
-        return stringBuilder.toString();
+        return "{{Quidditch match infobox" +
+                "\n|homeTeam=" + match.getHomeTeam().getName() +
+                "\n|awayTeam=" + match.getAwayTeam().getName() +
+                "\n|location=" + match.getLocation() +
+                "\n|start=" + match.getStartDateTime().format(Formatters.dateTimeFormatter) +
+                "\n|end=" + endTime.format(Formatters.dateTimeFormatter) +
+                "\n|length=" + Formatters.formatDuration(match.getMatchLength()) +
+                "\n|homeFouls=" + match.getFoulsHome() +
+                "\n|awayFouls=" + match.getFoulsAway() +
+                "\n|homeScore=" + match.getScoreHome() +
+                "\n|awayScore=" + match.getScoreAway() +
+                "\n|leagueYear=" + resources.getString("yearRange") +
+                "\n|leagueName=" + resources.getString("leagueName") +
+                "\n}}\n";
     }
 
     public String wikitextTemplate() {

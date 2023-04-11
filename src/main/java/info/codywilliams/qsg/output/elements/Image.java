@@ -19,12 +19,14 @@
 package info.codywilliams.qsg.output.elements;
 
 import info.codywilliams.qsg.output.Element;
+import info.codywilliams.qsg.output.InlineElement;
 import info.codywilliams.qsg.util.Formatters;
 
 import java.util.Map;
 import java.util.Set;
 
-public class Image extends Element{
+public class Image extends Element implements InlineElement {
+    public static final String IMAGES_DIR = "/images/";
     public static String IMG = "img";
     private static Set<String> specialClasses = Set.of("border", "frameless", "frame", "thumb");
     private static Set<String> specialAttributes = Set.of("height", "width");
@@ -32,22 +34,44 @@ public class Image extends Element{
     public String imageName;
 
     public Image(String alt, String imageName) {
-        super(IMG);
-        addAttribute("src", "/images/" + Formatters.sanitizeFileNames(imageName));
+        addAttribute("src", IMAGES_DIR + Formatters.sanitizeFileNames(imageName));
         addAttribute("alt", alt);
         this.imageName = imageName;
     }
 
     @Override
+    public String getTagName() {
+        return IMG;
+    }
+
+    @Override
+    public boolean isTagClosedOnNewLine() {
+        return false;
+    }
+
+    @Override
+    public String toHtml(int tabs) {
+        StringBuilder stringBuilder = new StringBuilder();
+        appendNewLineAndTabs(stringBuilder, tabs);
+        stringBuilder.append("<img");
+
+        createClassesString(classes, stringBuilder);
+        createAttributeString(attributes, stringBuilder);
+
+        stringBuilder.append('>');
+        return stringBuilder.toString();
+    }
+
+    @Override
     public String toWikitext() {
         StringBuilder stringBuilder = new StringBuilder("[[");
-        wikitextImage(stringBuilder);
+        wikitextImageFile(stringBuilder);
         stringBuilder.append("]]");
 
         return stringBuilder.toString();
     }
 
-    private StringBuilder wikitextImage(StringBuilder stringBuilder) {
+    protected StringBuilder wikitextImageFile(StringBuilder stringBuilder) {
         stringBuilder.append("File:")
                 .append(imageName);
 
@@ -79,4 +103,45 @@ public class Image extends Element{
 
         return stringBuilder;
     }
+
+    static class Gallery extends Div{
+        static final String DEFAULT_MODE = "packed";
+        final String mode;
+        public Gallery(String mode) {
+            super();
+            if(mode == null)
+                mode = DEFAULT_MODE;
+            this.mode = mode;
+        }
+
+        public void addImages(Image... images) {
+            addChildren(images);
+        }
+
+        @Override
+        public String toHtml(int tabs) {
+            return super.toHtml(0);
+        }
+
+        @Override
+        public String toWikitext() {
+            StringBuilder stringBuilder = new StringBuilder("<gallery mode=").append(mode);
+            for(Map.Entry<String, String> attribute: attributes.entrySet()) {
+                stringBuilder.append(' ').append(attribute.getKey()).append('=').append(attribute.getValue());
+            }
+            stringBuilder.append(">\n");
+
+            for(Element child: children) {
+                if(!(child instanceof Image))
+                    continue;
+
+                Image image = (Image) child;
+                image.wikitextImageFile(stringBuilder).append('\n');
+            }
+
+            stringBuilder.append("</gallery>");
+            return stringBuilder.toString();
+        }
+    }
+
 }

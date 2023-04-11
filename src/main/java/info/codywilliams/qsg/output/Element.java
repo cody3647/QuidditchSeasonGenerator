@@ -20,43 +20,19 @@ package info.codywilliams.qsg.output;
 
 import java.util.*;
 
-public abstract class Element implements Outputs{
+public abstract class Element implements ElementOutputs {
     final protected HashMap<String, String> attributes;
     final protected HashSet<String> classes;
-    final protected LinkedList<Element> children;
     protected String id;
     protected String title;
-    final protected String tagName;
 
-    public Element(String tagName) {
-        this.tagName = tagName;
+    public Element() {
         attributes = new HashMap<>();
         classes = new HashSet<>();
-        children = new LinkedList<>();
     }
 
-    public Element(String tagName, Element... elements) {
-        this(tagName);
-        addChildren(elements);
-    }
-
-    public Element(String tagName, Collection<Element> elements) {
-        this(tagName);
-        addChildren(elements);
-    }
-
-    /**
-     * Adds the child elements to the end of the children of this element
-     *
-     * @param elements Child elements to add to this element
-     */
-    public void addChildren(Element... elements) {
-        children.addAll(Arrays.asList(elements));
-    }
-
-    public void addChildren(Collection<Element> elements) {
-        children.addAll(elements);
-    }
+    abstract public String getTagName();
+    abstract public boolean isTagClosedOnNewLine();
 
     /**
      * Add attributes to the element
@@ -81,14 +57,7 @@ public abstract class Element implements Outputs{
         return attributes;
     }
 
-    /**
-     * Gets an unmodifiable list of child elements
-     *
-     * @return Unmodifiable List of Element of Children
-     */
-    List<Element> getChildren() {
-        return Collections.unmodifiableList(children);
-    }
+
 
     public HashSet<String> getClasses() {
         return classes;
@@ -112,44 +81,34 @@ public abstract class Element implements Outputs{
         attributes.put("title", title);
     }
 
-    protected String openHtmlTag() {
-        StringBuilder stringBuilder = new StringBuilder("<");
-        stringBuilder.append(tagName);
+    protected StringBuilder openHtmlTag(StringBuilder stringBuilder, int tabs) {
+        appendNewLineAndTabs(stringBuilder, tabs);
+        stringBuilder.append("<").append(getTagName());
 
         createClassesString(classes, stringBuilder);
         createAttributeString(attributes, stringBuilder);
 
         stringBuilder.append(">");
-        return stringBuilder.toString();
+
+        return stringBuilder;
     }
 
-    protected String closeHtmlTag() {
-        return "</" + tagName + ">";
+    protected StringBuilder closeHtmlTag(StringBuilder stringBuilder, int tabs) {
+        if(isTagClosedOnNewLine())
+            appendNewLineAndTabs(stringBuilder, tabs);
+        stringBuilder.append("</").append(getTagName()).append(">");
+
+        return stringBuilder;
     }
 
-    @Override
-    public String toHtml() {
+    protected void appendNewLineAndTabs(StringBuilder stringBuilder, int tabs) {
+        if(tabs == 0)
+            return;
 
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(openHtmlTag());
-        for (Element child: children) {
-            stringBuilder.append(child.toHtml());
+        stringBuilder.append('\n');
+        for(; tabs > 0; tabs--) {
+            stringBuilder.append('\t');
         }
-        stringBuilder.append(closeHtmlTag());
-
-        return stringBuilder.toString();
-    }
-
-    public String toWikitextHtml() {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append(openHtmlTag());
-
-        for(Element child: children) {
-            stringBuilder.append(child.toWikitext());
-        }
-
-        stringBuilder.append(closeHtmlTag());
-        return stringBuilder.toString();
     }
 
     protected static void createClassesString(Set<String> classes, StringBuilder stringBuilder) {

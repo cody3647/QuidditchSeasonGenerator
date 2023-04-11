@@ -19,22 +19,24 @@
 package info.codywilliams.qsg.output.elements;
 
 import info.codywilliams.qsg.output.Element;
-import javafx.scene.Node;
+import info.codywilliams.qsg.output.InlineElement;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-
-public class Text extends Element {
+public class Text extends Element implements InlineElement {
     private String text;
     public static String SPAN = "span";
-    public Text() {
-        super(SPAN);
-    }
 
     public Text(String text) {
-        super(SPAN);
         this.text = text;
+    }
+
+    @Override
+    public String getTagName() {
+        return SPAN;
+    }
+
+    @Override
+    public boolean isTagClosedOnNewLine() {
+        return false;
     }
 
     public String getText() {
@@ -46,24 +48,18 @@ public class Text extends Element {
     }
 
     @Override
-    public void addChildren(Element... elements) {
-        System.err.println("Text cannot have children.");
-    }
-
-    @Override
-    public void addChildren(Collection<Element> elements) {
-        System.err.println("Text cannot have children.");
-    }
-    @Override
-    public String toHtml() {
+    public String toHtml(int tabs) {
         if(id != null || title != null || !classes.isEmpty() || !attributes.isEmpty()) {
-            return openHtmlTag() + text + closeHtmlTag();
+            StringBuilder stringBuilder = new StringBuilder();
+            openHtmlTag(stringBuilder, 0).append(text);
+            return closeHtmlTag(stringBuilder, 0).toString();
         }
         return text;
     }
 
     @Override
     public String toWikitext() {
-        return toHtml();
+        return toHtml(0);
     }
+
 }

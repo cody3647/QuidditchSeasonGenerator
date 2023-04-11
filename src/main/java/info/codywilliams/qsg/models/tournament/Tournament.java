@@ -19,8 +19,8 @@ package info.codywilliams.qsg.models.tournament;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import info.codywilliams.qsg.generators.MatchGenerator;
-import info.codywilliams.qsg.models.match.Match;
 import info.codywilliams.qsg.models.Team;
+import info.codywilliams.qsg.models.match.Match;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
 import info.codywilliams.qsg.output.Element;
 import info.codywilliams.qsg.output.Page;
@@ -187,7 +187,7 @@ public abstract class Tournament {
         DefinitionList openingDayDef = new DefinitionList();
         seasonPage.addBodyContent(openingDayDef);
         openingDayDef.addChildren(new DefinitionList.Term(resources.getString("openingDay")));
-        openingDayDef.addChildren(new DefinitionList.Defintion(getTournamentOptions().getStartDate().format(Formatters.dateFormatter)));
+        openingDayDef.addChildren(new DefinitionList.Def(getTournamentOptions().getStartDate().format(Formatters.dateFormatter)));
 
         Table matchTable = new Table();
         matchTable.addClass("league-schedule");
@@ -254,9 +254,9 @@ public abstract class Tournament {
     }
 
     public Table.Row matchTableRow(Match match) {
-        Table.Cell date = new Table.Cell(new Link.Match(match.getStartDateTime().format(Formatters.dateFormatter) + " at " + match.getStartDateTime().format(Formatters.timeFormatter), match.getTitle()));
-        Table.Cell home = new Table.Cell(new Link.Team(match.getHomeTeam().getName(), match.getHomeTeam().getName()));
-        Table.Cell away = new Table.Cell(new Link.Team(match.getAwayTeam().getName(), match.getAwayTeam().getName()));
+        Table.Cell date = new Table.Cell(Link.TextLink.createMatchLink(match.getStartDateTime().format(Formatters.dateFormatter) + " at " + match.getStartDateTime().format(Formatters.timeFormatter), match.getTitle()));
+        Table.Cell home = new Table.Cell(Link.TextLink.createTeamLink(match.getHomeTeam().getName()));
+        Table.Cell away = new Table.Cell(Link.TextLink.createTeamLink(match.getAwayTeam().getName()));
         Table.Cell location = new Table.Cell(match.getLocation());
         Table.Cell length = new Table.Cell(Formatters.formatDuration(match.getMatchLength()));
         Table.Cell score = new Table.Cell(match.getScoreHome() + " - " + match.getScoreAway());

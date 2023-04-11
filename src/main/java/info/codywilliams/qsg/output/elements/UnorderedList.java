@@ -19,49 +19,64 @@
 package info.codywilliams.qsg.output.elements;
 
 import info.codywilliams.qsg.output.Element;
+import info.codywilliams.qsg.output.ElementChildren;
 
 import java.util.Collection;
 
-public class UnorderedList extends Element {
+public class UnorderedList extends ElementChildren<UnorderedList.Item> {
     public static String UL = "ul";
-    public UnorderedList() {
-        super(UL);
+
+    public UnorderedList(Item... elements) {
+        super(elements);
     }
 
-    public UnorderedList(Element... elements) {
-        super(UL, elements);
+    public UnorderedList(Collection<Item> elements) {
+        super(elements);
     }
 
-    public UnorderedList(Collection<Element> elements) {
-        super(UL, elements);
+    @Override
+    public String getTagName() {
+        return UL;
+    }
+
+    @Override
+    public boolean isTagClosedOnNewLine() {
+        return true;
     }
 
     @Override
     public String toWikitext() {
-        return toHtml();
+        return toHtml(0);
     }
 
-    public static class Item extends Element {
+    public static class Item extends ElementChildren<Element> {
         public static String LI = "li";
-        public Item() {
-            super(LI);
-        }
 
         public Item(Element... elements) {
-            super(LI, elements);
+            super(elements);
         }
 
         public Item(Collection<Element> elements) {
-            super(LI, elements);
+            super(elements);
         }
 
         public Item(String text) {
-            super(LI, new Text(text));
+            super(new Text(text));
+        }
+
+        @Override
+        public String getTagName() {
+            return LI;
+        }
+
+        @Override
+        public boolean isTagClosedOnNewLine() {
+            return false;
         }
 
         @Override
         public String toWikitext() {
-            return toHtml();
+            return toHtml(0);
         }
     }
 }

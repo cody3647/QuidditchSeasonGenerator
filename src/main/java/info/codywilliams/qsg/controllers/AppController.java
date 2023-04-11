@@ -145,7 +145,7 @@ public class AppController {
             Files.createDirectories(outputPath);
             for (Page page : pages) {
                 Path pageFile = outputPath.resolve(Formatters.sanitizeFileNames(page.getFileName()) + ".html");
-                Files.writeString(pageFile, page.toHtml(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                Files.writeString(pageFile, page.toHtml(0), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             }
         } catch (IOException e) {
             System.err.println(e);

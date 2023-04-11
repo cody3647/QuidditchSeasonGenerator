@@ -16,36 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package info.codywilliams.qsg.output.elements;
+package info.codywilliams.qsg.output;
 
-import info.codywilliams.qsg.output.Element;
-import info.codywilliams.qsg.output.ElementChildren;
-
-import java.util.Collection;
-
-public class Div extends ElementChildren<Element> {
-    final public static String DIV = "div";
-
-    public Div(Element... elements) {
-        super(elements);
-    }
-
-    public Div(Collection<Element> elements) {
-        super(elements);
-    }
-
-    @Override
-    public String getTagName() {
-        return DIV;
-    }
-
-    @Override
-    public boolean isTagClosedOnNewLine() {
-        return true;
-    }
-
-    @Override
-    public String toWikitext() {
-        return toWikitextHtml();
-    }
+public interface InlineElement extends ElementOutputs {
 }

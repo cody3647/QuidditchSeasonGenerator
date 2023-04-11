@@ -18,24 +18,52 @@
 
 package info.codywilliams.qsg.output.elements;
 
-import info.codywilliams.qsg.output.Element;
-import javafx.scene.Node;
+import info.codywilliams.qsg.output.ElementChildren;
 
-import java.util.Collection;
-
-public class Header extends Element {
+public class Header extends ElementChildren<Text> {
     public static String H = "h";
+    public final static String wikitextTag = "======";
     public int level;
 
     public Header(int level, String text) {
-        super(H + level, new Text(text));
-        this.level = level;
+        super(new Text(text));
+        if(level > 6)
+            this.level = 6;
+        else if(level < 1)
+            this.level = 1;
+        else
+            this.level = level;
+    }
+
+    @Override
+    public String getTagName() {
+        return H + level;
+    }
+
+    @Override
+    public boolean isTagClosedOnNewLine() {
+        return false;
     }
 
     @Override
     public String toWikitext() {
-        String equalSign = "=";
-        equalSign = equalSign.repeat(level);
-        return '\n' + equalSign + children.get(0).toWikitext() + equalSign + '\n';
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append('\n');
+        addWikitextTag(stringBuilder);
+
+        for(Text text: children) {
+            stringBuilder.append(text.toWikitext());
+        }
+
+        addWikitextTag(stringBuilder);
+        stringBuilder.append('\n');
+
+        return stringBuilder.toString();
     }
+
+    private void addWikitextTag(StringBuilder stringBuilder) {
+        stringBuilder.append(wikitextTag, 0, level);
+    }
+
+
 }

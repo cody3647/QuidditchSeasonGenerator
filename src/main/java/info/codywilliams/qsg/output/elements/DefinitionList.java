@@ -18,83 +18,100 @@
 
 package info.codywilliams.qsg.output.elements;
 
-import info.codywilliams.qsg.output.Element;
-import javafx.scene.Node;
+import info.codywilliams.qsg.output.ElementChildren;
+import info.codywilliams.qsg.output.ElementOutputs;
+import info.codywilliams.qsg.output.InlineElement;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 
-public class DefinitionList extends Element {
+public class DefinitionList extends ElementChildren<DefinitionList.Item> {
     public static String DL = "dl";
+    private final List<Item> items;
     public DefinitionList() {
-        super(DL);
+        items = new ArrayList<>();
     }
 
-    public DefinitionList(Element... elements) {
-        super(DL, elements);
+    public DefinitionList(Item... items) {
+        this.items = new ArrayList<>(Arrays.asList(items));
     }
 
-    public DefinitionList(Collection<Element> elements) {
-        super(DL, elements);
+    public DefinitionList(Collection<Item> items) {
+        this.items = new ArrayList<>(items);
+    }
+
+    @Override
+    public String getTagName() {
+        return DL;
+    }
+
+    @Override
+    public boolean isTagClosedOnNewLine() {
+        return true;
     }
 
     @Override
     public String toWikitext() {
-        return toHtml();
+        return toHtml(0);
     }
 
-    public static class Term extends Element {
+    public static class Term extends ElementChildren<InlineElement> implements Item {
         public static String DT = "dt";
-        public Term() {
-            super(DT);
-        }
 
-        public Term(Element element) {
-            super(DT, element);
-        }
-
-        public Term(Element... elements) {
-            super(DT, elements);
-        }
-
-        public Term(Collection<Element> elements) {
-            super(DT, elements);
+        public Term(InlineElement element) {
+            super(element);
         }
 
         public Term(String text) {
-            super(DT, new Text(text));
+            super(new Text(text));
+        }
+
+        @Override
+        public String getTagName() {
+            return DT;
+        }
+
+        @Override
+        public boolean isTagClosedOnNewLine() {
+            return false;
         }
 
         @Override
         public String toWikitext() {
-            return toHtml();
+            return toHtml(0);
         }
     }
 
-    public static class Defintion extends  Element {
+    public static class Def extends ElementChildren<InlineElement> implements Item{
         public static String DD = "dd";
-        public Defintion() {
-            super(DD);
+
+        public Def(InlineElement element) {
+            super(element);
         }
 
-        public Defintion(Element element) {
-            super(DD, element);
+        public Def(String text) {
+            super(new Text(text));
         }
 
-        public Defintion(Element... elements) {
-            super(DD, elements);
+        @Override
+        public String getTagName() {
+            return DD;
         }
 
-        public Defintion(Collection<Element> elements) {
-            super(DD, elements);
-        }
-
-        public Defintion(String text) {
-            super(DD, new Text(text));
+        @Override
+        public boolean isTagClosedOnNewLine() {
+            return false;
         }
 
         @Override
         public String toWikitext() {
-            return toHtml();
+            return toHtml(0);
         }
+    }
+
+    public interface Item extends ElementOutputs {
+
     }
 }

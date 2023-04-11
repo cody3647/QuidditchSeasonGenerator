@@ -18,15 +18,13 @@
 
 package info.codywilliams.qsg.output;
 
-import javafx.scene.Node;
-
-public interface Outputs {
+public interface ElementOutputs {
     /**
      * Returns the element as HTML string
      *
      * @return HTML String
      */
-    String toHtml();
+    String toHtml(int tabs);
 
     String toWikitext();
 

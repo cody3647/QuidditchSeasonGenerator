@@ -19,24 +19,33 @@
 package info.codywilliams.qsg.output.elements;
 
 import info.codywilliams.qsg.output.Element;
+import info.codywilliams.qsg.output.ElementChildren;
+import info.codywilliams.qsg.output.ElementOutputs;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Table extends Element{
+public class Table extends ElementChildren<Table.Row>{
     public static String TABLE = "table";
-    public Table() {
-        super(TABLE);
+
+    public Table(Row... rows) {
+        super(rows);
     }
 
-    public Table(Element... elements) {
-        super(TABLE, elements);
+    public Table(Collection<Row> rows) {
+        super(rows);
     }
 
-    public Table(Collection<Element> elements) {
-        super(TABLE, elements);
+    @Override
+    public String getTagName() {
+        return TABLE;
+    }
+
+    @Override
+    public boolean isTagClosedOnNewLine() {
+        return true;
     }
 
     @Override
@@ -46,8 +55,8 @@ public class Table extends Element{
         createClassesString(classes, stringBuilder);
         createAttributeString(attributes, stringBuilder);
 
-        for(Element element: children) {
-            stringBuilder.append(element.toWikitext());
+        for(Row row: children) {
+            stringBuilder.append(row.toWikitext());
         }
 
         stringBuilder.append("\n|}");
@@ -55,21 +64,25 @@ public class Table extends Element{
         return stringBuilder.toString();
     }
 
-    public static class Cell extends Element{
+    public static class Cell extends ElementChildren<Element> implements TableCell{
         public static String TD = "td";
-        public Cell() {
-            super(TD);
-        }
-        public Cell(Element... elements) {
-            super(TD, elements);
-        }
 
-        public Cell(Collection<Element> elements) {
-            super(TD, elements);
+        public Cell(Element... elements) {
+            super(elements);
         }
 
         public Cell(String text) {
-            super(TD, new Text(text));
+            super(new Text(text));
+        }
+
+        @Override
+        public String getTagName() {
+            return TD;
+        }
+
+        @Override
+        public boolean isTagClosedOnNewLine() {
+            return false;
         }
 
         @Override
@@ -96,26 +109,25 @@ public class Table extends Element{
 
     }
 
-    static public class HeaderCell extends Element {
+    static public class HeaderCell extends ElementChildren<Element> implements TableCell{
         public static String TH = "th";
-        public HeaderCell() {
-            super(TH);
-        }
-
-        public HeaderCell(Element element) {
-            super(TH, element);
-        }
 
         public HeaderCell(Element... elements) {
-            super(TH, elements);
-        }
-
-        public HeaderCell(Collection<Element> elements) {
-            super(TH, elements);
+            super(elements);
         }
 
         public HeaderCell(String text) {
-            super(TH, new Text(text));
+            super(new Text(text));
+        }
+
+        @Override
+        public String getTagName() {
+            return TH;
+        }
+
+        @Override
+        public boolean isTagClosedOnNewLine() {
+            return false;
         }
 
         @Override
@@ -124,19 +136,39 @@ public class Table extends Element{
         }
     }
 
-    public static class Row extends Element{
+    public static class Row extends ElementChildren<TableCell>{
         public static String TR = "tr";
 
-        public Row(Element element) {
-            super(TR, element);
+        public Row(TableCell... cells) {
+            super(cells);
         }
 
-        public Row(Element... elements) {
-            super(TR, elements);
+        public Row(Collection<TableCell> cells) {
+            super(cells);
         }
 
-        public Row(Collection<Element> elements) {
-            super(TR, elements);
+        @Override
+        public String getTagName() {
+            return TR;
+        }
+
+        @Override
+        public boolean isTagClosedOnNewLine() {
+            return true;
+        }
+
+        @Override
+        public String toHtml(int tabs) {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            openHtmlTag(stringBuilder, tabs);
+            for(TableCell cell: children) {
+                stringBuilder.append(cell.toHtml(tabs + 1));
+            }
+
+            closeHtmlTag(stringBuilder, tabs);
+
+            return stringBuilder.toString();
         }
 
         @Override
@@ -149,12 +181,15 @@ public class Table extends Element{
                 createAttributeString(attributes, stringBuilder);
             }
 
-            for(Element child: children) {
-                stringBuilder.append(child.toWikitext());
+            for(TableCell cell: children) {
+                stringBuilder.append(cell.toWikitext());
             }
 
 
             return stringBuilder.toString();
         }
+    }
+
+    public interface TableCell extends ElementOutputs {
     }
 }

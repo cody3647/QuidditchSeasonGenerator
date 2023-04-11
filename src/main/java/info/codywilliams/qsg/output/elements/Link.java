@@ -19,75 +19,120 @@
 package info.codywilliams.qsg.output.elements;
 
 import info.codywilliams.qsg.output.Element;
+import info.codywilliams.qsg.output.ElementChildren;
 import info.codywilliams.qsg.util.Formatters;
 
-public class Link extends Element {
+public class Link {
+    static public final String TEAMS_DIR = "../teams/";
     public static String A = "a";
-    String href;
-    String title;
-    private Link(Element element, String dir, String href, String title) {
-        super(A, element);
-        addAttribute("href", dir + Formatters.sanitizeFileNames(href));
-        addAttribute("title", title);
 
-        this.href = href;
-        this.title = title;
-    }
+    public static class TextLink extends ElementChildren<Text> {
+        String wikipage;
 
-    @Override
-    public String toWikitext() {
-        Element child = children.getFirst();
-        if(child instanceof Text) {
-            String ret = "[[" + href;
-            if(title != null)
-                ret += "|" + title;
-
-            return ret + "]]";
-        }
-        else if (child instanceof Image) {
-            child.addAttribute("link", href);
-            return child.toWikitext();
+        public TextLink(String text, String dir, String page, String ext) {
+            super(new Text(text));
+            addAttribute("href", dir + Formatters.sanitizeFileNames(page) + '.' + ext);
+            wikipage = page;
         }
 
-        return "";
-    }
-
-    public static class Team extends Link {
-        public Team(String text, String teamName) {
-            this(new Text(text), teamName, text);
+        @Override
+        public String getTagName() {
+            return A;
         }
 
-        public Team(Element element, String teamName, String title) {
-            super(element, "../teams/",  teamName + ".html", title);
-            href = teamName;
-            this.title = title;
+        @Override
+        public boolean isTagClosedOnNewLine() {
+            return false;
         }
 
-
-    }
-
-    public static class Match extends Link {
-        public Match(String text, String matchTitle) {
-            this(new Text(text), matchTitle, text);
+        public void setWikipage(String wikipage) {
+            this.wikipage = wikipage;
         }
 
-        public Match(Element element, String matchTitle, String title) {
-            super(element, "", matchTitle + ".html", title);
-            href = matchTitle;
-            this.title = title;
-        }
-    }
-
-    public static class Tournament extends Link {
-        public Tournament(String text) {
-            this(new Text(text), text);
+        static public TextLink createTeamLink(String teamName) {
+            return new TextLink(teamName, TEAMS_DIR, teamName, "html");
         }
 
-        public Tournament(Element element, String title) {
-            super(element, "", "index.html", title);
-            href = title;
-            this.title = title;
+        static public TextLink createMatchLink(String text, String matchTitle) {
+            return new TextLink(text, "", matchTitle, "html");
+        }
+
+        static public TextLink createTournamentLink(String text, String tournamentTitle) {
+            TextLink tournamentLink = new TextLink(text, "", "index", "html");
+            tournamentLink.wikipage = tournamentTitle;
+            return tournamentLink;
+        }
+
+        @Override
+        public String toWikitext() {
+            StringBuilder stringBuilder = new StringBuilder("[[");
+            stringBuilder.append(wikipage);
+
+            if (!children.isEmpty()) {
+                stringBuilder.append('|');
+                for (Text text : children)
+                    stringBuilder.append(text.toWikitext());
+            }
+
+            stringBuilder.append("]]");
+
+            return stringBuilder.toString();
         }
     }
 
+    public static class ImageLink extends Element {
+        private final Image image;
+        String wikipage;
+        public ImageLink(String alt, String imageName, String pageDir, String page, String pageExt) {
+            image = new Image(alt, imageName);
+            addAttribute("href", pageDir + Formatters.sanitizeFileNames(page) + '.' + pageExt);
+            wikipage = page;
+        }
+
+        @Override
+        public String getTagName() {
+            return A;
+        }
+
+        @Override
+        public boolean isTagClosedOnNewLine() {
+            return false;
+        }
+
+        static public ImageLink createTeamLink(String teamName) {
+            return new ImageLink(teamName, teamName + ".png", TEAMS_DIR, teamName, "html");
+        }
+
+        public void addImageAttribute(String name, String value) {
+            image.addAttribute(name, value);
+        }
+
+        public void addImageClass(String... names) {
+            image.addClass(names);
+        }
+
+        @Override
+        public String toHtml(int tabs) {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            openHtmlTag(stringBuilder, tabs);
+            stringBuilder.append(image.toHtml(tabs + 1));
+            closeHtmlTag(stringBuilder, tabs);
+
+            return stringBuilder.toString();
+        }
+
+        @Override
+        public String toWikitext() {
+            StringBuilder stringBuilder = new StringBuilder("[[");
+
+            image.wikitextImageFile(stringBuilder);
+
+            stringBuilder.append("|link=").append(wikipage);
+
+            stringBuilder.append("]]");
+
+            return stringBuilder.toString();
+        }
+    }
 }

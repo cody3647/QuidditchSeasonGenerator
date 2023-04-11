@@ -18,34 +18,41 @@
 
 package info.codywilliams.qsg.output.elements;
 
-import info.codywilliams.qsg.output.Element;
-import javafx.scene.Node;
+import info.codywilliams.qsg.output.ElementChildren;
+import info.codywilliams.qsg.output.InlineElement;
 
 import java.util.Collection;
 
-public class Paragraph extends Element {
+public class Paragraph extends ElementChildren<InlineElement> {
     public static String P = "p";
-    public Paragraph() {
-        super(P);
+
+    public Paragraph(InlineElement... elements) {
+        super(elements);
     }
 
-    public Paragraph(Element... elements) {
-        super(P, elements);
-    }
-
-    public Paragraph(Collection<Element> elements) {
-        super(P, elements);
+    public Paragraph(Collection<InlineElement> elements) {
+        super(elements);
     }
 
     public Paragraph(String text) {
-        super(P, new Text(text));
+        super(new Text(text));
+    }
+
+    @Override
+    public String getTagName() {
+        return P;
+    }
+
+    @Override
+    public boolean isTagClosedOnNewLine() {
+        return false;
     }
 
     @Override
     public String toWikitext() {
         StringBuilder stringBuilder = new StringBuilder("\n\n");
 
-        for(Element child: children) {
+        for(InlineElement child: children) {
             stringBuilder.append(child.toWikitext());
         }
 

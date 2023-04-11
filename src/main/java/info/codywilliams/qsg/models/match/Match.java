@@ -84,7 +84,7 @@ public class Match implements Comparable<Match>{
         Page matchPage = new Page(getTitle(), getTitle());
         matchPage.addMetadata("keywords", null, resources.getString("meta.match.keywords"), null);
         matchPage.addBodyContent(new MatchInfobox(this));
-        LinkedList<Element> listItems = new LinkedList<>();
+        LinkedList<UnorderedList.Item> listItems = new LinkedList<>();
 
         for(Play play: plays) {
             UnorderedList.Item li = new UnorderedList.Item();

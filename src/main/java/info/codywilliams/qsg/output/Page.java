@@ -19,15 +19,12 @@
 package info.codywilliams.qsg.output;
 
 import info.codywilliams.qsg.util.DependencyInjector;
-import info.codywilliams.qsg.util.Formatters;
-import javafx.scene.Node;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.List;
 
-public class Page implements Outputs{
+public class Page implements ElementOutputs {
     private String pageTitle;
     private String fileName;
     private LinkedList<Metadata> metadata;
@@ -64,23 +61,23 @@ public class Page implements Outputs{
     }
 
     @Override
-    public String toHtml() {
+    public String toHtml(int tabs) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("<!DOCTYPE html><html><head>");
+        stringBuilder.append("<!DOCTYPE html>\n<html>\n\t<head>");
         if(pageTitle != null)
-            stringBuilder.append("<title>").append(pageTitle).append("</title>\n");
+            stringBuilder.append("\n\t\t<title>").append(pageTitle).append("</title>");
         if(!metadata.isEmpty())
             for(Metadata meta: metadata)
                 stringBuilder.append(meta.toHtml());
-        stringBuilder.append("</head><body>");
+        stringBuilder.append("\n</head>\n<body>");
 
         if(!body.isEmpty()) {
             for(Element element: body)
-                stringBuilder.append(element.toHtml());
+                stringBuilder.append(element.toHtml(1));
         }
 
-        stringBuilder.append("</body></html>");
+        stringBuilder.append("\n</body>\n</html>");
 
         return stringBuilder.toString();
     }
@@ -115,7 +112,7 @@ public class Page implements Outputs{
         }
 
         public String toHtml() {
-            String tag = "<meta ";
+            String tag = "\n\t\t<meta ";
             if(name != null)
                 tag += "name=\"" + name + "\" ";
             if(httpEquiv != null)
