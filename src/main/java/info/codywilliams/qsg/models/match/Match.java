@@ -53,12 +53,18 @@ public class Match implements Comparable<Match>{
         this.number = number;
         this.round = round;
         this.startDateTime = startDateTime;
-        this.matchLength = Duration.ZERO;
-        plays = new LinkedList<>();
+        clear();
+    }
 
+    public void clear() {
+        matchLength = Duration.ZERO;
+        plays = new LinkedList<>();
         scoreHome = 0;
         scoreAway = 0;
+        foulsHome = 0;
+        foulsAway = 0;
         winner = null;
+
     }
 
     public void setResources(ResourceBundleReplacer resources) {

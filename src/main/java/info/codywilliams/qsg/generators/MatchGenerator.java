@@ -68,6 +68,7 @@ public class MatchGenerator {
 
     public void setUpMatch(Match match) {
         this.match = match;
+        match.clear();
         LocalDateTime startDateTime = match.getStartDateTime();
 
         // Generate seed for specific match
