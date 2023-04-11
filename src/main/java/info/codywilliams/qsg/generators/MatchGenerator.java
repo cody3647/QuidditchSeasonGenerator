@@ -66,8 +66,19 @@ public class MatchGenerator {
         random = new Random();
     }
 
-    public void setUpMatch(Match match) {
+    public void run(Match match) {
         this.match = match;
+        setUpMatch();
+        generate();
+        cleanUp();
+    }
+
+    private void cleanUp() {
+        homeTeam.cleanUpTeam();
+        awayTeam.cleanUpTeam();
+    }
+
+    private void setUpMatch() {
         match.clear();
         LocalDateTime startDateTime = match.getStartDateTime();
 
@@ -99,7 +110,7 @@ public class MatchGenerator {
         snitchReleased = false;
     }
 
-    public void generate() {
+    private void generate() {
         // Start the game, one team gets the quaffle first
         int homeStart = randomNumbersSum(1, 10, 5) + homeTeam.getChasersSkills().getOffense();
         int awayStart = randomNumbersSum(1, 10, 5) + awayTeam.getChasersSkills().getOffense();
@@ -362,11 +373,6 @@ public class MatchGenerator {
     }
     private boolean inRange(int number, int lowEnd, int highEnd) {
         return lowEnd <= number && number <= highEnd;
-    }
-
-    public void cleanUp() {
-        homeTeam.cleanUpTeam();
-        awayTeam.cleanUpTeam();
     }
 
     static private class MatchTeam {

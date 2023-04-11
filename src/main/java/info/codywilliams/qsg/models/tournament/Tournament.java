@@ -129,9 +129,7 @@ public abstract class Tournament {
         MatchGenerator matchGenerator = new MatchGenerator(seed);
         long now = System.currentTimeMillis();
         for (Match match : getMatches()) {
-            matchGenerator.setUpMatch(match);
-            matchGenerator.generate();
-            matchGenerator.cleanUp();
+            matchGenerator.run(match);
         }
         now = System.currentTimeMillis() - now;
         assignPoints();
