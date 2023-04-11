@@ -79,7 +79,7 @@ public class MatchGenerator {
         matchSeed |= startDateTime.getMinute();
         matchSeed |= match.getNumber() + match.getRound();
         matchSeed |= matchSeed << 34;
-        matchSeed ^= ((long) match.getHomeTeam().hashCode() << 32) | match.getHomeTeam().hashCode();
+        matchSeed ^= ((long) match.getHomeTeam().hashCode() << 32) | match.getAwayTeam().hashCode();
         matchSeed ^= seed;
         random.setSeed(matchSeed);
 
