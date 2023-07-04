@@ -11,6 +11,9 @@ module QuidditchSeasonGenerator {
     requires org.kordamp.ikonli.fontawesome5;
     requires org.slf4j;
     requires ch.qos.logback.classic;
+    requires org.jetbrains.annotations;
+    requires okhttp3;
+    requires okhttp3.logging;
 
     opens info.codywilliams.qsg to javafx.fxml;
     exports info.codywilliams.qsg;
@@ -21,4 +24,6 @@ module QuidditchSeasonGenerator {
     opens info.codywilliams.qsg.util to com.fasterxml.jackson.databind;
     opens info.codywilliams.qsg.models.tournament.type to javafx.base, com.fasterxml.jackson.databind;
     opens info.codywilliams.qsg.models.match to com.fasterxml.jackson.databind;
+    opens info.codywilliams.qsg.service to com.fasterxml.jackson.databind;
+    opens info.codywilliams.qsg.models.mediawiki to com.fasterxml.jackson.databind;
 }
