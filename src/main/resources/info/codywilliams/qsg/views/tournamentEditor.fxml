@@ -1,23 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-<?import javafx.scene.text.Text?>
-
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="info.codywilliams.qsg.controllers.TournamentEditorController">
    <children>
       <HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="5.0">
@@ -26,8 +12,9 @@
                <children>
                   <GridPane hgap="5.0" vgap="5.0">
                      <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="192.0" minWidth="132.0" prefWidth="166.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="250.0" prefWidth="250.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="250.0" prefWidth="250.0" />
                      </columnConstraints>
                      <rowConstraints>
                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
@@ -35,38 +22,17 @@
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                      </rowConstraints>
                      <children>
-                        <TextField fx:id="roundsPerWeekTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="%tournament.label.roundsPerWeek" GridPane.columnIndex="1" GridPane.rowIndex="3">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </TextField>
-                        <TextField fx:id="hoursBetweenMatchesTextField" promptText="%tournament.label.hoursBetweenMatches" GridPane.columnIndex="1" GridPane.rowIndex="4">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </TextField>
-                        <Label text="%tournament.label.roundsPerWeek" wrapText="true" GridPane.rowIndex="3">
+                        <Label text="%tournament.label.startDate" wrapText="true" GridPane.rowIndex="3">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <Label text="%tournament.label.hoursBetweenMatches" wrapText="true" GridPane.rowIndex="4">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Label>
-                        <Label text="%tournament.label.startDate" wrapText="true" GridPane.rowIndex="5">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Label>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%tournament.editor.title" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER">
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%tournament.editor.title" textAlignment="CENTER" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER">
                            <font>
                               <Font size="30.0" />
                            </font>
@@ -74,29 +40,59 @@
                               <Insets />
                            </GridPane.margin>
                         </Text>
-                        <Label text="%tournament.label.acceptableTimes" wrapText="true" GridPane.rowIndex="6">
+                        <VBox GridPane.rowIndex="4">
+                           <children>
+                              <Label text="%tournament.label.matchDayTimes" wrapText="true">
+                                 <font>
+                                    <Font size="18.0" />
+                                 </font>
+                              </Label>
+                              <Label text="%tournament.label.matchDay.matches" wrapText="true">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="matchesPerWeekLabel" text="%tournament.label.matchDay.matchesPerWeek" wrapText="true">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <padding>
+                                    <Insets left="14.0" />
+                                 </padding>
+                              </Label>
+                           </children>
+                        </VBox>
+                        <Label text="%tournament.label.blackoutDates" wrapText="true" GridPane.rowIndex="6">
                            <font>
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <Label text="%tournament.label.blackoutDates" wrapText="true" GridPane.rowIndex="7">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Label>
-                        <DatePicker fx:id="startDatePicker" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="%tournament.label.startDate" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                        <TableView fx:id="validStartTimeTableView" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                        <DatePicker fx:id="startDatePicker" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="%tournament.label.startDate" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <TableView fx:id="matchDayTimeTableView" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="4">
                           <columns>
-                              <TableColumn fx:id="dayCol" maxWidth="200.0" minWidth="50.0" prefWidth="120.0" text="%tournament.col.day" />
-                            <TableColumn fx:id="earliestCol" maxWidth="200.0" minWidth="50.0" prefWidth="120.0" text="%tournament.col.startTime" />
-                            <TableColumn fx:id="latestCol" maxWidth="200.0" minWidth="50.0" prefWidth="120.0" text="%tournament.col.endTime" />
-                              <TableColumn fx:id="enableCol" maxWidth="76.0" minWidth="50.0" prefWidth="76.0" text="%tournament.col.dayValid" />
+                              <TableColumn fx:id="matchDayTimeDayCol" maxWidth="350.0" minWidth="100.0" prefWidth="200.0" sortable="false" text="%tournament.col.matchDayOfWeek" />
+                            <TableColumn fx:id="matchDayTimeStartTimeCol" maxWidth="300.0" minWidth="100.0" prefWidth="200.0" sortable="false" text="%tournament.col.matchStartTime" />
+                              <TableColumn fx:id="matchDayTimePriorityCol" maxWidth="100.0" minWidth="50.0" prefWidth="75.0" sortable="false" text="%tournament.col.matchPriority" />
+                              <TableColumn fx:id="matchDayTimeCountCol" maxWidth="100.0" minWidth="50.0" prefWidth="75.0" sortable="false" text="%tournament.col.matchCount" />
+                              <TableColumn fx:id="matchDayTimeRemoveCol" editable="false" maxWidth="100.0" minWidth="50.0" prefWidth="75.0" sortable="false" text="%tournament.col.matchDayTimeRemove" />
                           </columns>
                            <columnResizePolicy>
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                            </columnResizePolicy>
                         </TableView>
-                        <TableView fx:id="blackoutDatesTable" editable="true" prefHeight="250.0" GridPane.columnIndex="1" GridPane.rowIndex="7">
+                        <HBox GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="5">
+                           <children>
+                              <ComboBox fx:id="matchDayTimeDayComboBox" maxWidth="-Infinity" minWidth="100.0" prefWidth="190.0" />
+                              <TextField fx:id="matchDayTimeTimeTextField" maxWidth="-Infinity" minWidth="100.0" prefWidth="190.0" />
+                              <TextField fx:id="matchDayTimePriorityTextField" maxWidth="-Infinity" minWidth="50.0" prefWidth="50.0" />
+                              <Button fx:id="matchDayTimeAddButton" mnemonicParsing="false" text="%tournament.button.blackoutAdd">
+                                 <HBox.margin>
+                                    <Insets left="20.0" />
+                                 </HBox.margin>
+                              </Button>
+                           </children>
+                        </HBox>
+                        <TableView fx:id="blackoutDatesTable" editable="true" prefHeight="250.0" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="6">
                           <columns>
                             <TableColumn fx:id="blackoutStartCol" minWidth="100.0" prefWidth="185.0" text="%tournament.col.blackoutStart" />
                             <TableColumn fx:id="blackoutEndCol" minWidth="100.0" prefWidth="185.0" text="%tournament.col.blackoutEnd" />
@@ -111,8 +107,8 @@
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <ComboBox fx:id="tournamentTypeComboBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <HBox GridPane.columnIndex="1" GridPane.rowIndex="8">
+                        <ComboBox fx:id="tournamentTypeComboBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" />
+                        <HBox GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="7">
                            <children>
                               <DatePicker fx:id="blackoutStartDatePicker" prefWidth="190.0" />
                               <DatePicker fx:id="blackoutEndDatePicker" prefWidth="190.0" />
@@ -128,7 +124,7 @@
                               <Font size="18.0" />
                            </font>
                         </Label>
-                        <TextField fx:id="leagueNameTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="%tournament.label.leagueName" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <TextField fx:id="leagueNameTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="%tournament.label.leagueName" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
                            <font>
                               <Font size="18.0" />
                            </font>

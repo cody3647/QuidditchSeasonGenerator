@@ -36,7 +36,6 @@ import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -45,8 +44,8 @@ public abstract class Tournament {
     protected IntegerProperty numWeeks;
     protected IntegerProperty numMatches;
     protected IntegerProperty numRounds;
+    protected IntegerProperty numMatchesPerRound;
     protected SetProperty<Match> matches;
-    protected TreeSet<TimeEntry> template;
     protected ObjectProperty<LocalDate> endDate;
     protected StringBinding endDateStringBinding;
     protected TournamentOptions tournamentOptions;
@@ -66,6 +65,8 @@ public abstract class Tournament {
         numWeeks = new SimpleIntegerProperty(this, "numWeeks", 0);
         numMatches = new SimpleIntegerProperty(this, "numMatches", 0);
         numRounds = new SimpleIntegerProperty(this, "numRounds", 0);
+
+        numMatchesPerRound = new SimpleIntegerProperty(this, "numMatchesPerRound", 0);
 
         matches = new SimpleSetProperty<>(this, "matches", FXCollections.observableSet(new TreeSet<>()));
         endDate = new SimpleObjectProperty<>(this, "endDate");
@@ -89,34 +90,56 @@ public abstract class Tournament {
             return;
 
         calculateNums(numTeams);
-        LocalDateTime lastMatchDate = calculateMatchDates();
-        setEndDate(lastMatchDate.toLocalDate());
+        LocalDate lastMatchDate = calculateMatchDates();
+        setEndDate(lastMatchDate);
         teamsAssigned.set(false);
     }
 
-    protected abstract void calculateNums(Integer numTeams);
+    protected void calculateNums(int numTeams) {
+        int totalMatches = calculateTotalMatches(numTeams);
+        int totalRounds = calculateTotalRounds(numTeams);
+
+        if (zeroCheckNums(totalMatches, totalRounds)) return;
+
+        setNumMatches(totalMatches);
+        setNumRounds(totalRounds);
+
+        int matchesPerRound = calculateMatchesPerRound(numTeams);
+        setNumMatchesPerRound(matchesPerRound);
+
+        System.out.printf("Num Teams: %d\nTotal Matches: %d\nTotal Rounds: %d\nMatches Per Round: %d\n",
+                numTeams, getNumMatches(), getNumRounds(), getNumMatchesPerRound());
+    }
+
+    protected abstract int calculateTotalMatches(int numTeams);
+    protected abstract int calculateTotalRounds(int numTeams);
+    protected abstract int calculateMatchesPerRound(int numTeams);
 
     protected boolean zeroCheckNums(int totalMatches, int totalRounds){
         if(totalMatches <= 0 && totalRounds <= 0){
             setNumMatches(0);
-            setNumMatches(0);
-
+            setNumRounds(0);
+            setNumWeeks(0);
+            setNumMatchesPerRound(0);
             return true;
         }
         return false;
     }
 
-    protected abstract LocalDateTime calculateMatchDates();
-    protected int isDateInBlackout(LocalDate date, BlackoutDates blackoutDates){
-        if(blackoutDates == null)
-            return 0;
+    protected abstract LocalDate calculateMatchDates();
+    @JsonIgnore
+    protected Set<LocalDate> getBlackoutDateSet(){
+        Set<LocalDate> dates = new HashSet<>();
 
-        if(date.isAfter(blackoutDates.getStart()) && date.isBefore(blackoutDates.getEnd()) || date.isEqual(blackoutDates.getStart()))
-            return 1;
-        if(date.isEqual(blackoutDates.getEnd()))
-            return 2;
+        for(BlackoutDates blackoutDates: tournamentOptions.getBlackoutDates()) {
+            LocalDate date = blackoutDates.getStart();
+            while(date.isBefore(blackoutDates.getEnd()) || date.isEqual(blackoutDates.getEnd())) {
+                dates.add(date);
+                date = date.plusDays(1);
+            }
+        }
 
-        return 0;
+        return dates;
     }
 
     public void generateMatches(List<Team> teams, long seed) {
@@ -326,6 +349,18 @@ public abstract class Tournament {
         this.numRounds.set(numRounds);
     }
 
+    public int getNumMatchesPerRound() {
+        return numMatchesPerRound.get();
+    }
+
+    public IntegerProperty numMatchesPerRoundProperty() {
+        return numMatchesPerRound;
+    }
+
+    public void setNumMatchesPerRound(int numMatchesPerRound) {
+        this.numMatchesPerRound.set(numMatchesPerRound);
+    }
+
     public ObservableSet<Match> getMatches() {
         return matches.get();
     }
@@ -348,10 +383,6 @@ public abstract class Tournament {
 
     public StringBinding endDateStringBinding(){
         return endDateStringBinding;
-    }
-
-    public TreeSet<TimeEntry> getTemplate() {
-        return template;
     }
 
     public boolean isTeamsAssigned() {

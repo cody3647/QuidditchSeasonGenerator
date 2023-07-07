@@ -26,7 +26,7 @@ public class StraightRoundRobinHomeAway extends StraightRoundRobin{
     }
 
     @Override
-    protected void calculateNums(Integer numTeams) {
+    protected void calculateNums(int numTeams) {
         super.calculateNums(numTeams);
 
         setNumMatches(numMatches.get() * 2);

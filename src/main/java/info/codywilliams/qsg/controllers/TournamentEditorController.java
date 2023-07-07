@@ -20,32 +20,39 @@ package info.codywilliams.qsg.controllers;
 
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.tournament.BlackoutDates;
+import info.codywilliams.qsg.models.tournament.MatchDayTime;
 import info.codywilliams.qsg.models.tournament.TournamentOptions;
-import info.codywilliams.qsg.models.tournament.ValidStartTime;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
-import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import javafx.util.converter.IntegerStringConverter;
 import javafx.util.converter.LocalDateStringConverter;
-import javafx.util.converter.LocalTimeStringConverter;
-import javafx.util.converter.NumberStringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.time.format.TextStyle;
+import java.time.temporal.TemporalAccessor;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.function.Consumer;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TournamentEditorController {
 
@@ -55,22 +62,31 @@ public class TournamentEditorController {
     ComboBox<TournamentType> tournamentTypeComboBox;
     @FXML
     TextField leagueNameTextField;
-    @FXML
-    TextField hoursBetweenMatchesTextField;
-    @FXML
-    TextField roundsPerWeekTextField;
+    static LocalTime defaultMatchTime = LocalTime.of(20, 0);
     @FXML
     DatePicker startDatePicker;
     @FXML
-    TableView<ValidStartTime> validStartTimeTableView;
+    Label  matchesPerWeekLabel;
     @FXML
-    TableColumn<ValidStartTime, String> dayCol;
+    TableView<MatchDayTime> matchDayTimeTableView;
     @FXML
-    TableColumn<ValidStartTime, LocalTime> earliestCol;
+    TableColumn<MatchDayTime, DayOfWeek> matchDayTimeDayCol;
     @FXML
-    TableColumn<ValidStartTime, LocalTime> latestCol;
+    TableColumn<MatchDayTime, LocalTime> matchDayTimeStartTimeCol;
     @FXML
-    TableColumn<ValidStartTime, Boolean> enableCol;
+    TableColumn<MatchDayTime, Integer> matchDayTimePriorityCol;
+    @FXML
+    TableColumn<MatchDayTime, Integer> matchDayTimeCountCol;
+    @FXML
+    TableColumn<MatchDayTime, Button> matchDayTimeRemoveCol;
+    @FXML
+    ComboBox<DayOfWeek> matchDayTimeDayComboBox;
+    @FXML
+    TextField matchDayTimeTimeTextField;
+    @FXML
+    TextField matchDayTimePriorityTextField;
+    TextFormatter<LocalTime> matchDayTimeTimeTextFieldFormatter;
+    TextFormatter<Integer> matchDayTimePriorityTextFieldFormatter;
     @FXML
     TableView<BlackoutDates> blackoutDatesTable;
     @FXML
@@ -89,32 +105,34 @@ public class TournamentEditorController {
     ResourceBundle resources;
     private final Context context;
     TournamentOptions tournamentOptions;
+    @FXML
+    Button matchDayTimeAddButton;
 
     public TournamentEditorController(Context context){
         this.context = context;
     }
+    EventHandler<TableColumn.CellEditEvent<MatchDayTime, DayOfWeek>> matchDayTimeDayCommitHandler = (dayOfWeekEditEvent) -> {
+        MatchDayTime matchDayTime = dayOfWeekEditEvent.getRowValue();
+        matchDayTime.setDayOfWeek(dayOfWeekEditEvent.getNewValue());
+
+        matchDayTimeDuplicateRemover(matchDayTime);
+    };
+    EventHandler<TableColumn.CellEditEvent<MatchDayTime, LocalTime>> matchDayTimeStartTimeCommitHandler = (startTimeEditEvent) -> {
+        MatchDayTime matchDayTime = startTimeEditEvent.getRowValue();
+        matchDayTime.setLocalTime(startTimeEditEvent.getNewValue());
+
+        matchDayTimeDuplicateRemover(matchDayTime);
+    };
 
     public void initialize() {
         tournamentOptions = context.getTournamentOptions();
 
         // Comboboxes and TextFields
         tournamentTypeComboBox.getItems().setAll(TournamentType.values());
-        tournamentTypeComboBox.setConverter(new StringConverter<>() {
-            @Override
-            public String toString(TournamentType tournamentType) {
-                if (tournamentType == null)
-                    return "";
-                return resources.getString(tournamentType.key);
-            }
-
-            @Override
-            public TournamentType fromString(String s) {
-                return null;
-            }
-        });
+        tournamentTypeComboBox.setConverter(new TournamentTypeStringConverter());
 
         context.currentTournamentProperty().addListener(((observableValue, oldTournament, newTournament) -> {
-            if(context.getCurrentTournament() != null){
+            if (context.getCurrentTournament() != null) {
                 if (newTournament != null && (oldTournament == null || oldTournament.getType() != newTournament.getType())) {
                     tournamentTypeComboBox.getSelectionModel().select(newTournament.getType());
                 }
@@ -122,36 +140,45 @@ public class TournamentEditorController {
         }));
 
         leagueNameTextField.textProperty().bindBidirectional(tournamentOptions.leagueNameProperty());
-        roundsPerWeekTextField.textProperty().bindBidirectional(tournamentOptions.roundsPerWeekProperty(), new NumberStringConverter());
-        hoursBetweenMatchesTextField.textProperty().bindBidirectional(tournamentOptions.hoursBetweenMatchesProperty(), new NumberStringConverter());
 
+        matchDayTimeDayComboBox.setItems(FXCollections.observableArrayList(DayOfWeek.values()));
+        matchDayTimeTimeTextFieldFormatter = new TextFormatter<>(
+                new MatchTimeStringConverter(),
+                defaultMatchTime,
+                MatchTimeStringConverter::filter);
+        matchDayTimeTimeTextField.setTextFormatter(matchDayTimeTimeTextFieldFormatter);
+
+        matchDayTimePriorityTextFieldFormatter = new TextFormatter<>(new IntegerStringConverter(), 0, TournamentEditorController::integerFilter);
+        matchDayTimePriorityTextField.setTextFormatter(matchDayTimePriorityTextFieldFormatter);
         // DatePickers
-        Callback<DatePicker, DateCell> startDayCellFactory = blackoutDateDayCellFactory(DayOfWeek.MONDAY);
-        Callback<DatePicker, DateCell> endDayCellFactory = blackoutDateDayCellFactory(DayOfWeek.SUNDAY);
-
         startDatePicker.valueProperty().bindBidirectional(tournamentOptions.startDateProperty());
         startDatePicker.setOnAction(actionEvent -> tournamentOptions.setStartDate(startDatePicker.getValue()));
         startDatePicker.setDayCellFactory(startDateDayCellFactory());
 
-        blackoutStartDatePicker.setDayCellFactory(startDayCellFactory);
-        blackoutEndDatePicker.setDayCellFactory(endDayCellFactory);
 
+        // Match Date and Times Table Setup
+        matchDayTimeDayCol.setCellValueFactory(new PropertyValueFactory<>("dayOfWeek"));
+        matchDayTimeDayCol.setCellFactory(ComboBoxTableCell.forTableColumn(new DayOfWeekConverter(), DayOfWeek.values()));
+        matchDayTimeDayCol.setOnEditCommit(matchDayTimeDayCommitHandler);
 
-        // Valid Start Time Table Setup
-        validStartTimeTableView.setItems(tournamentOptions.getValidStartTimes());
+        matchDayTimeStartTimeCol.setCellValueFactory(new PropertyValueFactory<>("localTime"));
+        matchDayTimeStartTimeCol.setCellFactory(TextFieldTableCell.forTableColumn(new MatchTimeStringConverter()));
+        matchDayTimeStartTimeCol.setOnEditCommit(matchDayTimeStartTimeCommitHandler);
 
-        dayCol.setCellValueFactory(
-                param -> new ReadOnlyObjectWrapper<>(param.getValue().getDayOfWeek().getDisplayName(TextStyle.FULL, Locale.getDefault()))
+        matchDayTimePriorityCol.setCellValueFactory(new PropertyValueFactory<>("priority"));
+        matchDayTimePriorityCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+
+        matchDayTimeCountCol.setCellValueFactory(new PropertyValueFactory<>("count"));
+        matchDayTimeCountCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+
+        matchDayTimeRemoveCol.setCellFactory(
+                ButtonTableCell.forTableColumn("far-trash-alt", "Delete Match Date & Time",
+                        (MatchDayTime param) -> tournamentOptions.getMatchDayTimeList().remove(param)
+                )
         );
 
-        earliestCol.setCellValueFactory(new PropertyValueFactory<>("earliest"));
-        earliestCol.setCellFactory(TextFieldTableCell.forTableColumn(new LocalTimeStringConverter()));
-
-        latestCol.setCellValueFactory(new PropertyValueFactory<>("latest"));
-        latestCol.setCellFactory(TextFieldTableCell.forTableColumn(new LocalTimeStringConverter()));
-
-        enableCol.setCellValueFactory(new PropertyValueFactory<>("enableDay"));
-        enableCol.setCellFactory(CheckBoxTableCell.forTableColumn(enableCol));
+        matchDayTimeTableView.setItems(tournamentOptions.getSortedMatchDayTimeList());
+        matchesPerWeekLabel.textProperty().bind(Bindings.format("%s %d", resources.getString("tournament.label.matchDay.matchesPerWeek"), tournamentOptions.matchesPerWeekProperty()));
 
         // Blackout Dates Table Setup
         blackoutStartCol.setCellValueFactory(new PropertyValueFactory<>("start"));
@@ -160,26 +187,29 @@ public class TournamentEditorController {
         blackoutEndCol.setCellValueFactory(new PropertyValueFactory<>("end"));
         blackoutEndCol.setCellFactory(TextFieldTableCell.forTableColumn(new LocalDateStringConverter()));
 
-        blackoutRemoveCol.setCellFactory(ButtonTableCell.forTableColumn("far-trash-alt", "Delete BlackoutDates",
-                (BlackoutDates param) -> tournamentOptions.getBlackoutDates().remove(param)
-        ));
+        blackoutRemoveCol.setCellFactory(
+                ButtonTableCell.forTableColumn("far-trash-alt", "Delete BlackoutDates",
+                        (BlackoutDates param) -> tournamentOptions.getBlackoutDates().remove(param)
+                )
+        );
 
         blackoutDatesTable.setItems(tournamentOptions.getBlackoutDates());
 
         setupActions();
     }
 
-    private Callback<DatePicker, DateCell> blackoutDateDayCellFactory(DayOfWeek dayOfWeek) {
-        return (final DatePicker datePicker) -> new DateCell() {
-            @Override
-            public void updateItem(LocalDate item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item.getDayOfWeek() != dayOfWeek) {
-                    setDisable(true);
-                    setStyle("-fx-background-color: lightgrey;");
-                }
-            }
-        };
+    private void matchDayTimeDuplicateRemover(MatchDayTime matchDayTime) {
+        ObservableList<MatchDayTime> matchDayTimeList = tournamentOptions.getMatchDayTimeList();
+        int i = matchDayTimeList.indexOf(matchDayTime);
+        int j = matchDayTimeList.lastIndexOf(matchDayTime);
+
+        if (i == j)
+            return;
+
+        MatchDayTime iMatchDayTime = matchDayTimeList.get(i);
+        MatchDayTime jMatchDayTime = matchDayTimeList.remove(j);
+        int iCount = iMatchDayTime.getCount();
+        iMatchDayTime.setCount(jMatchDayTime.getCount() + iCount);
     }
 
     private Callback<DatePicker, DateCell> startDateDayCellFactory() {
@@ -187,7 +217,7 @@ public class TournamentEditorController {
             @Override
             public void updateItem(LocalDate item, boolean empty) {
                 super.updateItem(item, empty);
-                if (item.getDayOfWeek() != tournamentOptions.validStartDayProperty().getValue()) {
+                if (item.getDayOfWeek() != DayOfWeek.MONDAY) {
                     setDisable(true);
                     setStyle("-fx-background-color: lightgrey;");
                 }
@@ -199,6 +229,27 @@ public class TournamentEditorController {
         tournamentTypeComboBox.setOnAction(actionEvent -> {
             TournamentType type = tournamentTypeComboBox.getValue();
             context.changeCurrentTournament(type);
+        });
+
+        matchDayTimeAddButton.setOnAction(actionEvent -> {
+            DayOfWeek dayOfWeek = matchDayTimeDayComboBox.getValue();
+            LocalTime localTime = matchDayTimeTimeTextFieldFormatter.getValue();
+            int priority = matchDayTimePriorityTextFieldFormatter.getValue();
+            if (dayOfWeek != null && localTime != null) {
+                MatchDayTime matchDayTime = new MatchDayTime(dayOfWeek, localTime, priority);
+                ObservableList<MatchDayTime> matchDayTimeList = tournamentOptions.getMatchDayTimeList();
+
+                if (matchDayTimeList.contains(matchDayTime)) {
+                    int index = matchDayTimeList.indexOf(matchDayTime);
+                    matchDayTimeList.get(index).incrementCount();
+                } else {
+                    matchDayTimeList.add(matchDayTime);
+                    FXCollections.sort(matchDayTimeList, Comparator.naturalOrder());
+                }
+
+                matchDayTimeDayComboBox.setValue(null);
+                matchDayTimeTimeTextField.setText(null);
+            }
         });
 
         blackoutStartDatePicker.setOnAction(actionEvent -> {
@@ -233,13 +284,12 @@ public class TournamentEditorController {
             }
 
         });
-
     }
 
-    static class ButtonTableCell extends TableCell<BlackoutDates, Button> {
+    static class ButtonTableCell<T> extends TableCell<T, Button> {
         private final Button button;
 
-        public ButtonTableCell(String iconCode, String buttonText, Consumer<BlackoutDates> function) {
+        public ButtonTableCell(String iconCode, String buttonText, Consumer<T> function) {
 
             button = new Button();
             button.setGraphic(new FontIcon(iconCode));
@@ -249,8 +299,8 @@ public class TournamentEditorController {
 
         }
 
-        public static Callback<TableColumn<BlackoutDates, Button>, TableCell<BlackoutDates, Button>> forTableColumn(String iconCode, String buttonText, Consumer<BlackoutDates> function) {
-            return param -> new TournamentEditorController.ButtonTableCell(iconCode, buttonText, function);
+        public static <TT> Callback<TableColumn<TT, Button>, TableCell<TT, Button>> forTableColumn(String iconCode, String buttonText, Consumer<TT> function) {
+            return param -> new TournamentEditorController.ButtonTableCell<>(iconCode, buttonText, function);
         }
 
         @Override
@@ -260,6 +310,107 @@ public class TournamentEditorController {
                 setGraphic(null);
             else
                 setGraphic(button);
+        }
+    }
+
+    static private final Pattern intPattern = Pattern.compile("^\\d*$");
+
+    private static TextFormatter.Change integerFilter(TextFormatter.Change change) {
+        if(!change.isContentChange() || change.getText().isEmpty()) return change;
+
+        Matcher matcher = intPattern.matcher(change.getText());
+        if(matcher.matches()) return change;
+
+        change.setText("");
+        return change;
+    }
+
+    private static class MatchTimeStringConverter extends StringConverter<LocalTime> {
+        final static Pattern pattern = Pattern.compile(
+                "^(?<hour>[0-2]?\\d)[\\.: ]?(?<min>[0-5]\\d)?[\\.: ]? ?(?<ampm>[ap]m?)?",
+                Pattern.CASE_INSENSITIVE
+        );
+        final static Pattern inProgressPattern = Pattern.compile(
+                "^[0-2]?\\d?[: \\.]?[0-5]?\\d? ?[apm]{0,2}$",
+                Pattern.CASE_INSENSITIVE
+        );
+        final DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT);
+
+        static TextFormatter.Change filter(TextFormatter.Change change) {
+            if (change.isContentChange()) {
+                Matcher matcher = MatchTimeStringConverter.inProgressPattern.matcher(change.getControlNewText());
+                if (matcher.matches()) return change;
+                change.setText("");
+            }
+            return change;
+        }
+
+        @Override
+        public String toString(LocalTime localTime) {
+            if (localTime == null)
+                return null;
+            return formatter.format(localTime);
+        }
+
+        @Override
+        public LocalTime fromString(String s) {
+            Matcher matcher = pattern.matcher(s);
+
+            if (!matcher.matches()) return TournamentEditorController.defaultMatchTime;
+
+            String ampm = matcher.group("ampm");
+            String hourStr = matcher.group("hour");
+            String minStr = matcher.group("min");
+
+            int hour;
+            int min;
+
+            hour = Integer.parseInt(hourStr);
+            min = minStr == null ? 0 : Integer.parseInt(minStr);
+
+            if (min < 0 || min > 59)
+                min = 0;
+
+            if (ampm != null) {
+                if (hour > 12)
+                    hour -= 12;
+
+                if (hour == 12)
+                    hour = 0;
+
+                if (ampm.equalsIgnoreCase("PM") || ampm.equalsIgnoreCase("P"))
+                    hour += 12;
+            }
+
+            return LocalTime.of(hour, min, 0);
+        }
+    }
+
+    private static class DayOfWeekConverter extends StringConverter<DayOfWeek> {
+        static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("cccc");
+        @Override
+        public String toString(DayOfWeek dayOfWeek) {
+            return dayOfWeek.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault());
+        }
+
+        @Override
+        public DayOfWeek fromString(String s) {
+            TemporalAccessor accessor = formatter.parse(s);
+            return DayOfWeek.from(accessor);
+        }
+    }
+
+    private class TournamentTypeStringConverter extends StringConverter<TournamentType> {
+        @Override
+        public String toString(TournamentType tournamentType) {
+            if (tournamentType == null)
+                return "";
+            return resources.getString(tournamentType.key);
+        }
+
+        @Override
+        public TournamentType fromString(String s) {
+            return null;
         }
     }
 }

@@ -81,6 +81,6 @@ public class BlackoutDates implements Comparable<BlackoutDates> {
 
     @Override
     public String toString() {
-        return String.format("%s \u2014 %s", getStart(), getEnd());
+        return String.format("%s — %s", getStart(), getEnd());
     }
 }

@@ -18,22 +18,18 @@
 
 package info.codywilliams.qsg.models.tournament.type;
 
-import info.codywilliams.qsg.models.match.Match;
 import info.codywilliams.qsg.models.Team;
-import info.codywilliams.qsg.models.tournament.*;
+import info.codywilliams.qsg.models.match.Match;
+import info.codywilliams.qsg.models.tournament.MatchDayTime;
+import info.codywilliams.qsg.models.tournament.Tournament;
+import info.codywilliams.qsg.models.tournament.TournamentOptions;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 public class StraightRoundRobin extends Tournament {
-    int numMatchesPerRound;
-    int numMatchesPerWeek;
-    int numMatchesPerDay;
-
     public StraightRoundRobin(TournamentOptions tournamentOptions) {
         super(tournamentOptions, TournamentType.STRAIGHT_ROUND_ROBIN);
     }
@@ -44,197 +40,77 @@ public class StraightRoundRobin extends Tournament {
     }
 
     @Override
-    protected void calculateNums(Integer numTeams) {
-        int totalMatches = (int) ((numTeams / 2.0) * (numTeams - 1));
-        int totalRounds = numTeams % 2 == 0 ? numTeams - 1 : numTeams;
-
-        if (zeroCheckNums(totalMatches, totalRounds)) {
-            numMatchesPerRound = 0;
-            numMatchesPerWeek = 0;
-            numMatchesPerDay = 0;
-            return;
-        }
-
-        setNumMatches(totalMatches);
-        setNumRounds(totalRounds);
-
-        calculateRoundRobinNumbers(numTeams);
-
-        System.out.printf("Num Teams: %d\nTotal Matches: %d\nTotal Rounds: %d\nMatches Per Round: %d\nMatches Per Week: %d\nMatches Per Day: %d\n\n",
-                numTeams, totalMatches, totalRounds, numMatchesPerRound, numMatchesPerWeek, numMatchesPerDay);
-
-    }
-
-    protected void calculateRoundRobinNumbers(int numTeams) {
-        int validDays = (int) tournamentOptions.getValidStartTimes().stream().filter(ValidStartTime::getEnableDay).count();
-        numMatchesPerRound = (numTeams % 2 == 0) ? (numTeams / 2) : ((numTeams - 1) / 2);
-        numMatchesPerWeek = (int) Math.ceil(tournamentOptions.getRoundsPerWeek() * numMatchesPerRound);
-        numMatchesPerDay = (int) Math.ceil(numMatchesPerWeek / (double) validDays);
+    protected int calculateTotalMatches(int numTeams) {
+        return (int) ((numTeams / 2.0) * (numTeams - 1));
     }
 
     @Override
-    protected LocalDateTime calculateMatchDates() {
+    protected int calculateTotalRounds(int numTeams) {
+        return numTeams % 2 == 0 ? numTeams - 1 : numTeams;
+    }
 
-        template = makeMatchTemplate();
+    @Override
+    protected int calculateMatchesPerRound(int numTeams) {
+        return (numTeams % 2 == 0) ? (numTeams / 2) : ((numTeams - 1) / 2);
+    }
 
-        if (template == null)
-            return null;
+    @Override
+    protected LocalDate calculateMatchDates() {
+        List<MatchDayTime> matchDayTimeList = tournamentOptions.getSortedMatchDayTimeList();
+        System.out.println(matchDayTimeList);
+
+        if (matchDayTimeList.isEmpty()) return null;
 
         // Move template to first acceptable day of the week selected in get start date
         LocalDate date = tournamentOptions.getStartDate();
-        DayOfWeek dayMatchesStart = tournamentOptions.getValidStartDay();
 
         // Setup iterators
-        List<BlackoutDates> blackoutDatesList = tournamentOptions.getBlackoutDates();
-        blackoutDatesList.sort(null);
-        Iterator<BlackoutDates> blackoutDatesIterator = blackoutDatesList.listIterator();
-        Iterator<TimeEntry> timeEntryIterator = template.iterator();
+        Iterator<MatchDayTime> matchDayIterator = matchDayTimeList.iterator();
+        Set<LocalDate> blackoutDates = getBlackoutDateSet();
 
         // Setup All Round Set<Dates>
         matches.clear();
 
-        BlackoutDates blackoutDates = null;
-        if (blackoutDatesIterator.hasNext())
-            blackoutDates = blackoutDatesIterator.next();
-
+        int totalMatches = getNumMatches();
+        int totalRoundMatches = getNumMatchesPerRound();
         int totalMatchCount = 0;
         int roundMatchCount = 0;
         int round = 1;
-        int compare;
-        LocalDateTime localDateTime = null;
 
-        while (totalMatchCount < numMatches.get()) {
-            // Have we finished a round?
-            if (roundMatchCount == numMatchesPerRound) {
-                // Reset round counter, start the week template over again
+        while(totalMatchCount < totalMatches) {
+            if(roundMatchCount == totalRoundMatches) {
+                // Round is over, New Round
                 roundMatchCount = 0;
-                timeEntryIterator = template.iterator();
                 round++;
-
-                if(totalMatchCount % numMatchesPerWeek == 0)
-                    // Adjust date to the next week
-                    date = date.with(TemporalAdjusters.next(dayMatchesStart));
-
-            }
-            // Have we split a round across weeks?
-            else if (roundMatchCount != 0 && roundMatchCount % numMatchesPerWeek == 0) {
-                timeEntryIterator = template.iterator();
-                // Adjust date to the next week
-                date = date.with(TemporalAdjusters.next(dayMatchesStart));
             }
 
-            if(!timeEntryIterator.hasNext())
-                throw new RuntimeException("Ran out of time entries before the end of a week or round");
-            TimeEntry timeEntry = timeEntryIterator.next();
-
-            while ((compare = isDateInBlackout(date, blackoutDates)) > 0) {
-                date = date.plusDays(1);
-
-                if (compare == 2) {
-                    if (blackoutDatesIterator.hasNext()) {
-                        blackoutDates = blackoutDatesIterator.next();
-                    } else
-                        blackoutDates = null;
-                }
-
+            if(!matchDayIterator.hasNext()) {
+                matchDayIterator = matchDayTimeList.iterator();
+                date = date.plusWeeks(1);
             }
 
-            while (!date.getDayOfWeek().equals(timeEntry.getDayOfWeek())) {
-                date = date.plusDays(1);
-            }
-            localDateTime = timeEntry.getLocalTime().atDate(date);
+            MatchDayTime matchDayTime = matchDayIterator.next();
+            date = nextMatchDate(date, matchDayTime.getDayOfWeek());
+            if(blackoutDates.contains(date))
+                continue;
 
-            int matchDayCount = 0;
-            for(int i = 0; i < timeEntry.getCount(); i++) {
+            int count = matchDayTime.getCount();
+            LocalDateTime localDateTime = matchDayTime.getLocalTime().atDate(date);
+            while(count > 0) {
+                count--;
                 matches.add(new Match(roundMatchCount + 1, round, localDateTime));
                 roundMatchCount++;
                 totalMatchCount++;
-                matchDayCount++;
 
-                if(matchDayCount == numMatchesPerDay || roundMatchCount == numMatchesPerRound)
+                if(roundMatchCount == getNumMatchesPerRound())
                     break;
             }
-
-            if (!timeEntryIterator.hasNext() && totalMatchCount < getNumMatches()) {
-                timeEntryIterator = template.iterator();
-            }
         }
 
-        return localDateTime;
-    }
-
-
-    TreeSet<TimeEntry> makeMatchTemplate() {
-        TreeMap<String, TimeEntry> template = new TreeMap<>();
-
-        Iterator<ValidStartTime> iterator = tournamentOptions.getValidStartTimes().iterator();
-        int hoursBetweenMatches = tournamentOptions.getHoursBetweenMatches();
-
-        int matches = 0;
-        LocalTime midnight = LocalTime.MAX;
-
-        while (iterator.hasNext()) {
-
-
-            ValidStartTime validStartTime = iterator.next();
-            if (!validStartTime.getEnableDay())
-                continue;
-
-            // Add the matches to try to schedule for the day to the number left over from previous day
-            matches += numMatchesPerDay;
-            LocalTime time;
-            // When hours between matches is 0, matches will be equally divided between valid days starting at the latest time available
-            if (hoursBetweenMatches == 0)
-                time = validStartTime.getLatest();
-            else
-                time = validStartTime.getEarliest();
-            // Add a minute to the end so that adding hours will not land on latest time and be ineligible
-            LocalTime end = validStartTime.getLatest().plusMinutes(1);
-
-            // Loop through the acceptable time adding a match every hoursBetweenMatches
-            while (matches > 0 && time.isBefore(end)) {
-                String key = Integer.toString(validStartTime.getDayOfWeek().getValue()) + time;
-                if (template.containsKey(key))
-                    template.get(key).incrementCount();
-                else
-                    template.put(key, new TimeEntry(validStartTime.getDayOfWeek(), time));
-                matches--;
-                // If we are going to wrap around midnight, don't.
-                if (midnight.minusHours(hoursBetweenMatches).isBefore(time))
-                    break;
-                time = time.plusHours(hoursBetweenMatches);
-            }
-
-            // If all matches aren't at the same time, move the last match for each day to the last valid start time
-            if (hoursBetweenMatches != 0) {
-                Map.Entry<String, TimeEntry> last = template.lastEntry();
-                TimeEntry newEntry = new TimeEntry(last.getValue().getDayOfWeek(), end.minusMinutes(1));
-                newEntry.setCount(last.getValue().getCount());
-                template.put(last.getKey(), newEntry);
-            }
-        }
-
-        if (template.isEmpty())
-            return null;
-
-        // Fill in the remaining matches
-        if (matches > 0) {
-            // Order by fewest matches on the day, then by Fri-Sun-Mon-Thu then by descending time
-            Comparator<TimeEntry> comparator = Comparator.comparingInt(TimeEntry::getCount).thenComparingInt(TimeEntry::fridayZero).thenComparing(TimeEntry::getLocalTime, Comparator.reverseOrder());
-            TreeSet<TimeEntry> templateByCount = new TreeSet<>(comparator);
-            templateByCount.addAll(template.values());
-
-            while (matches > 0) {
-                TimeEntry timeEntry = templateByCount.pollFirst();
-
-                timeEntry.incrementCount();
-
-                templateByCount.add(timeEntry);
-                matches--;
-            }
-            System.out.println(matches);
-        }
-        return new TreeSet<>(template.values());
+        return matches.stream()
+                .map(match -> match.getStartDateTime().toLocalDate())
+                .max(Comparator.naturalOrder())
+                .orElse(tournamentOptions.getStartDate());
     }
 
     @Override
@@ -297,7 +173,7 @@ public class StraightRoundRobin extends Tournament {
             // Swap first match with random other match in round
             if(match.getNumber() == 1){
                 firstMatch = match;
-                randInt = rand.nextInt(numMatchesPerRound) + 1;
+                randInt = rand.nextInt(getNumMatchesPerRound()) + 1;
             }
             if(match.getNumber() == randInt){
                 otherMatch = match;
@@ -382,4 +258,14 @@ public class StraightRoundRobin extends Tournament {
     }
 
 
+    private LocalDate nextMatchDate(LocalDate currentDate, DayOfWeek nextDay) {
+        DayOfWeek currentDay = currentDate.getDayOfWeek();
+
+        int difference = nextDay.getValue() - currentDay.getValue();
+        if(difference == 0)
+            return currentDate;
+
+        return currentDate.plusDays(difference);
+
+    }
 }

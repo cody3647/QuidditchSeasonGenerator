@@ -32,7 +32,10 @@ import javafx.collections.ObservableMap;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 
 public class Context {
     private final ObjectProperty<Team> currentTeam;
@@ -119,9 +122,7 @@ public class Context {
 
 
         tournamentOptions.blackoutDatesProperty().addListener(listChangeListener);
-        tournamentOptions.validStartTimesProperty().addListener(listChangeListener);
-        tournamentOptions.roundsPerWeekProperty().addListener(changeListener);
-        tournamentOptions.hoursBetweenMatchesProperty().addListener(changeListener);
+        tournamentOptions.matchDayTimeListProperty().addListener(listChangeListener);
         tournamentOptions.startDateProperty().addListener(changeListener);
     }
 

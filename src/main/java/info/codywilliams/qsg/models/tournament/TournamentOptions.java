@@ -23,81 +23,59 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.SortedList;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.Month;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Comparator;
 
 public class TournamentOptions {
     private final StringProperty leagueName;
-    private final DoubleProperty roundsPerWeek;
-    private final IntegerProperty hoursBetweenMatches;
-    private final ListProperty<ValidStartTime> validStartTimes;
+    private final ListProperty<MatchDayTime> matchDayTimeList;
+    private final SortedList<MatchDayTime> sortedMatchDayTimeList;
     private final ListProperty<BlackoutDates> blackoutDates;
     private final ObjectProperty<LocalDate> startDate;
-    private final ObjectProperty<DayOfWeek> validStartDay;
+    private final IntegerProperty matchesPerWeek;
 
     public TournamentOptions() {
         leagueName = new SimpleStringProperty(this, "leagueName", "");
-        roundsPerWeek = new SimpleDoubleProperty(this, "roundsPerWeek", 1);
-        hoursBetweenMatches = new SimpleIntegerProperty(this, "hoursBetweenMatches", 0);
-        validStartTimes = new SimpleListProperty<>(this, "acceptableTimes",
-                FXCollections.observableArrayList(validStartTime -> new Observable[]{validStartTime.earliestProperty(), validStartTime.latestProperty(), validStartTime.enableDayProperty()}));
-        for (DayOfWeek day: DayOfWeek.values()) {
-            ValidStartTime validStartTime = new ValidStartTime();
-            validStartTime.setDayOfWeek(day);
-            validStartTime.setEnableDay(day.getValue() >= 5);
-            validStartTimes.add(validStartTime);
-        }
-        startDate = new SimpleObjectProperty<>(this, "startDate", firstFridayOctober);
+        matchDayTimeList = new SimpleListProperty<>(this, "matchDayTimes",
+                FXCollections.observableArrayList(matchDayTime -> new Observable[]{matchDayTime.dayOfWeekProperty(), matchDayTime.localTimeProperty(), matchDayTime.priorityProperty(), matchDayTime.countProperty()}));
+        matchDayTimeList.add(defaultMatchDayTime());
+        sortedMatchDayTimeList = new SortedList<>(matchDayTimeList, Comparator.naturalOrder());
+        startDate = new SimpleObjectProperty<>(this, "startDate", firstMondayOctober);
         blackoutDates = new SimpleListProperty<>(this, "blackoutDates", FXCollections.observableArrayList(blackoutDate -> new Observable[]{blackoutDate.startProperty(), blackoutDate.endProperty()}));
-        validStartDay = new SimpleObjectProperty<>();
-        validStartDay.setValue(getStartDate().getDayOfWeek());
+        matchesPerWeek = new SimpleIntegerProperty(this, "matchesPerWeek", 1);
 
-        // Add listener to valid start times to change valid start day whenever there is a change to the list
-        validStartTimes.addListener((ListChangeListener<ValidStartTime>) change -> {
-            change.next();
-            for (ValidStartTime validStartTime : change.getList()) {
-                if (validStartTime.getEnableDay()) {
-                    validStartDayProperty().setValue(validStartTime.getDayOfWeek());
-                    break;
-                }
-            }
+        // Add listener to matchDayTimeList to change valid start day whenever there is a change to the list
+        matchDayTimeList.addListener((ListChangeListener<MatchDayTime>) change -> {
+            System.out.println("TEST");
+            setMatchesPerWeek(getMatchDayTimeList().stream().mapToInt(MatchDayTime::getCount).sum());
 
-            if (getStartDate().getDayOfWeek() != validStartDayProperty().getValue()) {
-                int daysDiff = validStartDayProperty().getValue().getValue() - getStartDate().getDayOfWeek().getValue();
-                startDateProperty().setValue(getStartDate().plusDays(daysDiff));
-            }
         });
     }
 
     public void clear(){
         leagueName.setValue("");
-        roundsPerWeek.set(1);
-        hoursBetweenMatches.set(0);
-        for(ValidStartTime startTime : validStartTimes.get()){
-            startTime.setEnableDay(startTime.getDayOfWeek().getValue() >= 5);
-            startTime.setEarliest(ValidStartTime.defaultEarliest);
-            startTime.setLatest(ValidStartTime.defaultLatest);
-        }
-        startDate.setValue(firstFridayOctober);
+        matchDayTimeList.clear();
+        matchDayTimeList.add(defaultMatchDayTime());
+        startDate.setValue(firstMondayOctober);
         blackoutDates.clear();
-        validStartDay.setValue(getStartDate().getDayOfWeek());
-
+        matchesPerWeek.set(1);
     }
 
     public void loadSettings(SaveSettings settings){
         leagueName.setValue(settings.getLeagueName());
-        roundsPerWeek.setValue(settings.getRoundsPerWeek());
-        hoursBetweenMatches.setValue(settings.getHoursBetweenMatches());
-        for(int i = 0; i < validStartTimes.size(); i++){
-            validStartTimes.get(i).copyValues(settings.getValidStartTimes().get(i));
-        }
+        matchDayTimeList.addAll(settings.getMatchDayTimeList());
         startDate.setValue(settings.getStartDate());
         blackoutDates.addAll(settings.getBlackoutDates());
-        validStartDay.setValue(getStartDate().getDayOfWeek());
+    }
 
+    private MatchDayTime defaultMatchDayTime() {
+        return new MatchDayTime(DayOfWeek.FRIDAY, LocalTime.of(20,0, 0), 1);
     }
 
     public String getLeagueName() {
@@ -112,40 +90,20 @@ public class TournamentOptions {
         this.leagueName.set(leagueName);
     }
 
-    public double getRoundsPerWeek() {
-        return roundsPerWeek.get();
+    public ObservableList<MatchDayTime> getMatchDayTimeList() {
+        return matchDayTimeList.get();
     }
 
-    public DoubleProperty roundsPerWeekProperty() {
-        return roundsPerWeek;
+    public ListProperty<MatchDayTime> matchDayTimeListProperty() {
+        return matchDayTimeList;
     }
 
-    public void setRoundsPerWeek(double roundsPerWeek) {
-        this.roundsPerWeek.set(roundsPerWeek);
+    public void setMatchDayTimeList(ObservableList<MatchDayTime> matchDayTimeList) {
+        this.matchDayTimeList.set(matchDayTimeList);
     }
 
-    public int getHoursBetweenMatches() {
-        return hoursBetweenMatches.get();
-    }
-
-    public IntegerProperty hoursBetweenMatchesProperty() {
-        return hoursBetweenMatches;
-    }
-
-    public void setHoursBetweenMatches(int hoursBetweenMatches) {
-        this.hoursBetweenMatches.set(hoursBetweenMatches);
-    }
-
-    public ObservableList<ValidStartTime> getValidStartTimes() {
-        return validStartTimes.get();
-    }
-
-    public ListProperty<ValidStartTime> validStartTimesProperty() {
-        return validStartTimes;
-    }
-
-    public void setValidStartTimes(ObservableList<ValidStartTime> validStartTimes) {
-        this.validStartTimes.set(validStartTimes);
+    public SortedList<MatchDayTime> getSortedMatchDayTimeList() {
+        return sortedMatchDayTimeList;
     }
 
     public LocalDate getStartDate() {
@@ -172,17 +130,17 @@ public class TournamentOptions {
         this.blackoutDates.set(blackoutDates);
     }
 
-    public DayOfWeek getValidStartDay() {
-        return validStartDay.get();
+    public int getMatchesPerWeek() {
+        return matchesPerWeek.get();
     }
 
-    public ObjectProperty<DayOfWeek> validStartDayProperty() {
-        return validStartDay;
+    public IntegerProperty matchesPerWeekProperty() {
+        return matchesPerWeek;
     }
 
-    public void setValidStartDay(DayOfWeek validStartDay) {
-        this.validStartDay.set(validStartDay);
+    public void setMatchesPerWeek(int matchesPerWeek) {
+        this.matchesPerWeek.set(matchesPerWeek);
     }
 
-    static final private LocalDate firstFridayOctober = LocalDate.now().withMonth(Month.OCTOBER.getValue()).with(TemporalAdjusters.firstInMonth(DayOfWeek.FRIDAY));
+    static final private LocalDate firstMondayOctober = LocalDate.now().withMonth(Month.OCTOBER.getValue()).with(TemporalAdjusters.firstInMonth(DayOfWeek.MONDAY));
 }

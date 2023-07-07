@@ -3,9 +3,9 @@ package info.codywilliams.qsg.controllers;
 
 import info.codywilliams.qsg.App;
 import info.codywilliams.qsg.models.Context;
-import info.codywilliams.qsg.models.match.Match;
 import info.codywilliams.qsg.models.SaveSettings;
-import info.codywilliams.qsg.models.tournament.TimeEntry;
+import info.codywilliams.qsg.models.match.Match;
+import info.codywilliams.qsg.models.tournament.MatchDayTime;
 import info.codywilliams.qsg.util.Formatters;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -143,8 +143,8 @@ public class MenuController {
         Scene calendarScene = new Scene(scrollPane, 1000, 1000);
 
         if(context.getCurrentTournament() != null) {
-            for (TimeEntry entry : context.getCurrentTournament().getTemplate()) {
-                calendarVbox.getChildren().add(new Label(String.format("TimeEntry: %s %s\tCount: %d", entry.getDayOfWeek(), entry.getLocalTime().format(Formatters.timeFormatter), entry.getCount())));
+            for (MatchDayTime matchDayTime : context.getTournamentOptions().getMatchDayTimeList()) {
+                calendarVbox.getChildren().add(new Label(String.format("TimeEntry: %s %s\tCount: %d", matchDayTime.getDayOfWeek(), matchDayTime.getLocalTime().format(Formatters.timeFormatter), matchDayTime.getCount())));
             }
             calendarVbox.getChildren().add(new Label(""));
             calendarVbox.getChildren().add(new Label("Calendar"));

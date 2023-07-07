@@ -23,8 +23,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import info.codywilliams.qsg.models.tournament.BlackoutDates;
+import info.codywilliams.qsg.models.tournament.MatchDayTime;
 import info.codywilliams.qsg.models.tournament.TournamentOptions;
-import info.codywilliams.qsg.models.tournament.ValidStartTime;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
 
 import java.io.File;
@@ -38,9 +38,7 @@ public class SaveSettings {
     private TournamentType tournamentType;
     // Tournament Options
     private String leagueName;
-    private double roundsPerWeek;
-    private int hoursBetweenMatches;
-    private List<ValidStartTime> validStartTimes;
+    private List<MatchDayTime> matchDayTimeList;
     private List<BlackoutDates> blackoutDates;
     private LocalDate startDate;
     private long seed;
@@ -52,10 +50,8 @@ public class SaveSettings {
         this.teams = teams;
         this.tournamentType = tournamentType;
         leagueName = tournamentOptions.getLeagueName();
-        roundsPerWeek = tournamentOptions.getRoundsPerWeek();
-        hoursBetweenMatches = tournamentOptions.getHoursBetweenMatches();
 
-        validStartTimes = new ArrayList<>(tournamentOptions.getValidStartTimes());
+        matchDayTimeList = new ArrayList<>(tournamentOptions.getMatchDayTimeList());
         blackoutDates = new ArrayList<>(tournamentOptions.getBlackoutDates());
 
         startDate = tournamentOptions.getStartDate();
@@ -90,28 +86,12 @@ public class SaveSettings {
         this.leagueName = leagueName;
     }
 
-    public double getRoundsPerWeek() {
-        return roundsPerWeek;
+    public List<MatchDayTime> getMatchDayTimeList() {
+        return matchDayTimeList;
     }
 
-    public void setRoundsPerWeek(double roundsPerWeek) {
-        this.roundsPerWeek = roundsPerWeek;
-    }
-
-    public int getHoursBetweenMatches() {
-        return hoursBetweenMatches;
-    }
-
-    public void setHoursBetweenMatches(int hoursBetweenMatches) {
-        this.hoursBetweenMatches = hoursBetweenMatches;
-    }
-
-    public List<ValidStartTime> getValidStartTimes() {
-        return validStartTimes;
-    }
-
-    public void setValidStartTimes(List<ValidStartTime> validStartTimes) {
-        this.validStartTimes = validStartTimes;
+    public void setMatchDayTimeList(List<MatchDayTime> matchDayTimeList) {
+        this.matchDayTimeList = matchDayTimeList;
     }
 
     public List<BlackoutDates> getBlackoutDates() {
