@@ -18,6 +18,7 @@
 
 package info.codywilliams.qsg.models.mediawiki;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import static info.codywilliams.qsg.App.mapper;
@@ -27,6 +28,7 @@ public class ClientLogin extends MediaikiApiResponse {
     String status;
     String username;
     String message;
+    @JsonProperty("messagecode")
     String messageCode;
 
     public String getStatus() {

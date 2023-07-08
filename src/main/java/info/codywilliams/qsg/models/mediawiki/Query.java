@@ -29,6 +29,7 @@ public class Query extends MediaikiApiResponse {
     public static final String field = "query";
     List<Page> pages;
     Map<String, String> tokens;
+    List<Map<String, String>> normalized;
 
     public List<Page> getPages() {
         return pages;
@@ -48,6 +49,14 @@ public class Query extends MediaikiApiResponse {
 
     public String getToken(String name) {
         return tokens.get(name);
+    }
+
+    public List<Map<String, String>> getNormalized() {
+        return normalized;
+    }
+
+    public void setNormalized(List<Map<String, String>> normalized) {
+        this.normalized = normalized;
     }
 
     @Override

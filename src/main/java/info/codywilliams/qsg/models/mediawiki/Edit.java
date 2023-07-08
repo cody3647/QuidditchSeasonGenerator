@@ -40,6 +40,10 @@ public class Edit extends MediaikiApiResponse {
     @JsonProperty("newtimestamp")
     LocalDateTime newTimestamp;
     String watched;
+    @JsonProperty("nochange")
+    boolean noChange;
+    @JsonProperty("new")
+    boolean newPage;
 
     public String getResult() {
         return result;
@@ -103,6 +107,22 @@ public class Edit extends MediaikiApiResponse {
 
     public void setWatched(String watched) {
         this.watched = watched;
+    }
+
+    public boolean isNoChange() {
+        return noChange;
+    }
+
+    public void setNoChange(boolean noChange) {
+        this.noChange = noChange;
+    }
+
+    public boolean isNewPage() {
+        return newPage;
+    }
+
+    public void setNewPage(boolean newPage) {
+        this.newPage = newPage;
     }
 
     @Override

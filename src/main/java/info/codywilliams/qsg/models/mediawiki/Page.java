@@ -43,6 +43,8 @@ public class Page extends OtherFields {
     @JsonProperty("lastrevid")
     int lastRevisionId;
     int length;
+    @JsonProperty("new")
+    boolean newPage;
     List<Revision> revisions;
 
     public int getPageId() {
@@ -131,6 +133,14 @@ public class Page extends OtherFields {
 
     public void setLength(int length) {
         this.length = length;
+    }
+
+    public boolean isNewPage() {
+        return newPage;
+    }
+
+    public void setNewPage(boolean newPage) {
+        this.newPage = newPage;
     }
 
     public List<Revision> getRevisions() {
