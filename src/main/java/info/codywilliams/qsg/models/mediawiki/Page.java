@@ -20,9 +20,10 @@ package info.codywilliams.qsg.models.mediawiki;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import info.codywilliams.qsg.service.Mediawiki;
 
 import java.util.List;
+
+import static info.codywilliams.qsg.App.mapper;
 
 public class Page extends OtherFields {
     @JsonProperty("pageid")
@@ -143,7 +144,7 @@ public class Page extends OtherFields {
     @Override
     public String toString() {
         try {
-            return Mediawiki.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
         } catch (JsonProcessingException e) {
             return "Unable to convert to JSON string";
         }

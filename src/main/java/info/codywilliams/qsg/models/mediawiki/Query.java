@@ -19,10 +19,11 @@
 package info.codywilliams.qsg.models.mediawiki;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import info.codywilliams.qsg.service.Mediawiki;
 
 import java.util.List;
 import java.util.Map;
+
+import static info.codywilliams.qsg.App.mapper;
 
 public class Query extends MediaikiApiResponse {
     public static final String field = "query";
@@ -52,7 +53,7 @@ public class Query extends MediaikiApiResponse {
     @Override
     public String toString() {
         try {
-            return Mediawiki.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
         } catch (JsonProcessingException e) {
             return "Unable to convert to JSON string";
         }

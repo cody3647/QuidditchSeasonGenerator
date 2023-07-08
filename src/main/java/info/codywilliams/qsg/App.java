@@ -18,6 +18,9 @@
 
 package info.codywilliams.qsg;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import info.codywilliams.qsg.controllers.*;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.util.DependencyInjector;
@@ -119,4 +122,8 @@ public class App extends Application {
     public static void close(){
         //Platform.exit();
     }
+
+    final static public ObjectMapper mapper = JsonMapper.builder()
+            .addModule(new JavaTimeModule())
+            .build();
 }

@@ -18,10 +18,7 @@
 
 package info.codywilliams.qsg.models;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import info.codywilliams.qsg.models.tournament.BlackoutDates;
 import info.codywilliams.qsg.models.tournament.MatchDayTime;
 import info.codywilliams.qsg.models.tournament.TournamentOptions;
@@ -32,6 +29,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import static info.codywilliams.qsg.App.mapper;
 
 public class SaveSettings {
     private List<Team> teams;
@@ -119,17 +118,10 @@ public class SaveSettings {
     }
 
     static public SaveSettings loadFromFile(File settingsFile) throws IOException {
-        ObjectMapper mapper = JsonMapper.builder()
-                .addModule(new JavaTimeModule())
-                .build();
-
         return mapper.readValue(settingsFile, SaveSettings.class);
     }
 
     public void saveToFile(File saveFile) throws IOException {
-        ObjectMapper mapper = JsonMapper.builder()
-                .addModule(new JavaTimeModule())
-                .build();
         mapper.enable(SerializationFeature.INDENT_OUTPUT);
         mapper.writeValue(saveFile, this);
     }

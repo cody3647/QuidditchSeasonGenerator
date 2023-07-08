@@ -20,8 +20,8 @@ package info.codywilliams.qsg.models.mediawiki;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import info.codywilliams.qsg.service.Mediawiki;
 
+import static info.codywilliams.qsg.App.mapper;
 public class Error extends MediaikiApiResponse {
     public static final String field = "Error";
     String code;
@@ -56,7 +56,7 @@ public class Error extends MediaikiApiResponse {
     @Override
     public String toString() {
         try {
-            return Mediawiki.objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(this);
         } catch (JsonProcessingException e) {
             return "Unable to convert to JSON string";
         }
