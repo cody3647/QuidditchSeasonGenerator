@@ -13,8 +13,7 @@ module QuidditchSeasonGenerator {
     requires ch.qos.logback.classic;
     requires org.jetbrains.annotations;
     requires java.naming;
-    requires okhttp3;
-    requires okhttp3.logging;
+    requires java.net.http;
 
     opens info.codywilliams.qsg to javafx.fxml;
     exports info.codywilliams.qsg;
