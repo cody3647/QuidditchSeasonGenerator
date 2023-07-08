@@ -43,6 +43,15 @@ abstract public class Player implements Serializable, Comparable<Player> {
     final private IntegerProperty foulLikelihood;
 
     @JsonIgnore
+    private double defenseModifier;
+    @JsonIgnore
+    private double offenceModifier;
+    @JsonIgnore
+    private double teamworkModifier;
+    @JsonIgnore
+    private double foulModifier;
+
+    @JsonIgnore
     final private NumberBinding skillLevel;
 
     @JsonIgnore
@@ -119,6 +128,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
             skillDefense = MIN;
 
         this.skillDefense.set(skillDefense);
+        defenseModifier = (double) skillDefense / MAX;
     }
 
     public IntegerProperty skillDefenseProperty() {
@@ -136,6 +146,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
             skillOffense = MIN;
 
         this.skillOffense.set(skillOffense);
+        offenceModifier = (double) skillOffense / MAX;
     }
 
     public IntegerProperty skillOffenseProperty() {
@@ -152,6 +163,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
         else if(skillTeamwork < MIN)
             skillTeamwork = MIN;
         this.skillTeamwork.set(skillTeamwork);
+        teamworkModifier = (double) skillTeamwork / MAX;
     }
 
     public IntegerProperty skillTeamworkProperty() {
@@ -168,6 +180,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
         else if(foulLikelihood < MIN)
             foulLikelihood = MIN;
         this.foulLikelihood.set(foulLikelihood);
+        foulModifier = (double) foulLikelihood / MAX;
     }
 
     public IntegerProperty foulLikelihoodProperty() {
@@ -176,6 +189,22 @@ abstract public class Player implements Serializable, Comparable<Player> {
 
     public int getSkillLevel(){
         return skillLevel.intValue();
+    }
+
+    public double getDefenseModifier() {
+        return defenseModifier;
+    }
+
+    public double getOffenceModifier() {
+        return offenceModifier;
+    }
+
+    public double getTeamworkModifier() {
+        return teamworkModifier;
+    }
+
+    public double getFoulModifier() {
+        return foulModifier;
     }
 
     @Override
