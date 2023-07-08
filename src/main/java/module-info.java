@@ -12,6 +12,7 @@ module QuidditchSeasonGenerator {
     requires org.slf4j;
     requires ch.qos.logback.classic;
     requires org.jetbrains.annotations;
+    requires java.naming;
     requires okhttp3;
     requires okhttp3.logging;
 
