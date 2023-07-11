@@ -30,6 +30,9 @@ public class PlayChaser extends Play {
     Keeper defendingKeeper;
     QuaffleOutcome quaffleOutcome;
 
+    PlayChaser() {
+    }
+
     public PlayChaser(TeamType attackingTeamType, TeamType defendingTeamType, Chaser attacker, Chaser defender, Keeper defendingKeeper) {
         this.attackingTeamType = attackingTeamType;
         this.defendingTeamType = defendingTeamType;

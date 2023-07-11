@@ -19,10 +19,12 @@
 package info.codywilliams.qsg.models.match;
 
 import info.codywilliams.qsg.models.Team;
-import info.codywilliams.qsg.output.Element;
 import info.codywilliams.qsg.output.MatchInfobox;
 import info.codywilliams.qsg.output.Page;
-import info.codywilliams.qsg.output.elements.*;
+import info.codywilliams.qsg.output.elements.Div;
+import info.codywilliams.qsg.output.elements.Paragraph;
+import info.codywilliams.qsg.output.elements.Text;
+import info.codywilliams.qsg.output.elements.UnorderedList;
 import info.codywilliams.qsg.util.Formatters;
 import info.codywilliams.qsg.util.ResourceBundleReplacer;
 
@@ -38,8 +40,6 @@ public class Match implements Comparable<Match>{
     private Team awayTeam;
     private String location;
     private Duration matchLength;
-    private boolean timeChanged;
-
     private int scoreHome;
     private int scoreAway;
     private int foulsHome;
@@ -204,6 +204,14 @@ public class Match implements Comparable<Match>{
 
     public int getFoulsAway() {
         return foulsAway;
+    }
+
+    public void incrementFoulsHome() {
+        this.foulsHome++;
+    }
+
+    public void incrementFoulsAway() {
+        this.foulsAway++;
     }
 
     public int homeScore(){

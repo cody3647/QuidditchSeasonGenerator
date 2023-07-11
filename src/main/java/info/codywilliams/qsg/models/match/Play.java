@@ -32,7 +32,6 @@ public abstract class Play {
     int scoreHome;
     int scoreAway;
     Duration matchLength;
-
     int playDurationSeconds;
 
     public TeamType getAttackingTeamType() {
