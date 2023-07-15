@@ -23,6 +23,7 @@ import info.codywilliams.qsg.models.match.*;
 import info.codywilliams.qsg.models.player.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -75,9 +76,11 @@ public class MatchGenerator {
 
     public void run(Match match) {
         this.match = match;
-        logger.info("Generating {}", this.match.getHomeTeam().getName() + " vs " + this.match.getAwayTeam().getName());
+        MDC.put("title", this.match.getHomeTeam().getName() + " vs " + this.match.getAwayTeam().getName());
+        logger.info("Generating Match");
         setUpMatch();
         generate();
+        logger.info(this.match.outcomesToString());
         cleanUp();
     }
 
@@ -99,7 +102,7 @@ public class MatchGenerator {
         matchSeed ^= ((long) match.getHomeTeam().hashCode() << 32) | match.getAwayTeam().hashCode();
         matchSeed ^= seed;
         random.setSeed(matchSeed);
-        logger.info("");
+        logger.info("Match Seed: {}", matchSeed);
     }
 
     private void setUpMatch() {
@@ -127,8 +130,8 @@ public class MatchGenerator {
 
     private void generate() {
         // Start the game, one team gets the quaffle first
-        int homeStart = modifiedRandomNumbersSum(1, 10, 5, homeTeam.getChasersSkills().getAvgOffenseModifier());
-        int awayStart = modifiedRandomNumbersSum(1, 10, 5, awayTeam.getChasersSkills().getAvgOffenseModifier());
+        int homeStart = modifiedRandomNumbersSum(homeTeam.getChasersSkills().getAvgOffenseModifier());
+        int awayStart = modifiedRandomNumbersSum(awayTeam.getChasersSkills().getAvgOffenseModifier());
 
         //  Set who is starting as offense and defense
         attackingTeam = homeStart >= awayStart ? homeTeam : awayTeam;
@@ -142,14 +145,14 @@ public class MatchGenerator {
 
             // Seeker Round
             int loops = seekerRoundLoops;
-            while(!snitchCaught && loops > 0) {
+            while (!snitchCaught && loops > 0) {
                 snitchCaught = seekerRound();
                 loops--;
             }
 
             long h = hours;
             hours = match.getMatchLength().toHours();
-            if(h != hours  && hours > 2)
+            if (h != hours && hours > 2)
                 seekerRoundLoops *= 2;
         }
 
@@ -196,24 +199,21 @@ public class MatchGenerator {
         if (bludgerPlay % 3 == 0) {
             play.setBeaterBlocker(getRandomBeater(targetTeam));
 
-            int hit = modifiedRandomNumbersSum(1, 10, 10, beater.getOffenceModifier(), beaterTeam.getBeatersSkills().getAvgOffenseModifier() * beaterTeam.getBeatersSkills().getAvgTeamworkModifier());
-            int block = modifiedRandomNumbersSum(1, 10, 10, targetTeam.getBeatersSkills().getAvgDefenseModifier() * targetTeam.getBeatersSkills().getAvgTeamworkModifier());
-            int miss = modifiedRandomNumbersSum(1, 10, 10, target.getDefenseModifier(), targetTeam.getChasersSkills().getAvgDefenseModifier() * targetTeam.getChasersSkills().getAvgTeamworkModifier());
+            int hit = modifiedRandomNumbersSum(beater.getOffenceModifier(), beaterTeam.getBeatersSkills().getAvgOffenseModifier() * beaterTeam.getBeatersSkills().getAvgTeamworkModifier());
+            int block = modifiedRandomNumbersSum(targetTeam.getBeatersSkills().getAvgDefenseModifier() * targetTeam.getBeatersSkills().getAvgTeamworkModifier());
+            int miss = modifiedRandomNumbersSum(target.getDefenseModifier(), targetTeam.getChasersSkills().getAvgDefenseModifier() * targetTeam.getChasersSkills().getAvgTeamworkModifier());
 
             if (block > hit) {
                 play.setBludgerOutcome(Play.BludgerOutcome.BLOCKED);
-            }
-            else if (miss > hit) {
+            } else if (miss > hit) {
                 play.setBludgerOutcome(Play.BludgerOutcome.MISSED);
-            }
-            else {
+            } else {
                 play.setBludgerOutcome(Play.BludgerOutcome.HIT);
                 outcome = true;
             }
 
-            logger.trace("Bludger Play:  Outcome: {}, Hit: {}, Block: {}, Miss: {}",  play.getBludgerOutcome(), hit, block, miss);
-        }
-        else
+            logger.trace("Bludger Play:  Outcome: {}, Hit: {}, Block: {}, Miss: {}", play.getBludgerOutcome(), hit, block, miss);
+        } else
             logger.trace("Bludger Play: {}", bludgerPlay);
 
         return outcome;
@@ -231,26 +231,23 @@ public class MatchGenerator {
         Chaser defender = getRandomChaser(defendingTeam);
         PlayChaser play;
 
-        int score = modifiedRandomNumbersSum(1, 10, 10,
+        int score = modifiedRandomNumbersSum(
                 attacker.getOffenceModifier(), attackingTeam.getChasersSkills().getAvgOffenseModifier() * attackingTeam.getChasersSkills().getAvgTeamworkModifier());
-        int block = modifiedRandomNumbersSum(1, 10, 10,
+        int block = modifiedRandomNumbersSum(
                 keeper.getDefenseModifier(), defender.getDefenseModifier() * defendingTeam.getChasersSkills().getAvgTeamworkModifier());
-        int miss = modifiedRandomNumbersSum(1, 10, 1, attacker.getOffenceModifier());
+        int miss = modifiedRandomNumbersSum(attacker.getOffenceModifier());
 
 
         if (isFoul(score, attacker)) {
             play = new PlayFoul(attacker, attackingTeam.type);
             foul(attacker, attackingTeam, defendingTeam, (PlayFoul) play);
-        }
-        else if (isFoul(block, defender)) {
+        } else if (isFoul(block, defender)) {
             play = new PlayFoul(defender, defendingTeam.type);
             foul(defender, defendingTeam, attackingTeam, (PlayFoul) play);
-        }
-        else if (isFoul(block, keeper)) {
+        } else if (isFoul(block, keeper)) {
             play = new PlayFoul(keeper, defendingTeam.type);
             foul(keeper, defendingTeam, attackingTeam, (PlayFoul) play);
-        }
-        else {
+        } else {
             play = new PlayChaser(attackingTeam.type, defendingTeam.type, attacker, defender, keeper);
             attemptGoal(score, block, miss, play);
         }
@@ -273,7 +270,7 @@ public class MatchGenerator {
         play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.TURNOVER);
         play.setPlayDurationSeconds(randomNumber(15, 60));
         logger.trace("Turnover: Attacking team: {}, Quaffle Outcome: {}, Bludger Outcome: {}, Seconds: {}",
-                play.getAttackingTeamType(), play.getQuaffleOutcome(),  play.getBludgerOutcome(), play.getPlayDurationSeconds());
+                play.getAttackingTeamType(), play.getQuaffleOutcome(), play.getBludgerOutcome(), play.getPlayDurationSeconds());
         match.addPlay(play);
         // Swap the teams, the chosen defender gets the quaffle
         swapTeams(defender);
@@ -285,9 +282,9 @@ public class MatchGenerator {
         Keeper keeper = foulerTeam.getKeeper();
         playFoul.setPlayChaser(otherTeam.type, foulerTeam.type, penaltyShotTaker, defender, keeper);
 
-        int score = modifiedRandomNumbersSum(1, 10, 10, penaltyShotTaker.getOffenceModifier());
-        int block = modifiedRandomNumbersSum(1, 10, 10, keeper.getDefenseModifier());
-        int miss = modifiedRandomNumbersSum(1, 10, 1, attacker.getOffenceModifier());
+        int score = modifiedRandomNumbersSum(penaltyShotTaker.getOffenceModifier());
+        int block = modifiedRandomNumbersSum(keeper.getDefenseModifier());
+        int miss = modifiedRandomNumbersSum(attacker.getOffenceModifier());
         switch (foulerTeam.type) {
             case HOME -> match.incrementFoulsHome();
             case AWAY -> match.incrementFoulsAway();
@@ -296,7 +293,7 @@ public class MatchGenerator {
     }
 
     private boolean isFoul(int number, Player player) {
-        switch(number) {
+        switch (number) {
             case 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144 -> {
                 int foul = randomNumber(0, 10);
                 logger.trace("Is Foul? {} < {} = {}", foul, player.getFoulLikelihood(), foul < player.getFoulLikelihood());
@@ -309,7 +306,7 @@ public class MatchGenerator {
     }
 
     void attemptGoal(int score, int block, int miss, PlayChaser play) {
-        if (score > block && miss < 6) {
+        if (score >= block && miss > 6) {
             play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.SCORED);
             switch (attackingTeam.type) {
                 case HOME -> match.homeScore();
@@ -334,16 +331,23 @@ public class MatchGenerator {
         int snitchChance = randomNumber(snitchChanceRange);
 
         // If this isn't in the snitch range,  nothing happens this round
-        if (!inRange(snitchChance, snitchInteractionRange))
+        if (!inRange(snitchChance, snitchInteractionRange)) {
+            if (snitchChance % 13 == 0) {
+                PlaySeeker playSeeker = new PlaySeeker(attackingTeam.getSeeker(), attackingTeam.getSeeker(), attackingTeam.type);
+                playSeeker.setSnitchOutcome(PlaySeeker.SnitchOutcome.SEEN);
+                match.addPlay(playSeeker);
+                logger.trace("Snitch Seen: Snitch Chance: {} {}, Snitch Outcome: {}", snitchChance, snitchInteractionRange, playSeeker.getSnitchOutcome());
+            }
             return false;
+        }
 
         // Get the chance for each team's seeker to be the seeker to catch or see the snitch
         int homeSeekerChance;
         int awaySeekerChance;
         int difference;
         do {
-            homeSeekerChance = modifiedRandomNumber(1, 100, homeTeam.getSeeker().getOffenceModifier());
-            awaySeekerChance = modifiedRandomNumber(1, 100, awayTeam.getSeeker().getOffenceModifier());
+            homeSeekerChance = modifiedRandomNumber(homeTeam.getSeeker().getOffenceModifier());
+            awaySeekerChance = modifiedRandomNumber(awayTeam.getSeeker().getOffenceModifier());
             difference = homeSeekerChance - awaySeekerChance;
             // If difference is 0, run this again until it's not 0 to ensure we have a definitive seeker
         } while (difference == 0);
@@ -423,14 +427,14 @@ public class MatchGenerator {
     }
 
     void shrinkSnitchChanceRange(int snitchChance) {
-        if(snitchChanceRange[0] == snitchInteractionRange[0] && snitchChanceRange[1] == snitchInteractionRange[1])
+        if (snitchChanceRange[0] == snitchInteractionRange[0] && snitchChanceRange[1] == snitchInteractionRange[1])
             return;
 
         // if chance is divisible by 3 (or later in the match 2) shrink the chance range
         int divisor;
         long minutes = match.getMatchLength().toMinutes();
 
-        if(minutes > 180)
+        if (minutes > 180)
             divisor = 1;
         else if (minutes > 120)
             divisor = 2;
@@ -458,27 +462,32 @@ public class MatchGenerator {
         return number;
     }
 
-    private int modifiedRandomNumbersSum(long lowestNumber, long largestNumber, int num, double... modifiers) {
+    private int modifiedRandomNumbersSum(double... modifiers) {
         double modifier = 1.0 + Arrays.stream(modifiers).sum();
+        long origin = 1;
+        long bound = 48;
+        int size = 3;
 
-        long sum = random.longs(num, lowestNumber, largestNumber + 1).sum();
+        long sum = random.longs(size, origin, bound + 1).sum();
         long result = Math.round(sum * modifier);
 
         logger.trace("Random Sum: Sum: {} [{}, {}, {}], Modifier: {}, Modifiers: {}, Result: {}",
-                sum, lowestNumber, largestNumber, num, modifier, modifiers, result);
+                sum, origin, bound, size, modifier, modifiers, result);
         if (result > Integer.MAX_VALUE)
             throw new IllegalArgumentException("Result is too large, check modifier and bounds");
         return (int) result;
     }
 
-    private int modifiedRandomNumber(long lowestNumber, long largestNumber, double... modifiers) {
+    private int modifiedRandomNumber(double... modifiers) {
         double modifier = 1.0 + Arrays.stream(modifiers).sum();
+        int origin = 1;
+        int bound = 100;
 
-        int number = random.nextInt((int) lowestNumber, (int) largestNumber + 1);
+        int number = random.nextInt(origin, bound + 1);
         long result = Math.round(number * modifier);
 
         logger.trace("Random Number: Number: {} [{}, {}], Modifier: {}, Modifiers: {}, Result: {}",
-                number, lowestNumber, largestNumber, modifier, modifiers, result);
+                number, origin, bound, modifier, modifiers, result);
 
         if (result > Integer.MAX_VALUE)
             throw new IllegalArgumentException("Result is too large, check modifier and bounds");
@@ -491,11 +500,7 @@ public class MatchGenerator {
     }
 
     private boolean inRange(long number, long[] range) {
-        return inRange(number, range[0], range[1]);
-    }
-
-    private boolean inRange(long number, long lowEnd, long highEnd) {
-        return lowEnd <= number && number <= highEnd;
+        return range[0] <= number && number <= range[1];
     }
 
     static private class MatchTeam {
@@ -535,8 +540,10 @@ public class MatchGenerator {
                 if (player.isInjured(date)) {
                     player.isCurrentlyInjured = true;
                     injuredPlayers.add(player);
-                } else
+                } else {
+                    player.isCurrentlyInjured = false;
                     uninjuredPlayers.add(player);
+                }
             }
 
             Collections.sort(uninjuredPlayers);
