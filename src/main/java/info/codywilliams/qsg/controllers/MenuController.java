@@ -1,23 +1,19 @@
 package info.codywilliams.qsg.controllers;
 
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.LoggerContext;
 import info.codywilliams.qsg.App;
+import info.codywilliams.qsg.generators.MatchGenerator;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.SaveSettings;
-import info.codywilliams.qsg.models.match.Match;
-import info.codywilliams.qsg.models.tournament.MatchDayTime;
+import info.codywilliams.qsg.service.Mediawiki;
 import info.codywilliams.qsg.util.Formatters;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,17 +22,18 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.ResourceBundle;
-import java.util.SortedSet;
 
 public class MenuController {
     private final Context context;
     private final Logger logger;
+
+
     @FXML
     ResourceBundle resources;
 
     public MenuController(Context context){
         this.context = context;
-        logger = LoggerFactory.getLogger(AppController.class);
+        logger = LoggerFactory.getLogger(MenuController.class);
     }
 
     public void initialize() {
@@ -125,6 +122,16 @@ public class MenuController {
     }
 
     @FXML
+    void displayMediawikiSetupWindow(ActionEvent ignoredEvent) {
+        try {
+            MediawikiSetupController.displayMediawikiSetupWindow();
+        } catch (IOException e) {
+            logger.error("Unable to load Mediawiki Setup Window", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    @FXML
     void menuHelpAbout(ActionEvent ignoredEvent) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle(resources.getString("alert.about.title"));
@@ -135,31 +142,41 @@ public class MenuController {
     }
 
     @FXML
-    void displayMatchCalendar(ActionEvent ignoredEvent){
-        Stage calendarWindow = new Stage();
-        calendarWindow.initModality(Modality.NONE);
-        VBox calendarVbox = new VBox();
-        ScrollPane scrollPane = new ScrollPane(calendarVbox);
-        Scene calendarScene = new Scene(scrollPane, 1000, 1000);
+    void changeMediawikiLogLevelInfo(ActionEvent ignoredEvent) {
+        logger.info("Changed mediawiki log level to {}", Level.INFO);
+        changeLogLevel(Mediawiki.class, Level.INFO);
+    }
+    @FXML
+    void changeMediawikiLogLevelDebug(ActionEvent ignoredEvent) {
+        logger.info("Changed mediawiki log level to {}", Level.DEBUG);
+        changeLogLevel(Mediawiki.class, Level.DEBUG);
+    }
+    @FXML
+    void changeMediawikiLogLevelTrace(ActionEvent ignoredEvent) {
+        logger.info("Changed mediawiki log level to {}", Level.TRACE);
+        changeLogLevel(Mediawiki.class, Level.TRACE);
+    }
 
-        if(context.getCurrentTournament() != null) {
-            for (MatchDayTime matchDayTime : context.getTournamentOptions().getMatchDayTimeList()) {
-                calendarVbox.getChildren().add(new Label(String.format("TimeEntry: %s %s\tCount: %d", matchDayTime.getDayOfWeek(), matchDayTime.getLocalTime().format(Formatters.timeFormatter), matchDayTime.getCount())));
-            }
-            calendarVbox.getChildren().add(new Label(""));
-            calendarVbox.getChildren().add(new Label("Calendar"));
-            for (Match match : context.getCurrentTournament().getMatches()) {
-                calendarVbox.getChildren().add(new Label(String.format("Round: %2d\tMatch: %2d\t\tDate: %s", match.getRound(), match.getNumber(), match.getStartDateTime().format(Formatters.dateTimeFormatter))));
-            }
-        }
-        else
-            calendarVbox.getChildren().add(new Label("No matches to show yet, please configure the tournament"));
-        calendarWindow.setScene(calendarScene);
-        calendarWindow.show();
+    @FXML
+    void changeMatchGeneratorLogLevelInfo(ActionEvent ignoredEvent) {
+        logger.info("Changed match generator log level to {}", Level.INFO);
+        changeLogLevel(MatchGenerator.class, Level.INFO);
+    }
+    @FXML
+    void changeMatchGeneratorLogLevelDebug(ActionEvent ignoredEvent) {
+        logger.info("Changed match generator log level to {}", Level.DEBUG);
+        changeLogLevel(MatchGenerator.class, Level.DEBUG);
+    }
+    @FXML
+    void changeMatchGeneratorLogLevelTrace(ActionEvent ignoredEvent) {
+        logger.info("Changed match generator log level to {}", Level.TRACE);
+        changeLogLevel(MatchGenerator.class, Level.TRACE);
+    }
 
-        SortedSet<Match> matches = context.getCurrentTournament().assignTeamsToMatches(context.getTeams(), context.getSeed());
-
-
+    void changeLogLevel(Class<?> loggerName, Level level) {
+        LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+        ch.qos.logback.classic.Logger loggerToChange = loggerContext.getLogger(loggerName);
+        loggerToChange.setLevel(level);
     }
 
     private enum FileAction {

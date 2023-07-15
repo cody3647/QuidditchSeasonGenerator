@@ -21,6 +21,7 @@ package info.codywilliams.qsg.models;
 import info.codywilliams.qsg.models.tournament.Tournament;
 import info.codywilliams.qsg.models.tournament.TournamentOptions;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
+import info.codywilliams.qsg.service.Mediawiki;
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.*;
@@ -50,6 +51,7 @@ public class Context {
     final private StringProperty rightStatus;
     private File currentSaveFile;
     private boolean listChangeAndChangeFlag = false;
+    private final Mediawiki mediawiki;
 
 
 
@@ -69,6 +71,8 @@ public class Context {
 
         leftStatus = new SimpleStringProperty(this, "leftStatus");
         rightStatus = new SimpleStringProperty(this, "rightStatus");
+
+        mediawiki = new Mediawiki();
 
         teamListenersAndBindings();
         tournamentListeners();
@@ -261,5 +265,9 @@ public class Context {
         }
         setCurrentTournament(getTournaments().get(type));
         getCurrentTournament().recalculateTournament(getNumTeams());
+    }
+
+    public Mediawiki getMediawiki() {
+        return mediawiki;
     }
 }

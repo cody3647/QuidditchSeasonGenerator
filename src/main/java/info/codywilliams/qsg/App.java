@@ -108,7 +108,7 @@ public class App extends Application {
         DependencyInjector.addInjectionMethod(TeamEditorController.class, type -> new TeamEditorController(context));
         DependencyInjector.addInjectionMethod(TournamentEditorController.class, type-> new TournamentEditorController(context));
         DependencyInjector.addInjectionMethod(TournamentInfoController.class, type-> new TournamentInfoController(context));
-
+        DependencyInjector.addInjectionMethod(MediawikiSetupController.class, type-> new MediawikiSetupController(context));
     }
 
     private void setupLocale(){

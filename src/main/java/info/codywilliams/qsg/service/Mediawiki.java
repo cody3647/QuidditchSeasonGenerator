@@ -42,14 +42,13 @@ import java.util.stream.Collectors;
 import static info.codywilliams.qsg.App.mapper;
 
 public class Mediawiki {
-    final String apiUrlString;
+    String apiUrlString;
     final private HttpClient client;
     final private Logger logger = LoggerFactory.getLogger(Mediawiki.class);
+    private String username;
     private boolean loggedIn = false;
 
-    public Mediawiki(String apiUrlString) {
-        this.apiUrlString = apiUrlString;
-
+    public Mediawiki() {
         client = HttpClient.newBuilder()
                 .cookieHandler(new CookieManager())
                 .build();
@@ -85,16 +84,42 @@ public class Mediawiki {
         return HttpRequest.BodyPublishers.ofByteArrays(byteArrays);
     }
 
-    private static String randomString(int numChars) {
+    private static String randomString() {
         Random random = new Random();
-        return random.ints(numChars, 'a', 'z').mapToObj(i -> Character.toString((char) i)).collect(Collectors.joining());
+        return random.ints(50, 'a', 'z').mapToObj(i -> Character.toString((char) i)).collect(Collectors.joining());
     }
 
-    public Response login(String username, String password) throws IOException {
+    synchronized public Response login(String apiUrlString, String username, String password) throws IOException {
+        setApiUrlString(apiUrlString);
+        return login(username, password);
+    }
+
+    synchronized public Response login(String username, String password) throws IOException {
+        String message;
+        if (apiUrlString == null || apiUrlString.isEmpty()) {
+            message = "Must provide API URL before logging in to mediawiki instance";
+            logger.error(message);
+            return new Response(false, "missingApiUrl", message);
+        }
+        if ((username == null || username.isEmpty()) && (this.username == null || this.username.isEmpty())) {
+            message = "Must provide username to login.";
+            logger.error(message);
+            return new Response(false, "missingUsername", message);
+        }
+        if (password == null || password.isEmpty()) {
+            message = "Must provide password to login.";
+            logger.error(message);
+            return new Response(false, "missingPassword", message);
+        }
         URI uri;
         HttpRequest request;
 
-        logger.info("Login - Attempting to login user: {}", username);
+        if (username != null)
+            this.username = username;
+        else
+            username = this.username;
+
+        logger.debug("Login - Attempting to login user: {}", username);
         uri = buildUri(Query.field, Map.of("meta", "tokens", "type", "login"));
         request = HttpRequest.newBuilder()
                 .uri(uri)
@@ -130,10 +155,10 @@ public class Mediawiki {
         }
 
         loggedIn = clientLogin.getStatus().equalsIgnoreCase("pass");
-        logger.info("Login: {}, {}", clientLogin.getStatus(), clientLogin.getMessageCode());
+        logger.debug("Login: {}, {}", clientLogin.getStatus(), clientLogin.getMessageCode());
 
         return loggedIn
-                ? new Response(true, null, null)
+                ? new Response(true, "loggedIn", "Successfully logged in to " + apiUrlString)
                 : new Response(false, clientLogin.getMessageCode(), clientLogin.getMessage());
     }
 
@@ -148,7 +173,7 @@ public class Mediawiki {
                 .build();
 
         Query query = apiCall(request, Query.field, Query.class);
-        logger.info("PageExists - {}, exists: {}", query.getPages().get(0).getTitle(), !query.getPages().get(0).isMissing());
+        logger.debug("PageExists - {}, exists: {}", query.getPages().get(0).getTitle(), !query.getPages().get(0).isMissing());
 
         if (errorReturned(query)) return false;
 
@@ -161,7 +186,7 @@ public class Mediawiki {
             logger.error(message);
             return new Response(false, "nologgedin", message);
         }
-        logger.info("CreatePage - Attempting to edit/create {}", pageName);
+        logger.debug("CreatePage - Attempting to edit/create {}", pageName);
         URI uri = buildUri("query",
                 Map.of("meta", "tokens",
                         "prop", "info|revisions",
@@ -191,7 +216,7 @@ public class Mediawiki {
 
         uri = buildUri(Edit.field, params);
 
-        String boundary = randomString(50);
+        String boundary = randomString();
         HttpRequest.BodyPublisher formBody = convertMultipartDataToBodyPublisher(
                 Map.of("text", content,
                         "token", csrfToken),
@@ -209,7 +234,7 @@ public class Mediawiki {
         if (errorReturned(edit)) {
             return new Response(false, edit.getError().getCode(), edit.getError().getInfo());
         }
-        logger.info("CreatePage - Edit of {} {}, new page: {}, no change: {}", edit.getTitle(), edit.getResult(), edit.isNewPage(), edit.isNoChange());
+        logger.debug("CreatePage - Edit of {} {}, new page: {}, no change: {}", edit.getTitle(), edit.getResult(), edit.isNewPage(), edit.isNoChange());
         String messageCode = null;
         if (edit.isNewPage())
             messageCode = "newpage";
@@ -220,13 +245,13 @@ public class Mediawiki {
 
     private <T extends MediaikiApiResponse> T apiCall(HttpRequest request, String field, Class<T> type) throws IOException {
         try {
-            logger.debug("{}: {}", request.method(), request.uri());
+            logger.trace("{}: {}", request.method(), request.uri());
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-            logger.debug("Response Code: {}, Content-Type: {}", response.statusCode(), response.headers().map().get("content-type"));
+            logger.trace("Response Code: {}, Content-Type: {}", response.statusCode(), response.headers().map().get("content-type"));
             if (response.statusCode() != 200) {
-                logger.error("Unexpected response: {}", response.statusCode());
-                throw new IOException("Unexpected response: " + response.statusCode());
+                logger.error("Unexpected response code: {}", response.statusCode());
+                throw new IOException("Unexpected response code: " + response.statusCode());
             }
 
             String responseBody = response.body();
@@ -287,6 +312,24 @@ public class Mediawiki {
         return URI.create(url);
     }
 
+    public String getApiUrlString() {
+        return apiUrlString;
+    }
+
+    synchronized public void setApiUrlString(String apiUrlString) {
+        if (!apiUrlString.equals(this.apiUrlString))
+            loggedIn = false;
+        this.apiUrlString = apiUrlString;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public boolean isLoggedIn() {
+        return loggedIn;
+    }
+
     public static class Response {
         public final boolean success;
         public final String messageCode;
@@ -300,6 +343,9 @@ public class Mediawiki {
 
         public boolean isSuccess() {
             return success;
+        }
+        public boolean isFailure() {
+            return !success;
         }
 
         public @Nullable String getMessageCode() {
