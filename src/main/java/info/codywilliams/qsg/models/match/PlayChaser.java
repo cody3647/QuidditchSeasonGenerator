@@ -81,10 +81,10 @@ public class PlayChaser extends Play {
     @Override
     public String outputWithDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName) {
         addCommonTokens(resources);
-        resources.addToken("attacker", attacker.getName());
-        resources.addToken("defender", defender.getName());
+        resources.addToken("attacker", attacker.getShortName());
+        resources.addToken("defender", defender.getShortName());
         if(defendingKeeper != null)
-            resources.addToken("keeper", defendingKeeper.getName());
+            resources.addToken("keeper", defendingKeeper.getShortName());
 
         return resources.getString("chaser." + getOutcomeString()  + ".player");
     }

@@ -26,11 +26,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ResourceBundleReplacer {
-    private ResourceBundle resources;
-    private HashMap<String, String> tokenMap;
-    private Replacer replacer;
+    private final ResourceBundle resources;
+    private final HashMap<String, String> tokenMap;
+    private final Replacer replacer;
 
-    static private Pattern pattern = Pattern.compile("\\$\\{(\\w*)\\}");
+    static private final Pattern pattern = Pattern.compile("\\$\\{(\\w*)\\}");
+    static private final Pattern ballPattern = Pattern.compile("((quaffle|bludger|snitch)\\w*)", Pattern.CASE_INSENSITIVE);
+    static private final String ballReplacement = "<span class=\"$2\">$1</span>";
 
     public ResourceBundleReplacer(ResourceBundle resources) {
         this.resources = resources;
@@ -47,7 +49,10 @@ public class ResourceBundleReplacer {
     public String getString(String key) {
         String text = resources.getString(key);
 
-        Matcher matcher = pattern.matcher(text);
+        Matcher matcher = ballPattern.matcher(text);
+        text = matcher.replaceAll(ballReplacement);
+
+        matcher = pattern.matcher(text);
         return matcher.replaceAll(replacer);
     }
 

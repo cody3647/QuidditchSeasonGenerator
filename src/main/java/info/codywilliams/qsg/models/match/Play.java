@@ -98,9 +98,9 @@ public abstract class Play {
 
     void addCommonTokens(ResourceBundleReplacer resources) {
         if(beaterHitter != null)
-            resources.addToken("beaterHitter", beaterHitter.getName());
+            resources.addToken("beaterHitter", beaterHitter.getShortName());
         if(beaterBlocker != null)
-            resources.addToken("beaterBlocker", beaterBlocker.getName());
+            resources.addToken("beaterBlocker", beaterBlocker.getShortName());
         switch(attackingTeamType) {
             case HOME -> {
                 resources.addTeamToken("attackingTeam", "homeTeam");

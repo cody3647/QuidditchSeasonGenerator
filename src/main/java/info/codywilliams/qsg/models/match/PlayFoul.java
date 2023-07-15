@@ -65,15 +65,15 @@ public class PlayFoul extends PlayChaser{
     @Override
     public String outputWithDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName) {
         addCommonTokens(resources);
-        resources.addToken("attacker", attacker.getName());
-        resources.addToken("defender", defender.getName());
-        resources.addToken("fouler", fouler.getName());
+        resources.addToken("attacker", attacker.getShortName());
+        resources.addToken("defender", defender.getShortName());
+        resources.addToken("fouler", fouler.getShortName());
         switch(foulerTeamType) {
             case HOME -> resources.addTeamToken("foulerTeam", "homeTeam");
             case AWAY -> resources.addTeamToken("foulerTeam", "awayTeam");
         }
         if(defendingKeeper != null)
-            resources.addToken("keeper", defendingKeeper.getName());
+            resources.addToken("keeper", defendingKeeper.getShortName());
 
         return resources.getString(getOutcomeString()  + ".player");
     }

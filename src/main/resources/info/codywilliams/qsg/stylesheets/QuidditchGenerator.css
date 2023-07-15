@@ -1,0 +1,149 @@
+/*
+ * Quidditch Season Generator
+ * Copyright (C) 2023.  Cody Williams
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+/* Infobox styling */
+div.ib {
+    float: right;
+    clear: right;
+    margin: 0 0 .5rem .75rem;
+}
+
+div.ib table {
+    width: 250px;
+    background: none;
+    border-collapse: collapse;
+    border-width: 0px;
+    font-size: 0.8em;
+    line-height: 1.5;
+}
+
+div.ib table th {
+    font-weight:bold;
+    text-align:center;
+    font-size:larger;
+}
+
+div.ib table td.ib-label {
+    padding: .1rem .5rem .1rem .5rem;
+}
+
+div.ib table td.ib-value {
+    padding: .1rem .75rem .1rem .75rem;
+}
+
+div.ib table ul {
+    margin: 0;
+    list-style: none;
+}
+
+div.ib table dt {
+    margin: .5rem 0 0 0;
+}
+
+div.ib table dd {
+    text-indent: -.75rem;
+    padding: 0 0 0 .75rem;
+    margin: 0 0 0 .75rem;
+}
+
+div.ib table .ib-footer {
+    text-align: center;
+}
+
+@media (max-width: 850px) {
+    div.ib {
+        float: none;
+    }
+
+    div.ib table {
+        width: 100%;
+    }
+
+    div.ib td.ib-image {
+        text-align: center;
+    }
+}
+
+/*Quidditch Matches and League Schdules*/
+ul {
+    list-style: none;
+    margin:0;
+}
+
+li div{
+    margin: .5em 2em;
+    width:25em;
+    padding: .5em;
+    text-align:center;
+    background-color:#464646;
+    border:1px solid #545454;
+}
+
+.quaffle-scored div{
+    border:1px solid #580000;
+}
+
+.quidditch-foul div{
+    background-color: #412626;
+    border:1px solid #972000;
+}
+
+.snitch-caught div, .snitch-stolen div {
+    border:1px solid #a68600;
+}
+
+.snitch-caught, .snitch-stolen, .snitch-seen, .snitch-feint, .snitch-missed {
+    color: gold;
+}
+
+.quaffle-scored.home, .quaffle-caught.home {
+    color: #48d9dc;
+}
+.quaffle-scored.away, .quaffle-caught.away {
+    color: #ea993c;
+}
+
+.bludger {
+    color: #8ca5a5;
+}
+.quaffle {
+    color: #ffacac;
+}
+
+/* Tournament Page */
+
+.match-winner a, .match-winner {
+    color: #CCCC66;
+}
+
+.match-loser a {
+    color: rgb(175,175,175);
+}
+
+table.league-rankings {
+    counter-reset: rank -1;
+    list-style-type:none;
+}
+
+table.league-rankings tr {
+    counter-increment: rank;
+}
+
+table.league-rankings td:first-child:before {
+    content: counter( rank )": ";
+}

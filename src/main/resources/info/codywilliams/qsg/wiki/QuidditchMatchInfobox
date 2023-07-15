@@ -1,0 +1,53 @@
+<includeonly><div class="ib ib-quidditch-match">
+{| cellspacing="0" cellpadding="4" style="border-width: 0px;"
+{{!}}-
+{{!}} class="ib-image" colspan="2" {{!}}<div style="display:flex;">
+<div>[[File:{{{homeTeam}}}.png|125px|link={{{homeTeam}}}|alt={{{homeTeam}}}]]</div>
+<div>[[File:{{{awayTeam}}}.png|125px|link={{{awayTeam}}}|alt={{{awayTeam}}}]]</div>
+</div>
+{{!}}-
+! class="plainlinks" colspan="2"{{!}}<div style="display:flex;">
+<div style="flex:2">[[{{{homeTeam}}}]]</div>
+<div style="flex:1">vs</div>
+<div style="flex:2">[[{{{awayTeam}}}]]</div>
+</div>
+{{!}}-
+! colspan="2" {{!}} Quidditch Match
+{{!}}-
+{{!}} class="ib-label" {{!}} Match Location
+{{!}} class="ib-value" {{!}} {{{location|}}}
+{{!}}-
+{{!}} class="ib-label" {{!}} Start of Game
+{{!}} class="ib-value" {{!}} {{{start|}}}
+{{!}}-
+{{!}} class="ib-label" {{!}} End of Game
+{{!}} class="ib-value" {{!}} {{{end|}}}
+{{!}}-
+{{!}} class="ib-label" {{!}} Length
+{{!}} class="ib-value" {{!}} {{{length|}}}
+{{!}}-
+! " colspan="2" {{!}} Fouls
+{{!}}-
+{{!}} class="ib-label" {{!}} {{{homeTeam}}}
+{{!}} class="ib-value" {{!}} {{{homeFouls}}}
+{{!}}-
+{{!}} class="ib-label" {{!}} {{{awayTeam}}}
+{{!}} class="ib-value" {{!}} {{{awayFouls}}}
+{{!}}-
+! colspan="2" {{!}} Final Score
+{{!}}-
+{{!}} class="ib-label" {{!}} {{{homeTeam}}}
+{{!}} class="ib-value" {{!}} {{{homeScore}}}
+{{!}}-
+{{!}} class="ib-label" {{!}} {{{awayTeam}}}
+{{!}} class="ib-value" {{!}} {{{awayScore}}}
+{{!}}- class="ib-footer"
+{{!}} colspan="2" {{!}} [[{{{leagueName}}} Cup ({{{leagueYear}}}) | {{{leagueYear}}} Season]]
+|}
+[[Category:{{{leagueYear}}} {{{leagueName}}} Matches]]
+</div></includeonly>
+<noinclude>
+{{Quidditch match infobox/doc}}
+
+[[Category: Infoboxes]]
+</noinclude>

@@ -72,8 +72,8 @@ public class PlaySeeker extends Play {
     @Override
     public String outputWithDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName) {
         addCommonTokens(resources);
-        resources.addToken("seeker", seeker.getName());
-        resources.addToken("otherSeeker", otherSeeker.getName());
+        resources.addToken("seeker", seeker.getShortName());
+        resources.addToken("otherSeeker", otherSeeker.getShortName());
 
         return resources.getString("seeker." + getOutcomeString()  + ".player");
     }

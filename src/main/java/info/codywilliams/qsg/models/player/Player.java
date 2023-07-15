@@ -22,17 +22,15 @@ import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.TreeSet;
 
 abstract public class Player implements Serializable, Comparable<Player> {
     final static int MAX = 10;
     final static int MIN = 1;
-    
-    final static int INJURY_DIVISOR = 2;
     final private StringProperty name;
     @JsonIgnore
     final private SetProperty<LocalDate> injuryHistory;
@@ -56,6 +54,8 @@ abstract public class Player implements Serializable, Comparable<Player> {
 
     @JsonIgnore
     public boolean isCurrentlyInjured = false;
+    @JsonIgnore
+    final private double injuryDivisor = 2;
 
     public Player() {
         name = new SimpleStringProperty(this, "name", "");
@@ -69,6 +69,15 @@ abstract public class Player implements Serializable, Comparable<Player> {
 
     public String getName() {
         return name.get();
+    }
+
+    @JsonIgnore
+    public String getShortName() {
+        String[] nameParts = getName().split(" ");
+        if(nameParts.length == 1)
+            return getName();
+
+        return nameParts[0].charAt(0) + ". " + nameParts[nameParts.length - 1];
     }
 
     public void setName(String name) {
@@ -95,8 +104,12 @@ abstract public class Player implements Serializable, Comparable<Player> {
         return injuryHistory.contains(date);
     }
 
-    public boolean addInjuryDate(LocalDate date){
-        return injuryHistory.add(date);
+    public void addInjuryDate(LocalDate startDate, LocalDate endDate){
+        LocalDate date = startDate;
+        while(date.isBefore(endDate) || date.isEqual(endDate)) {
+            injuryHistory.add(date);
+            date = date.plusDays(1);
+        }
     }
 
     public static int validateSkill(int skillNumber){
@@ -118,7 +131,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
     }
 
     public int getSkillDefense() {
-        return isCurrentlyInjured ? skillDefense.get() / INJURY_DIVISOR : skillDefense.get();
+        return skillDefense.get();
     }
 
     public void setSkillDefense(int skillDefense) {
@@ -136,7 +149,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
     }
 
     public int getSkillOffense() {
-        return isCurrentlyInjured ? skillOffense.get() / INJURY_DIVISOR : skillOffense.get();
+        return skillOffense.get();
     }
 
     public void setSkillOffense(int skillOffense) {
@@ -154,7 +167,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
     }
 
     public int getSkillTeamwork() {
-        return isCurrentlyInjured ? skillTeamwork.get() / INJURY_DIVISOR : skillTeamwork.get();
+        return skillTeamwork.get();
     }
 
     public void setSkillTeamwork(int skillTeamwork) {
@@ -192,19 +205,23 @@ abstract public class Player implements Serializable, Comparable<Player> {
     }
 
     public double getDefenseModifier() {
-        return defenseModifier;
+        return isCurrentlyInjured ? defenseModifier / injuryDivisor : defenseModifier;
     }
 
     public double getOffenceModifier() {
-        return offenceModifier;
+        return isCurrentlyInjured ? offenceModifier / injuryDivisor : offenceModifier;
     }
 
     public double getTeamworkModifier() {
-        return teamworkModifier;
+        return isCurrentlyInjured ? teamworkModifier / injuryDivisor : teamworkModifier;
     }
 
     public double getFoulModifier() {
         return foulModifier;
+    }
+
+    public double getModifiers() {
+        return getOffenceModifier() + getDefenseModifier() + getTeamworkModifier() - getFoulModifier();
     }
 
     @Override
@@ -216,33 +233,23 @@ abstract public class Player implements Serializable, Comparable<Player> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Player)) return false;
+        if (!(o instanceof Player player)) return false;
 
-        Player player = (Player) o;
-
-        if (!Objects.equals(name, player.name)) return false;
-        if (!Objects.equals(skillDefense, player.skillDefense))
-            return false;
-        if (!Objects.equals(skillOffense, player.skillOffense))
-            return false;
-        if (!Objects.equals(skillTeamwork, player.skillTeamwork))
-            return false;
-        return Objects.equals(foulLikelihood, player.foulLikelihood);
+        return getName().equals(player.getName());
     }
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
-        result = 31 * result + (skillDefense.hashCode());
-        result = 31 * result + (skillOffense.hashCode());
-        result = 31 * result + (skillTeamwork.hashCode());
-        result = 31 * result + (foulLikelihood.hashCode());
-        return result;
+        return getName().hashCode();
     }
 
     @Override
-    public int compareTo(Player o) {
-        return (getSkillDefense() + getSkillOffense() + getSkillTeamwork() - getFoulLikelihood()) -
-                (o.getSkillDefense() + o.getSkillOffense() + o.getSkillTeamwork() - o.getFoulLikelihood());
+    public int compareTo(@NotNull Player o) {
+        if(Math.abs(getModifiers() - o.getModifiers()) <= 0.0001)
+            return 0;
+        else if (getModifiers() > o.getModifiers())
+            return 1;
+        else
+            return -1;
     }
 }

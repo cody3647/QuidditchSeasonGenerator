@@ -20,28 +20,27 @@ package info.codywilliams.qsg.output;
 
 import info.codywilliams.qsg.util.DependencyInjector;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.List;
 
 public class Page implements ElementOutputs {
-    private String pageTitle;
-    private String fileName;
-    private LinkedList<Metadata> metadata;
+    private final String pageTitle;
+    private final String fileName;
+    private final ArrayList<Metadata> metadata;
 
-    private LinkedList<Element> body;
+    private final ArrayList<Element> body;
+    private final ArrayList<String> styles;
 
     public Page(String pageTitle, String fileName) {
         this.pageTitle = pageTitle;
         this.fileName = fileName;
 
-        metadata = new LinkedList<>();
-        body = new LinkedList<>();
+        metadata = new ArrayList<>();
+        body = new ArrayList<>();
+        styles = new ArrayList<>();
         addMetadata("author", "", DependencyInjector.getBundle().getString("app.title"), "");
-    }
-
-    public void setPageTitle(String pageTitle) {
-        this.pageTitle = pageTitle;
     }
 
     public void addMetadata(String name, String httpEquiv, String content, String charset) {
@@ -60,6 +59,13 @@ public class Page implements ElementOutputs {
         body.addAll(elements);
     }
 
+    public List<String> getStyles() {
+        return styles;
+    }
+
+    public void addStyle(String style) {
+        this.styles.add(style);
+    }
     @Override
     public String toHtml(int tabs) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -70,6 +76,9 @@ public class Page implements ElementOutputs {
         if(!metadata.isEmpty())
             for(Metadata meta: metadata)
                 stringBuilder.append(meta.toHtml());
+        if(!styles.isEmpty())
+            for(String style: styles)
+                stringBuilder.append("\n\t\t<link rel='stylesheet' href=\"").append(style).append("\">");
         stringBuilder.append("\n</head>\n<body>");
 
         if(!body.isEmpty()) {
@@ -85,24 +94,23 @@ public class Page implements ElementOutputs {
     @Override
     public String toWikitext() {
         StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder.append("\n{{{start page=").append(pageTitle).append("}}}\n");
+        if(!styles.isEmpty())
+            for(String style: styles)
+                stringBuilder.append("<templatestyles src=\"Styles/").append(style).append("\" />\n");
 
         if(!body.isEmpty()) {
             for(Element element: body)
                 stringBuilder.append(element.toWikitext());
         }
 
-        stringBuilder.append("\n{{{end}}}\n");
-
         return stringBuilder.toString();
     }
 
     static public class Metadata {
-        private String name;
-        private String httpEquiv;
-        private String content;
-        private String charset;
+        private final String name;
+        private final String httpEquiv;
+        private final String content;
+        private final String charset;
 
         public Metadata(String name, String httpEquiv, String content, String charset) {
             this.name = name;
