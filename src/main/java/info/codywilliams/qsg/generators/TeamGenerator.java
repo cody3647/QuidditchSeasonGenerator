@@ -29,15 +29,18 @@ public class TeamGenerator {
     }
 
     static public Team randomTeam() {
-        Team team = new Team();
         String name = teamNames.getNextName();
         String[] parts = name.split(" ");
         String shortName = parts[parts.length - 1];
 
-        team.setName(name);
-        team.setHome(parts[0]);
-        team.setShortName(shortName);
+        return randomTeam(name, shortName, parts[0]);
+    }
 
+    static public Team randomTeam(String name, String shortName, String home) {
+        Team team = new Team();
+        team.setName(name);
+        team.setShortName(shortName);
+        team.setHome(home);
 
         for (int i = 0; i < Team.TOTAL_BEATERS; i++)
             team.getBeaters().add(PlayerGenerator.randomBeater());
@@ -55,33 +58,38 @@ public class TeamGenerator {
     }
 
     static public Team newTeam(int num, ResourceBundle resources) {
-        Team team = new Team();
         String teamName = resources.getString("gen.team.newName") + ' ' + num;
 
-        team.setName(teamName);
-        team.setShortName(teamName);
-        team.setHome(teamName + ' ' + resources.getString("gen.team.newHome"));
+        return newTeam(teamName, teamName, teamName + ' ' + resources.getString("gen.team.newHome"), resources);
+    }
 
-        String name;
+    static public Team newTeam(String name, String shortName, String home, ResourceBundle resources) {
+        Team team = new Team();
+        team.setName(name);
+        team.setShortName(shortName);
+        team.setHome(home);
+
+        String playerName;
         for (int i = 1; i <= Team.TOTAL_BEATERS; i++) {
-            name = resources.getString("player.beater") + ' ' + i;
-            team.getBeaters().add(PlayerGenerator.newBeater(name));
+            playerName = resources.getString("player.beater") + ' ' + i;
+            team.getBeaters().add(PlayerGenerator.newBeater(playerName));
         }
 
         for (int i = 1; i <= Team.TOTAL_CHASERS; i++) {
-            name = resources.getString("player.chaser") + ' ' + i;
-            team.getChasers().add(PlayerGenerator.newChaser(name));
+            playerName = resources.getString("player.chaser") + ' ' + i;
+            team.getChasers().add(PlayerGenerator.newChaser(playerName));
         }
 
         for (int i = 1; i <= Team.TOTAL_KEEPERS; i++) {
-            name = resources.getString("player.keeper") + ' ' + i;
-            team.getKeepers().add(PlayerGenerator.newKeeper(name));
+            playerName = resources.getString("player.keeper") + ' ' + i;
+            team.getKeepers().add(PlayerGenerator.newKeeper(playerName));
         }
 
         for (int i = 1; i <= Team.TOTAL_SEEKERS; i++) {
-            name = resources.getString("player.seeker") + ' ' + i;
-            team.getSeekers().add(PlayerGenerator.newSeeker(name));
+            playerName = resources.getString("player.seeker") + ' ' + i;
+            team.getSeekers().add(PlayerGenerator.newSeeker(playerName));
         }
+
         return team;
     }
 

@@ -5,8 +5,13 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import info.codywilliams.qsg.App;
 import info.codywilliams.qsg.generators.MatchGenerator;
+import info.codywilliams.qsg.generators.TeamGenerator;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.SaveSettings;
+import info.codywilliams.qsg.models.Team;
+import info.codywilliams.qsg.models.tournament.MatchDayTime;
+import info.codywilliams.qsg.models.tournament.TournamentOptions;
+import info.codywilliams.qsg.models.tournament.type.TournamentType;
 import info.codywilliams.qsg.service.Mediawiki;
 import info.codywilliams.qsg.util.Formatters;
 import javafx.event.ActionEvent;
@@ -20,7 +25,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.DayOfWeek;
 import java.time.Instant;
+import java.time.LocalTime;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MenuController {
@@ -28,6 +36,11 @@ public class MenuController {
     private final Logger logger;
     @FXML
     ResourceBundle resources;
+
+    static final List<String> britishTeams = List.of("appleby", "ballycastle", "caerphilly", "chudley",
+            "falmouth", "holyhead", "kenmare", "montrose",
+            "portree", "puddlemere", "tutshill", "wigtown", "wimbourne"
+    );
 
     public MenuController(Context context) {
         this.context = context;
@@ -127,6 +140,53 @@ public class MenuController {
             logger.error("Unable to load Mediawiki Setup Window", e);
             throw new RuntimeException(e);
         }
+    }
+
+    @FXML
+    void loadBlankBritishQuidditchLeague(ActionEvent ignoredEvent) {
+        standardBritishQuidditchLeague(britishTeams.stream()
+                .map(name -> TeamGenerator.newTeam(
+                                resources.getString("tournament.BIQL." + name + ".name"),
+                                resources.getString("tournament.BIQL." + name + ".name.short"),
+                                resources.getString("tournament.BIQL." + name + ".home"),
+                                resources
+                        )
+                )
+                .toList()
+        );
+    }
+
+    @FXML
+    void loadRandomBritishQuidditchLeague(ActionEvent ignoredEvent) {
+        standardBritishQuidditchLeague(britishTeams.stream()
+                .map(name -> TeamGenerator.randomTeam(
+                                resources.getString("tournament.BIQL." + name + ".name"),
+                                resources.getString("tournament.BIQL." + name + ".name.short"),
+                                resources.getString("tournament.BIQL." + name + ".home")
+                        )
+                )
+                .toList()
+        );
+    }
+
+    void standardBritishQuidditchLeague(List<Team> teams) {
+        TournamentOptions options = context.getTournamentOptions();
+        options.setLeagueName(resources.getString("tournament.BIQL.name"));
+        options.matchDayTimeListProperty().get().clear();
+        List<MatchDayTime> matchDayTimeList = List.of(
+                new MatchDayTime(DayOfWeek.FRIDAY, LocalTime.of(19, 30, 0), 1),
+                new MatchDayTime(DayOfWeek.SATURDAY, LocalTime.of(10, 0, 0), 2),
+                new MatchDayTime(DayOfWeek.SATURDAY, LocalTime.of(2, 0, 0), 3),
+                new MatchDayTime(DayOfWeek.SATURDAY, LocalTime.of(19, 0, 0), 4),
+                new MatchDayTime(DayOfWeek.SUNDAY, LocalTime.of(13, 0, 0), 5),
+                new MatchDayTime(DayOfWeek.SUNDAY, LocalTime.of(16, 30, 0), 6)
+        );
+        options.matchDayTimeListProperty().addAll(matchDayTimeList);
+        context.changeCurrentTournament(TournamentType.STRAIGHT_ROUND_ROBIN_HOME_AWAY);
+
+        context.getTeams().clear();
+        context.getTeams().addAll(teams);
+
     }
 
     @FXML

@@ -1,48 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
-<MenuBar xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/18"
-         fx:controller="info.codywilliams.qsg.controllers.MenuController">
+<MenuBar xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="info.codywilliams.qsg.controllers.MenuController">
     <menus>
         <Menu text="%app.menu.file">
             <items>
-                <MenuItem mnemonicParsing="false" onAction="#menuFileNew" text="%app.menu.new"/>
-                <MenuItem mnemonicParsing="false" onAction="#fileOpen" text="%app.menu.open"/>
-                <SeparatorMenuItem mnemonicParsing="false"/>
-                <MenuItem mnemonicParsing="false" text="%app.menu.close"/>
-                <MenuItem mnemonicParsing="false" onAction="#fileSaveAction" text="%app.menu.save"/>
-                <MenuItem mnemonicParsing="false" onAction="#fileSaveAs" text="%app.menu.saveas"/>
+                <MenuItem mnemonicParsing="false" onAction="#menuFileNew" text="%app.menu.new" />
+                <MenuItem mnemonicParsing="false" onAction="#fileOpen" text="%app.menu.open" />
+                <SeparatorMenuItem mnemonicParsing="false" />
+                <MenuItem mnemonicParsing="false" text="%app.menu.close" />
+                <MenuItem mnemonicParsing="false" onAction="#fileSaveAction" text="%app.menu.save" />
+                <MenuItem mnemonicParsing="false" onAction="#fileSaveAs" text="%app.menu.saveas" />
             </items>
         </Menu>
+      <Menu mnemonicParsing="false" text="%tournament.menu">
+        <items>
+          <MenuItem mnemonicParsing="false" onAction="#loadBlankBritishQuidditchLeague" text="%tournament.BIQL.menu.blank" />
+            <MenuItem mnemonicParsing="false" onAction="#loadRandomBritishQuidditchLeague" text="%tournament.BIQL.menu.random" />
+        </items>
+      </Menu>
         <Menu mnemonicParsing="false" text="%app.menu.mediawiki">
             <items>
-                <MenuItem mnemonicParsing="false" onAction="#displayMediawikiSetupWindow"
-                          text="%app.menu.mediawiki.setup"/>
+                <MenuItem mnemonicParsing="false" onAction="#displayMediawikiSetupWindow" text="%app.menu.mediawiki.setup" />
             </items>
         </Menu>
         <Menu text="%app.menu.help">
             <items>
                 <Menu mnemonicParsing="false" text="%app.menu.mediawiki.logs">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#changeMediawikiLogLevelInfo"
-                                  text="%app.menu.logLevel.info"/>
-                        <MenuItem mnemonicParsing="false" onAction="#changeMediawikiLogLevelDebug"
-                                  text="%app.menu.logLevel.debug"/>
-                        <MenuItem mnemonicParsing="false" onAction="#changeMediawikiLogLevelTrace"
-                                  text="%app.menu.logLevel.trace"/>
+                        <MenuItem mnemonicParsing="false" onAction="#changeMediawikiLogLevelInfo" text="%app.menu.logLevel.info" />
+                        <MenuItem mnemonicParsing="false" onAction="#changeMediawikiLogLevelDebug" text="%app.menu.logLevel.debug" />
+                        <MenuItem mnemonicParsing="false" onAction="#changeMediawikiLogLevelTrace" text="%app.menu.logLevel.trace" />
                     </items>
                 </Menu>
                 <Menu mnemonicParsing="false" text="%app.menu.matchGenerator.logs">
                     <items>
-                        <MenuItem mnemonicParsing="false" onAction="#changeMatchGeneratorLogLevelInfo"
-                                  text="%app.menu.logLevel.info"/>
-                        <MenuItem mnemonicParsing="false" onAction="#changeMatchGeneratorLogLevelDebug"
-                                  text="%app.menu.logLevel.debug"/>
-                        <MenuItem mnemonicParsing="false" onAction="#changeMatchGeneratorLogLevelTrace"
-                                  text="%app.menu.logLevel.trace"/>
+                        <MenuItem mnemonicParsing="false" onAction="#changeMatchGeneratorLogLevelInfo" text="%app.menu.logLevel.info" />
+                        <MenuItem mnemonicParsing="false" onAction="#changeMatchGeneratorLogLevelDebug" text="%app.menu.logLevel.debug" />
+                        <MenuItem mnemonicParsing="false" onAction="#changeMatchGeneratorLogLevelTrace" text="%app.menu.logLevel.trace" />
                     </items>
                 </Menu>
-                <MenuItem mnemonicParsing="false" onAction="#menuHelpAbout" text="%app.menu.about"/>
+                <MenuItem mnemonicParsing="false" onAction="#menuHelpAbout" text="%app.menu.about" />
             </items>
         </Menu>
     </menus>
