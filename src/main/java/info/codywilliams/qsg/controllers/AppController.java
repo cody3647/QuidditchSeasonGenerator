@@ -24,6 +24,7 @@ import info.codywilliams.qsg.layout.TournamentCalendar;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.output.Page;
+import info.codywilliams.qsg.service.Mediawiki;
 import info.codywilliams.qsg.util.DependencyInjector;
 import info.codywilliams.qsg.util.Formatters;
 import javafx.beans.binding.Bindings;
@@ -43,6 +44,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class AppController {
@@ -162,17 +164,28 @@ public class AppController {
     void generateWikitextOutput(ActionEvent ignoreEvent) {
         List<Page> pages = context.getCurrentTournament().buildPages(context.getTeams(), context.getSeed());
         String tournamentTitle = context.getCurrentTournament().getTournamentTitle();
-        Path outputPath = Paths.get("output", Formatters.sanitizeFileNames(tournamentTitle));
+        Mediawiki mediawiki = context.getMediawiki();
+        if(!mediawiki.isLoggedIn())
+            return;
 
         try {
-            Files.createDirectories(outputPath);
-            Path wikitextFile = outputPath.resolve("wikitext.txt");
-            Files.deleteIfExists(wikitextFile);
+            if(mediawiki.pageExists(tournamentTitle)) {
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setTitle(resources.getString("alert.mediawiki.title"));
+                alert.setHeaderText(resources.getString("alert.mediawiki.header"));
+                alert.setContentText(resources.getString("alert.mediawiki.content"));
+                Optional<ButtonType> result = alert.showAndWait();
+                if (result.isEmpty() || result.get() != ButtonType.OK)
+                    return;
+            }
+
             for (Page page : pages) {
-                Files.writeString(wikitextFile, page.toWikitext(), StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+                logger.info("Writing: {}", page.getPageTitle());
+                mediawiki.createPage(page.getPageTitle(), page.toWikitext());
             }
         } catch (IOException e) {
-            logger.error("Problem with Wikitext files", e);
+            logger.error("Error communicating with mediawiki instance", e);
+            throw new RuntimeException(e);
         }
     }
 

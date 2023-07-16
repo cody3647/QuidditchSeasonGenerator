@@ -26,4 +26,5 @@ module QuidditchSeasonGenerator {
     opens info.codywilliams.qsg.models.match to com.fasterxml.jackson.databind;
     opens info.codywilliams.qsg.service to com.fasterxml.jackson.databind;
     opens info.codywilliams.qsg.models.mediawiki to com.fasterxml.jackson.databind;
+    opens info.codywilliams.qsg.util.multipart to com.fasterxml.jackson.databind;
 }

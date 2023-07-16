@@ -129,6 +129,7 @@ public class StraightRoundRobin extends Tournament {
         int bIdx = teamArrayList.size() - 1;
         int half = numRounds.get() / 2;
         HashMap<String, Integer> homeTeamTimes = new HashMap<>();
+        HashSet<String> matcheSet = new HashSet<>();
         boolean reset = false;
         for (Match match : getMatches()) {
             if (match.getRound() != round) {
@@ -158,6 +159,16 @@ public class StraightRoundRobin extends Tournament {
 
                 // Reverse comparison and teamA and teamB so that when counts are equal or different behavior is reversed from above
                 assignTeams(aCount > bCount, match, teamArrayList.get(bIdx), teamArrayList.get(aIdx), homeTeamTimes);
+            }
+
+            boolean exists = !matcheSet.add(match.getHomeTeam().getName() + match.getAwayTeam().getName());
+            if(exists) {
+                Team temp = match.getHomeTeam();
+                match.setHomeTeam(match.getAwayTeam());
+                match.setAwayTeam(temp);
+                exists = matcheSet.add(match.getHomeTeam().getName() + match.getAwayTeam().getName());
+                if (exists)
+                    logger.error("Swapped Teams also already exists, {} {}", match.getHomeTeam().getName(), match.getAwayTeam().getName());
             }
 
             aIdx++;

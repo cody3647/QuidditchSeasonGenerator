@@ -21,6 +21,7 @@ package info.codywilliams.qsg.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import info.codywilliams.qsg.models.mediawiki.*;
+import info.codywilliams.qsg.util.multipart.MultipartFormDataBodyPublisher;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -36,7 +37,10 @@ import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import static info.codywilliams.qsg.App.mapper;
@@ -47,6 +51,7 @@ public class Mediawiki {
     String apiUrlString;
     private String username;
     private boolean loggedIn = false;
+    private String token;
 
     public Mediawiki() {
         client = HttpClient.newBuilder()
@@ -70,20 +75,6 @@ public class Mediawiki {
         return HttpRequest.BodyPublishers.ofString(formDataString);
     }
 
-    private static HttpRequest.BodyPublisher convertMultipartDataToBodyPublisher(Map<String, String> formData, String boundary) {
-        ArrayList<byte[]> byteArrays = new ArrayList<>();
-        byte[] separator = ("--" + boundary + "\r\nContent-Disposition:form-data; name=").getBytes(StandardCharsets.UTF_8);
-
-        for (Map.Entry<String, String> entry : formData.entrySet()) {
-            byteArrays.add(separator);
-
-            byteArrays.add(("\"" + entry.getKey() + "\"\r\n\r\n" + entry.getValue() + "\r\n").getBytes(StandardCharsets.UTF_8));
-        }
-
-        byteArrays.add(("--" + boundary + "--\r\n").getBytes(StandardCharsets.UTF_8));
-        return HttpRequest.BodyPublishers.ofByteArrays(byteArrays);
-    }
-
     private static String randomString() {
         Random random = new Random();
         return random.ints(50, 'a', 'z').mapToObj(i -> Character.toString((char) i)).collect(Collectors.joining());
@@ -95,6 +86,7 @@ public class Mediawiki {
     }
 
     synchronized public Response login(String username, String password) throws IOException {
+        token = null;
         String message;
         if (apiUrlString == null || apiUrlString.isEmpty()) {
             message = "Must provide API URL before logging in to mediawiki instance";
@@ -187,21 +179,36 @@ public class Mediawiki {
             return new Response(false, "nologgedin", message);
         }
         logger.debug("CreatePage - Attempting to edit/create {}", pageName);
-        URI uri = buildUri("query",
-                Map.of("meta", "tokens",
-                        "prop", "info|revisions",
+        URI uri;
+        Query query;
+        HttpRequest request;
+        if (token == null) {
+            uri = buildUri("query",
+                    Map.of("meta", "tokens")
+            );
+            request = HttpRequest.newBuilder()
+                    .uri(uri)
+                    .build();
+           query = apiCall(request, Query.field, Query.class);
+            if (errorReturned(query)) {
+                return new Response(false, query.getError().getCode(), query.getError().getInfo());
+            }
+            token = query.getToken("csrftoken");
+        }
+
+        uri = buildUri("query",
+                Map.of("prop", "info|revisions",
                         "titles", pageName
                 )
         );
-        HttpRequest request = HttpRequest.newBuilder()
+        request = HttpRequest.newBuilder()
                 .uri(uri)
                 .build();
-        Query query = apiCall(request, Query.field, Query.class);
+        query = apiCall(request, Query.field, Query.class);
         if (errorReturned(query)) {
             return new Response(false, query.getError().getCode(), query.getError().getInfo());
         }
 
-        String csrfToken = query.getToken("csrftoken");
         Page firstPage = query.getPages().get(0);
 
         Map<String, String> params = new HashMap<>();
@@ -216,20 +223,26 @@ public class Mediawiki {
 
         uri = buildUri(Edit.field, params);
 
-        String boundary = randomString();
-        HttpRequest.BodyPublisher formBody = convertMultipartDataToBodyPublisher(
-                Map.of("text", content,
-                        "token", csrfToken),
-                boundary
-        );
+        MultipartFormDataBodyPublisher formBody = new MultipartFormDataBodyPublisher()
+                .add("text", content)
+                .add("token", token);
 
         request = HttpRequest.newBuilder()
                 .uri(uri)
-                .header("Content-Type", "multipart/form-data;boundary=" + boundary)
+                .header("Content-Type", formBody.contentType())
                 .POST(formBody)
                 .build();
 
         Edit edit = apiCall(request, Edit.field, Edit.class);
+
+        if (edit.getError() != null && edit.getError().getCode().equals("missingparam")) {
+            int i = 5;
+            while (edit.getError() != null && edit.getError().getCode().equals("missingparam") && i > 0) {
+                logger.warn("missingparam: Trying again {}", i);
+                edit = apiCall(request, Edit.field, Edit.class);
+                i--;
+            }
+        }
 
         if (errorReturned(edit)) {
             return new Response(false, edit.getError().getCode(), edit.getError().getInfo());
@@ -246,6 +259,7 @@ public class Mediawiki {
     private <T extends MediaikiApiResponse> T apiCall(HttpRequest request, String field, Class<T> type) throws IOException {
         try {
             logger.trace("{}: {}", request.method(), request.uri());
+
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             logger.trace("Response Code: {}, Content-Type: {}", response.statusCode(), response.headers().map().get("content-type"));
@@ -317,8 +331,10 @@ public class Mediawiki {
     }
 
     synchronized public void setApiUrlString(String apiUrlString) {
-        if (!apiUrlString.equals(this.apiUrlString))
+        if (!apiUrlString.equals(this.apiUrlString)) {
             loggedIn = false;
+            token = null;
+        }
         this.apiUrlString = apiUrlString;
     }
 

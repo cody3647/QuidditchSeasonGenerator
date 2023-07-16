@@ -65,7 +65,7 @@ public abstract class Tournament {
     private String yearRange;
     @JsonIgnore
     private String generatorVersionUsed;
-    Logger logger = LoggerFactory.getLogger(Tournament.class);
+    protected Logger logger = LoggerFactory.getLogger(Tournament.class);
 
 
     public Tournament(TournamentOptions tournamentOptions, TournamentType type) {
@@ -191,7 +191,8 @@ public abstract class Tournament {
             pages.add(match.buildMatchPage());
         }
 
-        pages.add(buildTournamentPage(tournamentTitle, seed));
+        pages.add(0, buildTournamentPage(tournamentTitle, seed));
+
         now = System.currentTimeMillis() - now;
         logger.info("{} seconds to generate pages", now / 1000.0);
         return pages;
