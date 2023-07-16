@@ -89,8 +89,6 @@ public class MediawikiSetupController {
                 usernameTextField.getText(),
                 passwordPasswordField.getText()
         );
-        task.setOnRunning(ignoredTaskEvent -> loginButton.setDisable(true));
-        task.setOnSucceeded(ignoredTaskEvent -> loginButton.setDisable(false));
 
         Thread thread = new Thread(task);
         thread.start();
@@ -130,6 +128,7 @@ public class MediawikiSetupController {
             super.succeeded();
             loginButton.setDisable(false);
             loginStatusText.setText(getValue().message);
+            context.setLoggedInToMediawiki(getValue().isSuccess());
         }
 
 

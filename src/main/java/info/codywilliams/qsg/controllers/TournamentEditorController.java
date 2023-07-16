@@ -140,6 +140,7 @@ public class TournamentEditorController {
         // Comboboxes and TextFields
         tournamentTypeComboBox.getItems().setAll(TournamentType.values());
         tournamentTypeComboBox.setConverter(new TournamentTypeStringConverter());
+        tournamentTypeComboBox.valueProperty().bindBidirectional(context.currentTypeProperty());
 
         context.currentTournamentProperty().addListener(((observableValue, oldTournament, newTournament) -> {
             if (context.getCurrentTournament() != null) {

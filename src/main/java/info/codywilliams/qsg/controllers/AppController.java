@@ -26,6 +26,7 @@ import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.output.Page;
 import info.codywilliams.qsg.util.DependencyInjector;
 import info.codywilliams.qsg.util.Formatters;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -128,6 +129,9 @@ public class AppController {
             storedPane = temp;
         }));
 
+        viewTournamentCalendarButton.disableProperty().bind(context.matchesReadyProperty().not());
+        generateSeasonHtmlButton.disableProperty().bind(context.matchesReadyProperty().not());
+        generateSeasonWikitextButton.disableProperty().bind(Bindings.or(context.loggedInToMediawikiProperty().not(), context.matchesReadyProperty().not()));
     }
 
     @FXML

@@ -42,6 +42,7 @@ public class Context {
     private final ObjectProperty<Team> currentTeam;
     final private ListProperty<Team> teams;
     final private TournamentOptions tournamentOptions;
+    final private ObjectProperty<TournamentType> currentType;
     final private ObjectProperty<Tournament> currentTournament;
     final private MapProperty<TournamentType, Tournament> tournaments;
     final private LongProperty seed;
@@ -49,6 +50,8 @@ public class Context {
     final private IntegerProperty numLocations;
     final private StringProperty leftStatus;
     final private StringProperty rightStatus;
+    final private BooleanProperty loggedInToMediawiki;
+    private final BooleanProperty matchesReady;
     private final Mediawiki mediawiki;
     private File currentSaveFile;
     private boolean listChangeAndChangeFlag = false;
@@ -61,7 +64,8 @@ public class Context {
         ));
 
         tournamentOptions = new TournamentOptions();
-        currentTournament = new SimpleObjectProperty<>(this, "tournament");
+        currentTournament = new SimpleObjectProperty<>(this, "currentTournament");
+        currentType = new SimpleObjectProperty<>(this, "currentTournamentType");
         tournaments = new SimpleMapProperty<>(this, "tournaments", FXCollections.observableHashMap());
         seed = new SimpleLongProperty(this, "seed", new Random().nextLong());
 
@@ -70,6 +74,8 @@ public class Context {
 
         leftStatus = new SimpleStringProperty(this, "leftStatus");
         rightStatus = new SimpleStringProperty(this, "rightStatus");
+        loggedInToMediawiki = new SimpleBooleanProperty(this, "loggedInToMediawiki", false);
+        matchesReady = new SimpleBooleanProperty(this, "matchesReady", false);
 
         mediawiki = new Mediawiki();
 
@@ -100,6 +106,8 @@ public class Context {
                     calculateTeamLocations();
             }
         });
+
+        matchesReady.bind(Bindings.and(teamsProperty().emptyProperty().not(), currentTournamentProperty().isNotNull()).and(tournamentOptions.leagueNameProperty().isEmpty().not()));
     }
 
     private void tournamentListeners() {
@@ -133,6 +141,7 @@ public class Context {
         currentTeam.set(null);
         teams.clear();
         currentTournament.set(null);
+        currentType.set(null);
         tournaments.clear();
         tournamentOptions.clear();
         seed.set(new Random().nextLong());
@@ -188,6 +197,18 @@ public class Context {
 
     public TournamentOptions getTournamentOptions() {
         return tournamentOptions;
+    }
+
+    public TournamentType getCurrentType() {
+        return currentType.get();
+    }
+
+    public ObjectProperty<TournamentType> currentTypeProperty() {
+        return currentType;
+    }
+
+    public void setCurrentType(TournamentType currentType) {
+        this.currentType.set(currentType);
     }
 
     public Tournament getCurrentTournament() {
@@ -255,6 +276,9 @@ public class Context {
     }
 
     public void changeCurrentTournament(TournamentType type) {
+        if (type == null)
+            return;
+
         if (!getTournaments().containsKey(type)) {
             try {
                 getTournaments().put(type, type.getConstructor().newInstance(getTournamentOptions()));
@@ -268,5 +292,29 @@ public class Context {
 
     public Mediawiki getMediawiki() {
         return mediawiki;
+    }
+
+    public boolean isLoggedInToMediawiki() {
+        return loggedInToMediawiki.get();
+    }
+
+    public BooleanProperty loggedInToMediawikiProperty() {
+        return loggedInToMediawiki;
+    }
+
+    public void setLoggedInToMediawiki(boolean loggedInToMediawiki) {
+        this.loggedInToMediawiki.set(loggedInToMediawiki);
+    }
+
+    public boolean isMatchesReady() {
+        return matchesReady.get();
+    }
+
+    public BooleanProperty matchesReadyProperty() {
+        return matchesReady;
+    }
+
+    public void setMatchesReady(boolean matchesReady) {
+        this.matchesReady.set(matchesReady);
     }
 }

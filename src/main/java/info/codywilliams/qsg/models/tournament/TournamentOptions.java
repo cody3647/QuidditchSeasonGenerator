@@ -52,10 +52,9 @@ public class TournamentOptions {
         matchesPerWeek = new SimpleIntegerProperty(this, "matchesPerWeek", 1);
 
         // Add listener to matchDayTimeList to change valid start day whenever there is a change to the list
-        matchDayTimeList.addListener((ListChangeListener<MatchDayTime>) change -> {
-            setMatchesPerWeek(getMatchDayTimeList().stream().mapToInt(MatchDayTime::getCount).sum());
-
-        });
+        matchDayTimeList.addListener((ListChangeListener<MatchDayTime>) change ->
+                setMatchesPerWeek(getMatchDayTimeList().stream().mapToInt(MatchDayTime::getCount).sum())
+        );
     }
 
     public void clear() {
