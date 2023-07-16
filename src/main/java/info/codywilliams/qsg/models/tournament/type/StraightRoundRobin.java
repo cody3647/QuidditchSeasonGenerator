@@ -115,6 +115,7 @@ public class StraightRoundRobin extends Tournament {
 
     @Override
     public TreeSet<Match> assignTeamsToMatches(List<Team> teams, long seed) {
+        teamList = new ArrayList<>(teams);
         ArrayList<Team> teamArrayList = new ArrayList<>(teams);
         Random rand = new Random(seed + "TeamShuffle".hashCode());
 

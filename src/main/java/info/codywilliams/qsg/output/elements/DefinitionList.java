@@ -22,24 +22,16 @@ import info.codywilliams.qsg.output.ElementChildren;
 import info.codywilliams.qsg.output.ElementOutputs;
 import info.codywilliams.qsg.output.InlineElement;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
 
 public class DefinitionList extends ElementChildren<DefinitionList.Item> {
     public static String DL = "dl";
-    private final List<Item> items;
     public DefinitionList() {
-        items = new ArrayList<>();
+        super();
     }
 
     public DefinitionList(Item... items) {
-        this.items = new ArrayList<>(Arrays.asList(items));
-    }
-
-    public DefinitionList(Collection<Item> items) {
-        this.items = new ArrayList<>(items);
+        super(Arrays.asList(items));
     }
 
     @Override

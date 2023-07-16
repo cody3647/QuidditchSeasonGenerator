@@ -28,8 +28,8 @@ import java.util.Set;
 public class Image extends Element implements InlineElement {
     public static final String IMAGES_DIR = "/images/";
     public static String IMG = "img";
-    private static Set<String> specialClasses = Set.of("border", "frameless", "frame", "thumb");
-    private static Set<String> specialAttributes = Set.of("height", "width");
+    private static final Set<String> specialClasses = Set.of("border", "frameless", "frame", "thumb");
+    private static final Set<String> specialAttributes = Set.of("height", "width");
 
     public String imageName;
 
@@ -104,7 +104,7 @@ public class Image extends Element implements InlineElement {
         return stringBuilder;
     }
 
-    static class Gallery extends Div{
+    static public class Gallery extends Div{
         static final String DEFAULT_MODE = "packed";
         final String mode;
         public Gallery(String mode) {
@@ -132,11 +132,10 @@ public class Image extends Element implements InlineElement {
             stringBuilder.append(">\n");
 
             for(Element child: children) {
-                if(!(child instanceof Image))
+                if(!(child instanceof Image image))
                     continue;
 
-                Image image = (Image) child;
-                image.wikitextImageFile(stringBuilder).append('\n');
+                stringBuilder.append("File:").append(image.imageName).append('\n');
             }
 
             stringBuilder.append("</gallery>");

@@ -150,6 +150,15 @@ ul.quidditch-match, .quidditch-match ul, .quidditch-roster ul {
 }
 
 /* Tournament Page */
+.league-schedule-topper {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.tournament-key dt, .tournament-key dd {
+    text-align: right;
+}
 
 .match-winner a, .match-winner {
     color: #CCCC66;
@@ -157,6 +166,10 @@ ul.quidditch-match, .quidditch-match ul, .quidditch-roster ul {
 
 .match-loser a {
     color: rgb(175,175,175);
+}
+
+.league-schedule {
+    width: 100%;
 }
 
 table.league-rankings {
