@@ -31,7 +31,21 @@ public abstract class Element implements ElementOutputs {
         classes = new HashSet<>();
     }
 
+    protected static void createClassesString(Set<String> classes, StringBuilder stringBuilder) {
+        if (!classes.isEmpty()) {
+            stringBuilder.append(" class=\"").append(String.join(" ", classes)).append('"');
+        }
+    }
+
+    protected static void createAttributeString(Map<String, String> attributes, StringBuilder stringBuilder) {
+        if (!attributes.isEmpty()) {
+            for (Map.Entry<String, String> attribute : attributes.entrySet())
+                stringBuilder.append(' ').append(attribute.getKey()).append("=\"").append(attribute.getValue()).append('"');
+        }
+    }
+
     abstract public String getTagName();
+
     abstract public boolean isTagClosedOnNewLine();
 
     /**
@@ -56,8 +70,6 @@ public abstract class Element implements ElementOutputs {
     public HashMap<String, String> getAttributes() {
         return attributes;
     }
-
-
 
     public HashSet<String> getClasses() {
         return classes;
@@ -94,7 +106,7 @@ public abstract class Element implements ElementOutputs {
     }
 
     protected StringBuilder closeHtmlTag(StringBuilder stringBuilder, int tabs) {
-        if(isTagClosedOnNewLine())
+        if (isTagClosedOnNewLine())
             appendNewLineAndTabs(stringBuilder, tabs);
         stringBuilder.append("</").append(getTagName()).append(">");
 
@@ -102,25 +114,12 @@ public abstract class Element implements ElementOutputs {
     }
 
     protected void appendNewLineAndTabs(StringBuilder stringBuilder, int tabs) {
-        if(tabs == 0)
+        if (tabs == 0)
             return;
 
         stringBuilder.append('\n');
-        for(; tabs > 0; tabs--) {
+        for (; tabs > 0; tabs--) {
             stringBuilder.append('\t');
-        }
-    }
-
-    protected static void createClassesString(Set<String> classes, StringBuilder stringBuilder) {
-        if(!classes.isEmpty()) {
-            stringBuilder.append(" class=\"").append(String.join(" ", classes)).append('"');
-        }
-    }
-
-    protected static void createAttributeString(Map<String, String> attributes, StringBuilder stringBuilder) {
-        if(!attributes.isEmpty()) {
-            for(Map.Entry<String, String> attribute: attributes.entrySet())
-                stringBuilder.append(' ').append(attribute.getKey()).append("=\"").append(attribute.getValue()).append('"');
         }
     }
 }

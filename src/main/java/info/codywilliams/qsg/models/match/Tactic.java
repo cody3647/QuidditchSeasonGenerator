@@ -18,8 +18,6 @@
 
 package info.codywilliams.qsg.models.match;
 
-import java.net.URL;
-
 public class Tactic {
 
     /**

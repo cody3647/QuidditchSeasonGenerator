@@ -33,6 +33,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -44,6 +46,7 @@ import java.util.ResourceBundle;
 
 public class AppController {
 
+    private final Context context;
     @FXML
     VBox main;
     @FXML
@@ -75,12 +78,13 @@ public class AppController {
     AnchorPane tournamentEditorPane;
     VBox tournamentInfoBox;
     Node storedPane;
-    private final Context context;
     private int teamNumber = 0;
+    Logger logger = LoggerFactory.getLogger(AppController.class);
 
-    public AppController(Context context){
+    public AppController(Context context) {
         this.context = context;
     }
+
     public void initialize() {
         try {
             menuBar = (MenuBar) DependencyInjector.load("menu");
@@ -88,10 +92,9 @@ public class AppController {
             tournamentEditorPane = (AnchorPane) DependencyInjector.load("tournamentEditor");
             tournamentInfoBox = (VBox) DependencyInjector.load("tournamentInfo");
             storedPane = tournamentEditorPane;
-        } catch (IOException e){
+        } catch (IOException e) {
             App.exceptionAlert(e, resources);
         }
-
 
 
         main.getChildren().add(0, menuBar);
@@ -100,7 +103,6 @@ public class AppController {
 
         leftPane.getChildren().add(index, tournamentInfoBox);
         rightPane.setContent(teamEditorPane);
-
 
 
         leftStatus.textProperty().bind(context.leftStatusProperty());
@@ -129,7 +131,7 @@ public class AppController {
     }
 
     @FXML
-    void displayTournamentCalendar(ActionEvent ignoredEvent){
+    void displayTournamentCalendar(ActionEvent ignoredEvent) {
         TournamentCalendar.displayTournamentCalendarWindow(context, resources);
     }
 
@@ -148,7 +150,7 @@ public class AppController {
                 Files.writeString(pageFile, page.toHtml(0), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             }
         } catch (IOException e) {
-            System.err.println(e);
+            logger.error("Problem with HTML files", e);
         }
     }
 
@@ -162,11 +164,11 @@ public class AppController {
             Files.createDirectories(outputPath);
             Path wikitextFile = outputPath.resolve("wikitext.txt");
             Files.deleteIfExists(wikitextFile);
-            for(Page page: pages) {
+            for (Page page : pages) {
                 Files.writeString(wikitextFile, page.toWikitext(), StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.APPEND);
             }
         } catch (IOException e) {
-            System.err.println(e);
+            logger.error("Problem with Wikitext files", e);
         }
     }
 

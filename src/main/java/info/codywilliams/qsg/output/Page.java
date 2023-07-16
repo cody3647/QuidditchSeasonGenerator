@@ -66,23 +66,24 @@ public class Page implements ElementOutputs {
     public void addStyle(String style) {
         this.styles.add(style);
     }
+
     @Override
     public String toHtml(int tabs) {
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append("<!DOCTYPE html>\n<html>\n\t<head>");
-        if(pageTitle != null)
+        if (pageTitle != null)
             stringBuilder.append("\n\t\t<title>").append(pageTitle).append("</title>");
-        if(!metadata.isEmpty())
-            for(Metadata meta: metadata)
+        if (!metadata.isEmpty())
+            for (Metadata meta : metadata)
                 stringBuilder.append(meta.toHtml());
-        if(!styles.isEmpty())
-            for(String style: styles)
+        if (!styles.isEmpty())
+            for (String style : styles)
                 stringBuilder.append("\n\t\t<link rel='stylesheet' href=\"").append(style).append("\">");
         stringBuilder.append("\n</head>\n<body>");
 
-        if(!body.isEmpty()) {
-            for(Element element: body)
+        if (!body.isEmpty()) {
+            for (Element element : body)
                 stringBuilder.append(element.toHtml(1));
         }
 
@@ -94,16 +95,24 @@ public class Page implements ElementOutputs {
     @Override
     public String toWikitext() {
         StringBuilder stringBuilder = new StringBuilder();
-        if(!styles.isEmpty())
-            for(String style: styles)
+        if (!styles.isEmpty())
+            for (String style : styles)
                 stringBuilder.append("<templatestyles src=\"Styles/").append(style).append("\" />\n");
 
-        if(!body.isEmpty()) {
-            for(Element element: body)
+        if (!body.isEmpty()) {
+            for (Element element : body)
                 stringBuilder.append(element.toWikitext());
         }
 
         return stringBuilder.toString();
+    }
+
+    public String getPageTitle() {
+        return pageTitle;
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 
     static public class Metadata {
@@ -121,26 +130,18 @@ public class Page implements ElementOutputs {
 
         public String toHtml() {
             String tag = "\n\t\t<meta ";
-            if(name != null)
+            if (name != null)
                 tag += "name=\"" + name + "\" ";
-            if(httpEquiv != null)
+            if (httpEquiv != null)
                 tag += "http-equiv=\"" + httpEquiv + "\" ";
-            if(content != null)
+            if (content != null)
                 tag += "content=\"" + content + "\" ";
-            if(charset != null)
+            if (charset != null)
                 tag += "charset=\"" + charset + "\" ";
 
             tag += ">";
 
             return tag;
         }
-    }
-
-    public String getPageTitle() {
-        return pageTitle;
-    }
-
-    public String getFileName() {
-        return fileName;
     }
 }

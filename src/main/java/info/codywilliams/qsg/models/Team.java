@@ -18,7 +18,6 @@
 
 package info.codywilliams.qsg.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import info.codywilliams.qsg.models.player.*;
@@ -30,8 +29,8 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Objects;
 
 @JsonDeserialize(using = TeamDeserializer.class)
 @JsonPropertyOrder({"name", "shortName", "home"})
@@ -63,87 +62,87 @@ public class Team implements Comparable<Team> {
         return name.get();
     }
 
-    public StringProperty nameProperty() {
-        return name;
-    }
-
     public void setName(String name) {
         this.name.set(name);
     }
 
+    public StringProperty nameProperty() {
+        return name;
+    }
+
     public String getShortName() {
-        if(shortName.get().isEmpty())
+        if (shortName.get().isEmpty())
             return getName();
 
         return shortName.get();
-    }
-
-    public StringProperty shortNameProperty() {
-        return shortName;
     }
 
     public void setShortName(String shortName) {
         this.shortName.set(shortName);
     }
 
-    public String getHome() {
-        return home.get();
+    public StringProperty shortNameProperty() {
+        return shortName;
     }
 
-    public StringProperty homeProperty() {
-        return home;
+    public String getHome() {
+        return home.get();
     }
 
     public void setHome(String home) {
         this.home.set(home);
     }
 
-    public ObservableList<Beater> getBeaters() {
-        return beaters.get();
+    public StringProperty homeProperty() {
+        return home;
     }
 
-    public ListProperty<Beater> beatersProperty() {
-        return beaters;
+    public ObservableList<Beater> getBeaters() {
+        return beaters.get();
     }
 
     public void setBeaters(ObservableList<Beater> beaters) {
         this.beaters.set(beaters);
     }
 
-    public ObservableList<Chaser> getChasers() {
-        return chasers.get();
+    public ListProperty<Beater> beatersProperty() {
+        return beaters;
     }
 
-    public ListProperty<Chaser> chasersProperty() {
-        return chasers;
+    public ObservableList<Chaser> getChasers() {
+        return chasers.get();
     }
 
     public void setChasers(ObservableList<Chaser> chasers) {
         this.chasers.set(chasers);
     }
 
-    public ObservableList<Keeper> getKeepers() {
-        return keepers.get();
+    public ListProperty<Chaser> chasersProperty() {
+        return chasers;
     }
 
-    public ListProperty<Keeper> keepersProperty() {
-        return keepers;
+    public ObservableList<Keeper> getKeepers() {
+        return keepers.get();
     }
 
     public void setKeepers(ObservableList<Keeper> keepers) {
         this.keepers.set(keepers);
     }
 
+    public ListProperty<Keeper> keepersProperty() {
+        return keepers;
+    }
+
     public ObservableList<Seeker> getSeekers() {
         return seekers.get();
     }
 
-    public ListProperty<Seeker> seekersProperty() {
-        return seekers;
-    }
-
     public void setSeekers(ObservableList<Seeker> seekers) {
         this.seekers.set(seekers);
+    }
+
+    public ListProperty<Seeker> seekersProperty() {
+        return seekers;
     }
 
     @Override

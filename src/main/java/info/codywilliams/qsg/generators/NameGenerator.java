@@ -27,7 +27,7 @@ import java.util.LinkedList;
 public class NameGenerator {
     private final LinkedList<String> names;
     private int used;
-    private int reshuffle;
+    private final int reshuffle;
 
     public NameGenerator(String filename) {
         names = new LinkedList<>();
@@ -39,7 +39,8 @@ public class NameGenerator {
             while ((line = br.readLine()) != null) {
                 names.add(line);
             }
-        } catch (IOException ignored){}
+        } catch (IOException ignored) {
+        }
 
         reshuffle = names.size() / 2;
     }
@@ -58,7 +59,7 @@ public class NameGenerator {
         return name;
     }
 
-    public String getNextName(){
+    public String getNextName() {
         return getNextName(true);
     }
 }

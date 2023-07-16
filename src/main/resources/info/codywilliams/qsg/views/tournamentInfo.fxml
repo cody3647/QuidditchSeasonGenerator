@@ -1,50 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
-
-<VBox spacing="5.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="info.codywilliams.qsg.controllers.TournamentInfoController">
-   <children>
-      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%info.tournament" textAlignment="CENTER">
-         <font>
-            <Font size="24.0" />
-         </font>
-      </Label>
-      <Label fx:id="typeLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%info.tournament.type" wrapText="true">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <Label fx:id="numTeamsLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%info.tournament.numTeams" wrapText="true">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <Label fx:id="numLocationsLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%info.tournament.numLocations" wrapText="true">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <Label fx:id="startDateLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%info.tournament.startDate" wrapText="true">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <Label fx:id="endDateLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%info.tournament.endDate" wrapText="true">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <Label fx:id="numRoundsLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%info.tournament.numRounds" wrapText="true">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-      <Label fx:id="numMatchesLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%info.tournament.numMatches" wrapText="true">
-         <font>
-            <Font size="14.0" />
-         </font>
-      </Label>
-   </children>
+<?import javafx.scene.text.*?>
+<VBox xmlns:fx="http://javafx.com/fxml/1" spacing="5.0" xmlns="http://javafx.com/javafx/18"
+      fx:controller="info.codywilliams.qsg.controllers.TournamentInfoController">
+    <children>
+        <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="%info.tournament" textAlignment="CENTER">
+            <font>
+                <Font size="24.0"/>
+            </font>
+        </Label>
+        <Label fx:id="typeLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="%info.tournament.type" wrapText="true">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Label>
+        <Label fx:id="numTeamsLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="%info.tournament.numTeams" wrapText="true">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Label>
+        <Label fx:id="numLocationsLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="%info.tournament.numLocations" wrapText="true">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Label>
+        <Label fx:id="startDateLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="%info.tournament.startDate" wrapText="true">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Label>
+        <Label fx:id="endDateLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="%info.tournament.endDate" wrapText="true">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Label>
+        <Label fx:id="numRoundsLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="%info.tournament.numRounds" wrapText="true">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Label>
+        <Label fx:id="numMatchesLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+               text="%info.tournament.numMatches" wrapText="true">
+            <font>
+                <Font size="14.0"/>
+            </font>
+        </Label>
+    </children>
 </VBox>

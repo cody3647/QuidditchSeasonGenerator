@@ -41,6 +41,18 @@ public class Match implements Comparable<Match> {
     private final int number;
     private final int round;
     private final LocalDateTime startDateTime;
+    private final Map<String, LocalDate> homeInjuredBefore;
+    private final Map<String, LocalDate> homeInjuredDuring;
+    private final Map<String, LocalDate> awayInjuredBefore;
+    private final Map<String, LocalDate> awayInjuredDuring;
+    private final EnumMap<QuaffleOutcome, Integer> homeQuaffleOutcomes;
+    private final EnumMap<QuaffleOutcome, Integer> awayQuaffleOutcomes;
+    private final EnumMap<BludgerOutcome, Integer> homeBludgerOutcomes;
+    private final EnumMap<BludgerOutcome, Integer> awayBludgerOutcomes;
+    private final EnumMap<SnitchOutcome, Integer> homeSnitchOutcomes;
+    private final EnumMap<SnitchOutcome, Integer> awaySnitchOutcomes;
+    private final EnumMap<InjuryType, Integer> homeInjuryTypes;
+    private final EnumMap<InjuryType, Integer> awayInjuryTypes;
     private Team homeTeam;
     private Team awayTeam;
     private Map<String, List<? extends Player>> homeTeamRoster;
@@ -56,19 +68,6 @@ public class Match implements Comparable<Match> {
     private String title;
     private ResourceBundleReplacer resources;
     private TeamType winner;
-    private final Map<String, LocalDate> homeInjuredBefore;
-    private final Map<String, LocalDate> homeInjuredDuring;
-    private final Map<String, LocalDate> awayInjuredBefore;
-    private final Map<String, LocalDate> awayInjuredDuring;
-
-    private final EnumMap<QuaffleOutcome, Integer> homeQuaffleOutcomes;
-    private final EnumMap<QuaffleOutcome, Integer> awayQuaffleOutcomes;
-    private final EnumMap<BludgerOutcome, Integer> homeBludgerOutcomes;
-    private final EnumMap<BludgerOutcome, Integer> awayBludgerOutcomes;
-    private final EnumMap<SnitchOutcome, Integer> homeSnitchOutcomes;
-    private final EnumMap<SnitchOutcome, Integer> awaySnitchOutcomes;
-    private final EnumMap<InjuryType, Integer> homeInjuryTypes;
-    private final EnumMap<InjuryType, Integer> awayInjuryTypes;
 
     public Match(int number, int round, LocalDateTime startDateTime) {
         this.number = number;
@@ -119,6 +118,10 @@ public class Match implements Comparable<Match> {
 
     }
 
+    public ResourceBundleReplacer getResources() {
+        return resources;
+    }
+
     public void setResources(ResourceBundleReplacer resources) {
         this.resources = new ResourceBundleReplacer(resources);
         this.resources.addToken("date", startDateTime.toLocalDate().format(Formatters.dateFormatter));
@@ -132,10 +135,6 @@ public class Match implements Comparable<Match> {
             this.resources.addToken("awayTeamShort", awayTeam.getName());
         else
             this.resources.addToken("awayTeamShort", awayTeam.getShortName());
-    }
-
-    public ResourceBundleReplacer getResources() {
-        return resources;
     }
 
     public Page buildMatchPage() {
@@ -266,7 +265,7 @@ public class Match implements Comparable<Match> {
 
         Iterator<Map.Entry<String, LocalDate>> beforeIt = injuredBefore.entrySet().iterator();
         Iterator<Map.Entry<String, LocalDate>> duringIt = injuredDuring.entrySet().iterator();
-        while(beforeIt.hasNext() || duringIt.hasNext()) {
+        while (beforeIt.hasNext() || duringIt.hasNext()) {
             row = new Table.Row();
             injuredRowCells(row, beforeIt);
             injuredRowCells(row, duringIt);
@@ -277,7 +276,7 @@ public class Match implements Comparable<Match> {
     }
 
     private void injuredRowCells(Table.Row row, Iterator<Map.Entry<String, LocalDate>> it) {
-        if(it.hasNext()) {
+        if (it.hasNext()) {
             Map.Entry<String, LocalDate> entry = it.next();
             row.addChildren(
                     new Table.Cell(new Text(entry.getKey())),

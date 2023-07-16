@@ -23,40 +23,42 @@ import info.codywilliams.qsg.models.player.*;
 import java.util.Random;
 
 public class PlayerGenerator {
-    private PlayerGenerator(){}
     private static final NameGenerator femaleNames = new NameGenerator("femaleNames");
     private static final NameGenerator maleNames = new NameGenerator("maleNames");
     private static final NameGenerator nonBinaryNames = new NameGenerator("nonBinaryNames");
     private static final NameGenerator surnames = new NameGenerator("surnames");
-    public static Beater randomBeater(){
+    private PlayerGenerator() {
+    }
+
+    public static Beater randomBeater() {
         Beater beater = new Beater();
         randomPlayer(beater);
 
         return beater;
     }
 
-    public static Chaser randomChaser(){
+    public static Chaser randomChaser() {
         Chaser chaser = new Chaser();
         randomPlayer(chaser);
 
         return chaser;
     }
 
-    public static Keeper randomKeeper(){
+    public static Keeper randomKeeper() {
         Keeper keeper = new Keeper();
         randomPlayer(keeper);
 
         return keeper;
     }
 
-    public static Seeker randomSeeker(){
+    public static Seeker randomSeeker() {
         Seeker seeker = new Seeker();
         randomPlayer(seeker);
 
         return seeker;
     }
 
-    public static Beater newBeater(String name){
+    public static Beater newBeater(String name) {
         Beater beater = new Beater();
         beater.setName(name);
         randomSkills(beater);
@@ -64,7 +66,7 @@ public class PlayerGenerator {
         return beater;
     }
 
-    public static Chaser newChaser(String name){
+    public static Chaser newChaser(String name) {
         Chaser chaser = new Chaser();
         chaser.setName(name);
         randomSkills(chaser);
@@ -72,7 +74,7 @@ public class PlayerGenerator {
         return chaser;
     }
 
-    public static Keeper newKeeper(String name){
+    public static Keeper newKeeper(String name) {
         Keeper keeper = new Keeper();
         keeper.setName(name);
         randomSkills(keeper);
@@ -80,7 +82,7 @@ public class PlayerGenerator {
         return keeper;
     }
 
-    public static Seeker newSeeker(String name){
+    public static Seeker newSeeker(String name) {
         Seeker seeker = new Seeker();
         seeker.setName(name);
         randomSkills(seeker);
@@ -88,26 +90,26 @@ public class PlayerGenerator {
         return seeker;
     }
 
-    private static void randomPlayer(Player player){
+    private static void randomPlayer(Player player) {
         randomFullName(player);
         randomSkills(player);
     }
 
-    public static void randomSkills(Player player){
+    public static void randomSkills(Player player) {
         Random random = new Random();
 
         player.setSkillOffense(random.nextInt(1, 11));
         player.setSkillDefense(random.nextInt(1, 11));
         player.setSkillTeamwork(random.nextInt(1, 11));
-        player.setFoulLikelihood((random.nextInt(1,15) % 10) + 1);
+        player.setFoulLikelihood((random.nextInt(1, 15) % 10) + 1);
     }
 
-    public static void randomFullName(Player player){
+    public static void randomFullName(Player player) {
         Random random = new Random();
 
         int i = random.nextInt(0, 100);
         String name;
-        if(i < 30)
+        if (i < 30)
             name = femaleNames.getNextName();
         else if (i < 90)
             name = maleNames.getNextName();

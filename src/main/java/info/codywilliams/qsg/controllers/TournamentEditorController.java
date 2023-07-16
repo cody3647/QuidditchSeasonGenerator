@@ -55,18 +55,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TournamentEditorController {
-
+    static private final Pattern intPattern = Pattern.compile("^\\d*$");
+    static LocalTime defaultMatchTime = LocalTime.of(20, 0);
+    private final Context context;
     @FXML
     VBox tournamentVBox;
     @FXML
     ComboBox<TournamentType> tournamentTypeComboBox;
     @FXML
     TextField leagueNameTextField;
-    static LocalTime defaultMatchTime = LocalTime.of(20, 0);
     @FXML
     DatePicker startDatePicker;
     @FXML
-    Label  matchesPerWeekLabel;
+    Label matchesPerWeekLabel;
     @FXML
     TableView<MatchDayTime> matchDayTimeTableView;
     @FXML
@@ -103,14 +104,9 @@ public class TournamentEditorController {
     Button blackoutAddButton;
     @FXML
     ResourceBundle resources;
-    private final Context context;
     TournamentOptions tournamentOptions;
     @FXML
     Button matchDayTimeAddButton;
-
-    public TournamentEditorController(Context context){
-        this.context = context;
-    }
     EventHandler<TableColumn.CellEditEvent<MatchDayTime, DayOfWeek>> matchDayTimeDayCommitHandler = (dayOfWeekEditEvent) -> {
         MatchDayTime matchDayTime = dayOfWeekEditEvent.getRowValue();
         matchDayTime.setDayOfWeek(dayOfWeekEditEvent.getNewValue());
@@ -123,6 +119,20 @@ public class TournamentEditorController {
 
         matchDayTimeDuplicateRemover(matchDayTime);
     };
+
+    public TournamentEditorController(Context context) {
+        this.context = context;
+    }
+
+    private static TextFormatter.Change integerFilter(TextFormatter.Change change) {
+        if (!change.isContentChange() || change.getText().isEmpty()) return change;
+
+        Matcher matcher = intPattern.matcher(change.getText());
+        if (matcher.matches()) return change;
+
+        change.setText("");
+        return change;
+    }
 
     public void initialize() {
         tournamentOptions = context.getTournamentOptions();
@@ -313,18 +323,6 @@ public class TournamentEditorController {
         }
     }
 
-    static private final Pattern intPattern = Pattern.compile("^\\d*$");
-
-    private static TextFormatter.Change integerFilter(TextFormatter.Change change) {
-        if(!change.isContentChange() || change.getText().isEmpty()) return change;
-
-        Matcher matcher = intPattern.matcher(change.getText());
-        if(matcher.matches()) return change;
-
-        change.setText("");
-        return change;
-    }
-
     private static class MatchTimeStringConverter extends StringConverter<LocalTime> {
         final static Pattern pattern = Pattern.compile(
                 "^(?<hour>[0-2]?\\d)[\\.: ]?(?<min>[0-5]\\d)?[\\.: ]? ?(?<ampm>[ap]m?)?",
@@ -388,6 +386,7 @@ public class TournamentEditorController {
 
     private static class DayOfWeekConverter extends StringConverter<DayOfWeek> {
         static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("cccc");
+
         @Override
         public String toString(DayOfWeek dayOfWeek) {
             return dayOfWeek.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault());

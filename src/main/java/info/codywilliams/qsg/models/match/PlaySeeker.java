@@ -22,13 +22,9 @@ import info.codywilliams.qsg.models.player.Seeker;
 import info.codywilliams.qsg.util.ResourceBundleReplacer;
 
 public class PlaySeeker extends Play {
-    public enum SnitchOutcome {FEINT, SEEN, MISSED, CAUGHT, STOLEN}
     Seeker seeker;
     Seeker otherSeeker;
     SnitchOutcome snitchOutcome;
-
-
-
     public PlaySeeker(Seeker seeker, Seeker otherSeeker, TeamType attackingTeamType) {
         this.seeker = seeker;
         this.otherSeeker = otherSeeker;
@@ -36,7 +32,7 @@ public class PlaySeeker extends Play {
     }
 
     public void swapTeam() {
-        attackingTeamType = switch(attackingTeamType) {
+        attackingTeamType = switch (attackingTeamType) {
             case HOME -> TeamType.AWAY;
             case AWAY -> TeamType.HOME;
         };
@@ -46,26 +42,28 @@ public class PlaySeeker extends Play {
         otherSeeker = temp;
     }
 
-    public void setSeeker(Seeker seeker) {
-        this.seeker = seeker;
-    }
-
     public Seeker getSeeker() {
         return seeker;
+    }
+
+    public void setSeeker(Seeker seeker) {
+        this.seeker = seeker;
     }
 
     public SnitchOutcome getSnitchOutcome() {
         return snitchOutcome;
     }
+
     public void setSnitchOutcome(SnitchOutcome snitchOutcome) {
         this.snitchOutcome = snitchOutcome;
     }
 
-    public boolean isSnitchCaught(){
+    public boolean isSnitchCaught() {
         return snitchOutcome == SnitchOutcome.CAUGHT || snitchOutcome == SnitchOutcome.STOLEN;
     }
+
     @Override
-    protected String getOutcomeString(){
+    protected String getOutcomeString() {
         return snitchOutcome.name().toLowerCase() + "." + bludgerOutcome.name().toLowerCase();
     }
 
@@ -75,7 +73,7 @@ public class PlaySeeker extends Play {
         resources.addToken("seeker", seeker.getShortName());
         resources.addToken("otherSeeker", otherSeeker.getShortName());
 
-        return resources.getString("seeker." + getOutcomeString()  + ".player");
+        return resources.getString("seeker." + getOutcomeString() + ".player");
     }
 
     @Override
@@ -91,9 +89,11 @@ public class PlaySeeker extends Play {
                 ", seeker=" + seeker.getName() +
                 ", snitchOutcome=" + snitchOutcome +
                 ", bludgerOutcome=" + bludgerOutcome +
-                ", beaterHitter=" + ((beaterHitter != null) ? beaterHitter.getName() : "" )+
-                ", beaterBlocker=" + ((beaterBlocker != null) ? beaterBlocker.getName() : "" ) +
+                ", beaterHitter=" + ((beaterHitter != null) ? beaterHitter.getName() : "") +
+                ", beaterBlocker=" + ((beaterBlocker != null) ? beaterBlocker.getName() : "") +
                 ", playDurationSeconds=" + playDurationSeconds +
                 '}';
     }
+
+    public enum SnitchOutcome {FEINT, SEEN, MISSED, CAUGHT, STOLEN}
 }

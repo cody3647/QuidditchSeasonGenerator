@@ -36,24 +36,24 @@ public class BlackoutDates implements Comparable<BlackoutDates> {
         return start.get();
     }
 
-    public ObjectProperty<LocalDate> startProperty() {
-        return start;
-    }
-
     public void setStart(LocalDate start) {
         this.start.set(start);
+    }
+
+    public ObjectProperty<LocalDate> startProperty() {
+        return start;
     }
 
     public LocalDate getEnd() {
         return end.get();
     }
 
-    public ObjectProperty<LocalDate> endProperty() {
-        return end;
-    }
-
     public void setEnd(LocalDate end) {
         this.end.set(end);
+    }
+
+    public ObjectProperty<LocalDate> endProperty() {
+        return end;
     }
 
     @Override

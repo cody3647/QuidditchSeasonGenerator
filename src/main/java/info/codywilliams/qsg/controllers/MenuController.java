@@ -26,12 +26,10 @@ import java.util.ResourceBundle;
 public class MenuController {
     private final Context context;
     private final Logger logger;
-
-
     @FXML
     ResourceBundle resources;
 
-    public MenuController(Context context){
+    public MenuController(Context context) {
         this.context = context;
         logger = LoggerFactory.getLogger(MenuController.class);
     }
@@ -146,11 +144,13 @@ public class MenuController {
         logger.info("Changed mediawiki log level to {}", Level.INFO);
         changeLogLevel(Mediawiki.class, Level.INFO);
     }
+
     @FXML
     void changeMediawikiLogLevelDebug(ActionEvent ignoredEvent) {
         logger.info("Changed mediawiki log level to {}", Level.DEBUG);
         changeLogLevel(Mediawiki.class, Level.DEBUG);
     }
+
     @FXML
     void changeMediawikiLogLevelTrace(ActionEvent ignoredEvent) {
         logger.info("Changed mediawiki log level to {}", Level.TRACE);
@@ -162,11 +162,13 @@ public class MenuController {
         logger.info("Changed match generator log level to {}", Level.INFO);
         changeLogLevel(MatchGenerator.class, Level.INFO);
     }
+
     @FXML
     void changeMatchGeneratorLogLevelDebug(ActionEvent ignoredEvent) {
         logger.info("Changed match generator log level to {}", Level.DEBUG);
         changeLogLevel(MatchGenerator.class, Level.DEBUG);
     }
+
     @FXML
     void changeMatchGeneratorLogLevelTrace(ActionEvent ignoredEvent) {
         logger.info("Changed match generator log level to {}", Level.TRACE);

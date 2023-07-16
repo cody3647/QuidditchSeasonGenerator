@@ -23,7 +23,7 @@ import info.codywilliams.qsg.models.player.Keeper;
 import info.codywilliams.qsg.models.player.Player;
 import info.codywilliams.qsg.util.ResourceBundleReplacer;
 
-public class PlayFoul extends PlayChaser{
+public class PlayFoul extends PlayChaser {
     Player fouler;
     TeamType foulerTeamType;
 
@@ -58,7 +58,7 @@ public class PlayFoul extends PlayChaser{
     }
 
     @Override
-    protected String getOutcomeString(){
+    protected String getOutcomeString() {
         return "foul." + quaffleOutcome.name().toLowerCase();
     }
 
@@ -68,14 +68,14 @@ public class PlayFoul extends PlayChaser{
         resources.addToken("attacker", attacker.getShortName());
         resources.addToken("defender", defender.getShortName());
         resources.addToken("fouler", fouler.getShortName());
-        switch(foulerTeamType) {
+        switch (foulerTeamType) {
             case HOME -> resources.addTeamToken("foulerTeam", "homeTeam");
             case AWAY -> resources.addTeamToken("foulerTeam", "awayTeam");
         }
-        if(defendingKeeper != null)
+        if (defendingKeeper != null)
             resources.addToken("keeper", defendingKeeper.getShortName());
 
-        return resources.getString(getOutcomeString()  + ".player");
+        return resources.getString(getOutcomeString() + ".player");
     }
 
     @Override

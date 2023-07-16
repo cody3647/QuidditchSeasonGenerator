@@ -516,7 +516,7 @@ public class MatchGenerator {
         );
         logger.trace("Injury: {}, {}", injuryChance, willBeInjured);
 
-        if ( willBeInjured.stream().allMatch(bool -> bool)) {
+        if (willBeInjured.stream().allMatch(bool -> bool)) {
             int injury = randomNumber(1, 6);
             logger.trace("Injured: {} % 6 = {}", injury, injury % 6);
             LocalDate endDate;

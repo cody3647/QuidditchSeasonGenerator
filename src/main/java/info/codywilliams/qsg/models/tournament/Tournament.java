@@ -36,6 +36,8 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.collections.ObservableSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -54,13 +56,14 @@ public abstract class Tournament {
     protected SimpleMapProperty<String, Integer> tournamentPoints;
     protected SimpleBooleanProperty teamsAssigned;
     @JsonIgnore
+    protected ArrayList<Team> teamList;
+    @JsonIgnore
     private ResourceBundleReplacer resources;
     @JsonIgnore
     private String tournamentTitle;
     @JsonIgnore
     private String yearRange;
-    @JsonIgnore
-    protected ArrayList<Team> teamList;
+    Logger logger = LoggerFactory.getLogger(Tournament.class);
 
 
     public Tournament(TournamentOptions tournamentOptions, TournamentType type) {
@@ -111,9 +114,6 @@ public abstract class Tournament {
 
         int matchesPerRound = calculateMatchesPerRound(numTeams);
         setNumMatchesPerRound(matchesPerRound);
-
-        System.out.printf("Num Teams: %d\nTotal Matches: %d\nTotal Rounds: %d\nMatches Per Round: %d\n",
-                numTeams, getNumMatches(), getNumRounds(), getNumMatchesPerRound());
     }
 
     protected abstract int calculateTotalMatches(int numTeams);
@@ -164,7 +164,7 @@ public abstract class Tournament {
         }
         now = System.currentTimeMillis() - now;
         assignPoints();
-        System.out.println(now / 1000.0 + " seconds to generate matches");
+        logger.info("{} seconds to generate matches", now / 1000.0);
     }
 
     public abstract TreeSet<Match> assignTeamsToMatches(List<Team> teams, long seed);
@@ -189,7 +189,7 @@ public abstract class Tournament {
 
         pages.add(buildTournamentPage(tournamentTitle));
         now = System.currentTimeMillis() - now;
-        System.out.println(now / 1000.0 + " seconds to generate pages");
+        logger.info("{} seconds to generate pages", now / 1000.0);
         return pages;
     }
 
@@ -339,60 +339,60 @@ public abstract class Tournament {
         return type.get();
     }
 
-    public ObjectProperty<TournamentType> typeProperty() {
-        return type;
-    }
-
     public void setType(TournamentType type) {
         this.type.set(type);
+    }
+
+    public ObjectProperty<TournamentType> typeProperty() {
+        return type;
     }
 
     public int getNumWeeks() {
         return numWeeks.get();
     }
 
-    public IntegerProperty numWeeksProperty() {
-        return numWeeks;
-    }
-
     public void setNumWeeks(int numWeeks) {
         this.numWeeks.set(numWeeks);
+    }
+
+    public IntegerProperty numWeeksProperty() {
+        return numWeeks;
     }
 
     public int getNumMatches() {
         return numMatches.get();
     }
 
-    public IntegerProperty numMatchesProperty() {
-        return numMatches;
-    }
-
     public void setNumMatches(int numMatches) {
         this.numMatches.set(numMatches);
+    }
+
+    public IntegerProperty numMatchesProperty() {
+        return numMatches;
     }
 
     public int getNumRounds() {
         return numRounds.get();
     }
 
-    public IntegerProperty numRoundsProperty() {
-        return numRounds;
-    }
-
     public void setNumRounds(int numRounds) {
         this.numRounds.set(numRounds);
+    }
+
+    public IntegerProperty numRoundsProperty() {
+        return numRounds;
     }
 
     public int getNumMatchesPerRound() {
         return numMatchesPerRound.get();
     }
 
-    public IntegerProperty numMatchesPerRoundProperty() {
-        return numMatchesPerRound;
-    }
-
     public void setNumMatchesPerRound(int numMatchesPerRound) {
         this.numMatchesPerRound.set(numMatchesPerRound);
+    }
+
+    public IntegerProperty numMatchesPerRoundProperty() {
+        return numMatchesPerRound;
     }
 
     public ObservableSet<Match> getMatches() {
@@ -407,12 +407,12 @@ public abstract class Tournament {
         return endDate.get();
     }
 
-    public ObjectProperty<LocalDate> endDateProperty() {
-        return endDate;
-    }
-
     public void setEndDate(LocalDate endDate) {
         this.endDate.set(endDate);
+    }
+
+    public ObjectProperty<LocalDate> endDateProperty() {
+        return endDate;
     }
 
     public StringBinding endDateStringBinding() {

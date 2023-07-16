@@ -33,6 +33,7 @@ import java.time.temporal.TemporalAdjusters;
 import java.util.Comparator;
 
 public class TournamentOptions {
+    static final private LocalDate firstMondayOctober = LocalDate.now().withMonth(Month.OCTOBER.getValue()).with(TemporalAdjusters.firstInMonth(DayOfWeek.MONDAY));
     private final StringProperty leagueName;
     private final ListProperty<MatchDayTime> matchDayTimeList;
     private final SortedList<MatchDayTime> sortedMatchDayTimeList;
@@ -52,13 +53,12 @@ public class TournamentOptions {
 
         // Add listener to matchDayTimeList to change valid start day whenever there is a change to the list
         matchDayTimeList.addListener((ListChangeListener<MatchDayTime>) change -> {
-            System.out.println("TEST");
             setMatchesPerWeek(getMatchDayTimeList().stream().mapToInt(MatchDayTime::getCount).sum());
 
         });
     }
 
-    public void clear(){
+    public void clear() {
         leagueName.setValue("");
         matchDayTimeList.clear();
         matchDayTimeList.add(defaultMatchDayTime());
@@ -67,7 +67,7 @@ public class TournamentOptions {
         matchesPerWeek.set(1);
     }
 
-    public void loadSettings(SaveSettings settings){
+    public void loadSettings(SaveSettings settings) {
         leagueName.setValue(settings.getLeagueName());
         matchDayTimeList.addAll(settings.getMatchDayTimeList());
         startDate.setValue(settings.getStartDate());
@@ -75,31 +75,31 @@ public class TournamentOptions {
     }
 
     private MatchDayTime defaultMatchDayTime() {
-        return new MatchDayTime(DayOfWeek.FRIDAY, LocalTime.of(20,0, 0), 1);
+        return new MatchDayTime(DayOfWeek.FRIDAY, LocalTime.of(20, 0, 0), 1);
     }
 
     public String getLeagueName() {
         return leagueName.get();
     }
 
-    public StringProperty leagueNameProperty() {
-        return leagueName;
-    }
-
     public void setLeagueName(String leagueName) {
         this.leagueName.set(leagueName);
+    }
+
+    public StringProperty leagueNameProperty() {
+        return leagueName;
     }
 
     public ObservableList<MatchDayTime> getMatchDayTimeList() {
         return matchDayTimeList.get();
     }
 
-    public ListProperty<MatchDayTime> matchDayTimeListProperty() {
-        return matchDayTimeList;
-    }
-
     public void setMatchDayTimeList(ObservableList<MatchDayTime> matchDayTimeList) {
         this.matchDayTimeList.set(matchDayTimeList);
+    }
+
+    public ListProperty<MatchDayTime> matchDayTimeListProperty() {
+        return matchDayTimeList;
     }
 
     public SortedList<MatchDayTime> getSortedMatchDayTimeList() {
@@ -110,37 +110,35 @@ public class TournamentOptions {
         return startDate.get();
     }
 
-    public ObjectProperty<LocalDate> startDateProperty() {
-        return startDate;
-    }
-
     public void setStartDate(LocalDate startDate) {
         this.startDate.set(startDate);
+    }
+
+    public ObjectProperty<LocalDate> startDateProperty() {
+        return startDate;
     }
 
     public ObservableList<BlackoutDates> getBlackoutDates() {
         return blackoutDates.get();
     }
 
-    public ListProperty<BlackoutDates> blackoutDatesProperty() {
-        return blackoutDates;
-    }
-
     public void setBlackoutDates(ObservableList<BlackoutDates> blackoutDates) {
         this.blackoutDates.set(blackoutDates);
+    }
+
+    public ListProperty<BlackoutDates> blackoutDatesProperty() {
+        return blackoutDates;
     }
 
     public int getMatchesPerWeek() {
         return matchesPerWeek.get();
     }
 
-    public IntegerProperty matchesPerWeekProperty() {
-        return matchesPerWeek;
-    }
-
     public void setMatchesPerWeek(int matchesPerWeek) {
         this.matchesPerWeek.set(matchesPerWeek);
     }
 
-    static final private LocalDate firstMondayOctober = LocalDate.now().withMonth(Month.OCTOBER.getValue()).with(TemporalAdjusters.firstInMonth(DayOfWeek.MONDAY));
+    public IntegerProperty matchesPerWeekProperty() {
+        return matchesPerWeek;
+    }
 }

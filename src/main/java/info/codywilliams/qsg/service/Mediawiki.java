@@ -42,9 +42,9 @@ import java.util.stream.Collectors;
 import static info.codywilliams.qsg.App.mapper;
 
 public class Mediawiki {
-    String apiUrlString;
     final private HttpClient client;
     final private Logger logger = LoggerFactory.getLogger(Mediawiki.class);
+    String apiUrlString;
     private String username;
     private boolean loggedIn = false;
 
@@ -344,6 +344,7 @@ public class Mediawiki {
         public boolean isSuccess() {
             return success;
         }
+
         public boolean isFailure() {
             return !success;
         }

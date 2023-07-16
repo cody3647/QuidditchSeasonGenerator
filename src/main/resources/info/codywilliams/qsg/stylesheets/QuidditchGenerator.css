@@ -33,9 +33,9 @@ div.ib table {
 }
 
 div.ib table th {
-    font-weight:bold;
-    text-align:center;
-    font-size:larger;
+    font-weight: bold;
+    text-align: center;
+    font-size: larger;
 }
 
 div.ib table td.ib-label {
@@ -118,11 +118,11 @@ ul.quidditch-match, .quidditch-match ul, .quidditch-roster ul {
     border: 1px solid #545454;
 }
 
-.quaffle-scored div{
+.quaffle-scored div {
     border: 1px solid #580000;
 }
 
-.quidditch-foul div{
+.quidditch-foul div {
     background-color: #412626;
     border: 1px solid #972000;
 }
@@ -138,6 +138,7 @@ ul.quidditch-match, .quidditch-match ul, .quidditch-roster ul {
 .quaffle-scored.home, .quaffle-caught.home {
     color: #48d9dc;
 }
+
 .quaffle-scored.away, .quaffle-caught.away {
     color: #ea993c;
 }
@@ -145,6 +146,7 @@ ul.quidditch-match, .quidditch-match ul, .quidditch-roster ul {
 .bludger {
     color: #8ca5a5;
 }
+
 .quaffle {
     color: #ffacac;
 }
@@ -165,7 +167,7 @@ ul.quidditch-match, .quidditch-match ul, .quidditch-roster ul {
 }
 
 .match-loser a {
-    color: rgb(175,175,175);
+    color: rgb(175, 175, 175);
 }
 
 .league-schedule {
@@ -174,7 +176,7 @@ ul.quidditch-match, .quidditch-match ul, .quidditch-roster ul {
 
 table.league-rankings {
     counter-reset: rank -1;
-    list-style-type:none;
+    list-style-type: none;
 }
 
 table.league-rankings tr {
@@ -182,7 +184,7 @@ table.league-rankings tr {
 }
 
 table.league-rankings td:first-child:before {
-    content: counter( rank )": ";
+    content: counter(rank) ": ";
 }
 
 /* Player Tooltips */
@@ -204,7 +206,7 @@ table.league-rankings td:first-child:before {
     border-radius: 10px;
     padding: 10px 15px 10px 15px;
     top: -2.7em;
-    right:-12.5em;
+    right: -12.5em;
     text-align: center;
 }
 

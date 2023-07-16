@@ -52,7 +52,7 @@ public class Paragraph extends ElementChildren<InlineElement> {
     public String toWikitext() {
         StringBuilder stringBuilder = new StringBuilder("\n\n");
 
-        for(InlineElement child: children) {
+        for (InlineElement child : children) {
             stringBuilder.append(child.toWikitext());
         }
 

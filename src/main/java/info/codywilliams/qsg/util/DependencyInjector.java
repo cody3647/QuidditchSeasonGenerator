@@ -40,14 +40,14 @@ public class DependencyInjector {
     };
     private static ResourceBundle bundle = null;
 
-    private static Object constructController(Class<?> controllerClass){
-        if(injectionMethods.containsKey(controllerClass))
+    private static Object constructController(Class<?> controllerClass) {
+        if (injectionMethods.containsKey(controllerClass))
             return loadControllerWithMethod(controllerClass);
         else
             return loadControllerWithDefault(controllerClass);
     }
 
-    private static Object loadControllerWithMethod(Class<?> controllerClass){
+    private static Object loadControllerWithMethod(Class<?> controllerClass) {
         try {
             return injectionMethods.get(controllerClass).call(controllerClass);
         } catch (Exception e) {
@@ -55,10 +55,11 @@ public class DependencyInjector {
         }
     }
 
-    private static Object loadControllerWithDefault(Class<?> controllerClass){
+    private static Object loadControllerWithDefault(Class<?> controllerClass) {
         try {
             return controllerClass.getConstructor().newInstance();
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                 NoSuchMethodException e) {
             throw new IllegalStateException(e);
         }
     }
@@ -68,7 +69,7 @@ public class DependencyInjector {
         return loader.load();
     }
 
-    public static FXMLLoader getLoader(String view){
+    public static FXMLLoader getLoader(String view) {
         return new FXMLLoader(
                 DependencyInjector.class.getResource("/info/codywilliams/qsg/views/" + view + ".fxml"),
                 bundle,
@@ -77,27 +78,28 @@ public class DependencyInjector {
         );
     }
 
-    public static void addInjectionMethod(Class<?> controllerClass, Callback<Class<?>, Object> method){
+    public static void addInjectionMethod(Class<?> controllerClass, Callback<Class<?>, Object> method) {
         injectionMethods.put(controllerClass, method);
-    }
-
-    public static void setBundle(ResourceBundle bundle){
-        DependencyInjector.bundle = bundle;
     }
 
     public static ResourceBundle getBundle() {
         return bundle;
     }
+
+    public static void setBundle(ResourceBundle bundle) {
+        DependencyInjector.bundle = bundle;
+    }
+
     public static void setUpAndShowStage(Stage window, Scene scene, String titleKey, String... iconPaths) {
         window.setTitle(bundle.getString(titleKey));
 
-        if(iconPaths == null || iconPaths.length == 0)
+        if (iconPaths == null || iconPaths.length == 0)
             iconPaths = defaultIconPaths;
 
         List<Image> iconList = window.getIcons();
-        for(String iconPath: iconPaths) {
+        for (String iconPath : iconPaths) {
             InputStream is = DependencyInjector.class.getResourceAsStream(iconPath);
-            if(is == null)
+            if (is == null)
                 continue;
             iconList.add(new Image(is));
         }
@@ -108,7 +110,7 @@ public class DependencyInjector {
 
     public static void addStylesheet(Scene scene, String... stylesheet) {
         ArrayList<String> stylesheets = new ArrayList<>();
-        for(String name: stylesheet) {
+        for (String name : stylesheet) {
             String stylesheetPath = DependencyInjector.class.getResource("/info/codywilliams/qsg/stylesheets/" + name).toExternalForm();
 
             stylesheets.add(stylesheetPath);
@@ -116,7 +118,6 @@ public class DependencyInjector {
 
         scene.getStylesheets().addAll(stylesheets);
     }
-
 
 
 }

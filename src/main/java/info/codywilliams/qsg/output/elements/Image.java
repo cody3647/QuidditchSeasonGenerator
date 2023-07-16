@@ -27,10 +27,9 @@ import java.util.Set;
 
 public class Image extends Element implements InlineElement {
     public static final String IMAGES_DIR = "/images/";
-    public static String IMG = "img";
     private static final Set<String> specialClasses = Set.of("border", "frameless", "frame", "thumb");
     private static final Set<String> specialAttributes = Set.of("height", "width");
-
+    public static String IMG = "img";
     public String imageName;
 
     public Image(String alt, String imageName) {
@@ -76,27 +75,26 @@ public class Image extends Element implements InlineElement {
                 .append(imageName);
 
         StringBuilder wikitextClass = new StringBuilder();
-        for(String c: classes) {
+        for (String c : classes) {
             if (specialClasses.contains(c))
                 stringBuilder.append("|").append(c);
             else
                 wikitextClass.append(c);
         }
 
-        if(!wikitextClass.isEmpty()){
+        if (!wikitextClass.isEmpty()) {
             stringBuilder.append("|class=").append(wikitextClass);
         }
 
-        for(Map.Entry<String, String> attribute: attributes.entrySet()) {
-            if(specialAttributes.contains(attribute.getKey())) {
+        for (Map.Entry<String, String> attribute : attributes.entrySet()) {
+            if (specialAttributes.contains(attribute.getKey())) {
                 stringBuilder.append('|');
 
-                if(attribute.getKey().equals("height"))
+                if (attribute.getKey().equals("height"))
                     stringBuilder.append('x');
 
                 stringBuilder.append(attribute.getValue());
-            }
-            else {
+            } else {
                 stringBuilder.append('|').append(attribute.getKey()).append('=').append(attribute.getValue());
             }
         }
@@ -104,12 +102,13 @@ public class Image extends Element implements InlineElement {
         return stringBuilder;
     }
 
-    static public class Gallery extends Div{
+    static public class Gallery extends Div {
         static final String DEFAULT_MODE = "packed";
         final String mode;
+
         public Gallery(String mode) {
             super();
-            if(mode == null)
+            if (mode == null)
                 mode = DEFAULT_MODE;
             this.mode = mode;
         }
@@ -126,13 +125,13 @@ public class Image extends Element implements InlineElement {
         @Override
         public String toWikitext() {
             StringBuilder stringBuilder = new StringBuilder("<gallery mode=").append(mode);
-            for(Map.Entry<String, String> attribute: attributes.entrySet()) {
+            for (Map.Entry<String, String> attribute : attributes.entrySet()) {
                 stringBuilder.append(' ').append(attribute.getKey()).append('=').append(attribute.getValue());
             }
             stringBuilder.append(">\n");
 
-            for(Element child: children) {
-                if(!(child instanceof Image image))
+            for (Element child : children) {
+                if (!(child instanceof Image image))
                     continue;
 
                 stringBuilder.append("File:").append(image.imageName).append('\n');

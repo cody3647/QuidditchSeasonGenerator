@@ -49,10 +49,9 @@ public class Context {
     final private IntegerProperty numLocations;
     final private StringProperty leftStatus;
     final private StringProperty rightStatus;
+    private final Mediawiki mediawiki;
     private File currentSaveFile;
     private boolean listChangeAndChangeFlag = false;
-    private final Mediawiki mediawiki;
-
 
 
     public Context() {
@@ -88,10 +87,10 @@ public class Context {
         setNumLocations(locations.size());
     }
 
-    private void teamListenersAndBindings(){
+    private void teamListenersAndBindings() {
         numTeams.bind(Bindings.size(teams));
         numTeams.addListener((observableValue, oldNumTeams, newNumTeams) -> {
-            if(currentTournament.get() != null)
+            if (currentTournament.get() != null)
                 currentTournament.get().recalculateTournament(numTeams.get());
         });
 
@@ -118,7 +117,7 @@ public class Context {
         };
 
         ChangeListener<Object> changeListener = (observableValue, oldObject, newObject) -> {
-            if (currentTournament.getValue() != null  && !listChangeAndChangeFlag) {
+            if (currentTournament.getValue() != null && !listChangeAndChangeFlag) {
                 currentTournament.getValue().recalculateTournament(numTeams.get());
             }
             listChangeAndChangeFlag = false;
@@ -215,12 +214,12 @@ public class Context {
         return seed.get();
     }
 
-    public LongProperty seedProperty() {
-        return seed;
-    }
-
     public void setSeed(long seed) {
         this.seed.set(seed);
+    }
+
+    public LongProperty seedProperty() {
+        return seed;
     }
 
     public int getNumTeams() {
@@ -255,7 +254,7 @@ public class Context {
         this.currentSaveFile = currentSaveFile;
     }
 
-    public void changeCurrentTournament(TournamentType type){
+    public void changeCurrentTournament(TournamentType type) {
         if (!getTournaments().containsKey(type)) {
             try {
                 getTournaments().put(type, type.getConstructor().newInstance(getTournamentOptions()));

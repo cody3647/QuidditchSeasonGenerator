@@ -20,7 +20,7 @@ package info.codywilliams.qsg.output;
 
 import java.util.*;
 
-public abstract class ElementChildren<T extends ElementOutputs> extends Element{
+public abstract class ElementChildren<T extends ElementOutputs> extends Element {
     final protected LinkedList<T> children;
 
     public ElementChildren() {
@@ -64,7 +64,7 @@ public abstract class ElementChildren<T extends ElementOutputs> extends Element{
         StringBuilder stringBuilder = new StringBuilder();
 
         openHtmlTag(stringBuilder, tabs);
-        for (T child: children) {
+        for (T child : children) {
             stringBuilder.append(child.toHtml(tabs + 1));
         }
         closeHtmlTag(stringBuilder, tabs);
@@ -76,7 +76,7 @@ public abstract class ElementChildren<T extends ElementOutputs> extends Element{
         StringBuilder stringBuilder = new StringBuilder();
         openHtmlTag(stringBuilder, 0);
 
-        for(T child: children) {
+        for (T child : children) {
             stringBuilder.append(child.toWikitext());
         }
 

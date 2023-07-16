@@ -61,6 +61,10 @@ public class SaveSettings {
         this(new ArrayList<>(context.getTeams()), (context.getCurrentTournament() != null) ? context.getCurrentTournament().getType() : null, context.getTournamentOptions(), context.getSeed());
     }
 
+    static public SaveSettings loadFromFile(File settingsFile) throws IOException {
+        return mapper.readValue(settingsFile, SaveSettings.class);
+    }
+
     public List<Team> getTeams() {
         return teams;
     }
@@ -115,10 +119,6 @@ public class SaveSettings {
 
     public void setSeed(long seed) {
         this.seed = seed;
-    }
-
-    static public SaveSettings loadFromFile(File settingsFile) throws IOException {
-        return mapper.readValue(settingsFile, SaveSettings.class);
     }
 
     public void saveToFile(File saveFile) throws IOException {

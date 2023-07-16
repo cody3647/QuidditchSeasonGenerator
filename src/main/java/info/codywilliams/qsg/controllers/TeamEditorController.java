@@ -44,6 +44,7 @@ import java.util.TreeMap;
 import java.util.function.Function;
 
 public class TeamEditorController {
+    private final Context context;
     @FXML
     VBox teamVBox;
     @FXML
@@ -70,11 +71,9 @@ public class TeamEditorController {
     TreeTableColumn<Player, Button> randomSkillsCol;
     @FXML
     ResourceBundle resources;
-    private final Context context;
-
     private Map<String, TreeItem<Player>> playerPositions;
 
-    public TeamEditorController(Context context){
+    public TeamEditorController(Context context) {
         this.context = context;
     }
 
@@ -89,9 +88,9 @@ public class TeamEditorController {
 
         for (TreeItem<Player> item : playerPositions.values())
             treeRoot.getChildren().add(item);
-        teamTable.setRowFactory(table -> new TreeTableRow<>(){
+        teamTable.setRowFactory(table -> new TreeTableRow<>() {
             @Override
-            public void updateItem(Player player, boolean empty){
+            public void updateItem(Player player, boolean empty) {
                 super.updateItem(player, empty);
                 setEditable(isEmpty() || !(player instanceof PlayerType));
             }

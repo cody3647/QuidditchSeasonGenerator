@@ -26,8 +26,6 @@ import java.time.LocalDate;
 
 public abstract class Play {
     TeamType attackingTeamType;
-    public enum BludgerOutcome {NONE, BLOCKED, HIT, MISSED}
-    public enum InjuryType {NONE, BLUDGER_BLOCKED, BLUDGER_HIT, CHASER, KEEPER}
     Player injuredPlayer = null;
     InjuryType injuryType = InjuryType.NONE;
     TeamType injuredPlayerTeam;
@@ -116,6 +114,7 @@ public abstract class Play {
     protected abstract String getOutcomeString();
 
     public abstract String outputWithDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName);
+
     public abstract String outputWithoutDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName);
 
     public String outputInjuryWithDetails(ResourceBundleReplacer resources) {
@@ -126,7 +125,7 @@ public abstract class Play {
         resources.addTeamToken("injuredPlayerTeam", injuredPlayerTeam.name().toLowerCase() + "Team");
         String resourceKey = "injury." + getInjuryType().name().toLowerCase();
 
-        if(getInjuryType() == InjuryType.KEEPER && this instanceof PlayChaser playChaser) {
+        if (getInjuryType() == InjuryType.KEEPER && this instanceof PlayChaser playChaser) {
             if (playChaser.getQuaffleOutcome() == PlayChaser.QuaffleOutcome.MISSED || playChaser.getQuaffleOutcome() == PlayChaser.QuaffleOutcome.SCORED)
                 resourceKey += ".missed";
             if (playChaser.getQuaffleOutcome() == PlayChaser.QuaffleOutcome.BLOCKED)
@@ -137,11 +136,11 @@ public abstract class Play {
     }
 
     void addCommonTokens(ResourceBundleReplacer resources) {
-        if(beaterHitter != null)
+        if (beaterHitter != null)
             resources.addToken("beaterHitter", beaterHitter.getShortName());
-        if(beaterBlocker != null)
+        if (beaterBlocker != null)
             resources.addToken("beaterBlocker", beaterBlocker.getShortName());
-        switch(attackingTeamType) {
+        switch (attackingTeamType) {
             case HOME -> {
                 resources.addTeamToken("attackingTeam", "homeTeam");
                 resources.addTeamToken("defendingTeam", "awayTeam");
@@ -154,7 +153,7 @@ public abstract class Play {
     }
 
     public void setInjury(InjuryType type, Player player, TeamType playerTeam, LocalDate endDate) {
-        switch(type) {
+        switch (type) {
             case NONE -> {
             }
             case BLUDGER_BLOCKED -> {
@@ -189,4 +188,8 @@ public abstract class Play {
             }
         }
     }
+
+    public enum BludgerOutcome {NONE, BLOCKED, HIT, MISSED}
+
+    public enum InjuryType {NONE, BLUDGER_BLOCKED, BLUDGER_HIT, CHASER, KEEPER}
 }

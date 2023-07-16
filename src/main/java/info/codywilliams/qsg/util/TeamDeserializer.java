@@ -18,24 +18,25 @@
 
 package info.codywilliams.qsg.util;
 
-import com.fasterxml.jackson.core.JacksonException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import info.codywilliams.qsg.models.Team;
-import info.codywilliams.qsg.models.player.*;
+import info.codywilliams.qsg.models.player.Beater;
+import info.codywilliams.qsg.models.player.Chaser;
+import info.codywilliams.qsg.models.player.Keeper;
+import info.codywilliams.qsg.models.player.Seeker;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class TeamDeserializer extends StdDeserializer<Team> {
-    public TeamDeserializer(){
+    public TeamDeserializer() {
         this(null);
     }
 
-    public TeamDeserializer(Class<?> vc){
+    public TeamDeserializer(Class<?> vc) {
         super(vc);
     }
 
@@ -90,7 +91,7 @@ public class TeamDeserializer extends StdDeserializer<Team> {
      * @return Deserialized value
      */
     @Override
-    public Team deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
+    public Team deserialize(JsonParser p, DeserializationContext ctxt) throws IOException {
         JsonNode node = p.getCodec().readTree(p);
         Team team = new Team();
 
@@ -105,7 +106,7 @@ public class TeamDeserializer extends StdDeserializer<Team> {
     }
 
     private <T> void deserializePlayerList(JsonNode listNode, DeserializationContext ctxt, List<T> playerList, Class<T> playerClass) throws IOException {
-        for(JsonNode n: listNode)
+        for (JsonNode n : listNode)
             playerList.add(ctxt.readTreeAsValue(n, playerClass));
     }
 }

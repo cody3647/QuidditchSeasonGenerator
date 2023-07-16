@@ -23,13 +23,11 @@ import info.codywilliams.qsg.models.player.Keeper;
 import info.codywilliams.qsg.util.ResourceBundleReplacer;
 
 public class PlayChaser extends Play {
-    public enum QuaffleOutcome {TURNOVER, MISSED, BLOCKED, SCORED}
     TeamType defendingTeamType;
     Chaser attacker;
     Chaser defender;
     Keeper defendingKeeper;
     QuaffleOutcome quaffleOutcome;
-
     PlayChaser() {
     }
 
@@ -74,7 +72,7 @@ public class PlayChaser extends Play {
     }
 
     @Override
-    protected String getOutcomeString(){
+    protected String getOutcomeString() {
         return quaffleOutcome.name().toLowerCase() + "." + bludgerOutcome.name().toLowerCase();
     }
 
@@ -83,10 +81,10 @@ public class PlayChaser extends Play {
         addCommonTokens(resources);
         resources.addToken("attacker", attacker.getShortName());
         resources.addToken("defender", defender.getShortName());
-        if(defendingKeeper != null)
+        if (defendingKeeper != null)
             resources.addToken("keeper", defendingKeeper.getShortName());
 
-        return resources.getString("chaser." + getOutcomeString()  + ".player");
+        return resources.getString("chaser." + getOutcomeString() + ".player");
     }
 
     @Override
@@ -104,9 +102,11 @@ public class PlayChaser extends Play {
                 ", defender=" + defender.getName() +
                 ", quaffleOutcome=" + quaffleOutcome +
                 ", bludgerOutcome=" + bludgerOutcome +
-                ", beaterHitter=" + ((beaterHitter != null) ? beaterHitter.getName() : "" )+
-                ", beaterBlocker=" + ((beaterBlocker != null) ? beaterBlocker.getName() : "" ) +
+                ", beaterHitter=" + ((beaterHitter != null) ? beaterHitter.getName() : "") +
+                ", beaterBlocker=" + ((beaterBlocker != null) ? beaterBlocker.getName() : "") +
                 ", playDurationSeconds=" + playDurationSeconds +
                 '}';
     }
+
+    public enum QuaffleOutcome {TURNOVER, MISSED, BLOCKED, SCORED}
 }

@@ -26,6 +26,7 @@ import java.util.Arrays;
 
 public class DefinitionList extends ElementChildren<DefinitionList.Item> {
     public static String DL = "dl";
+
     public DefinitionList() {
         super();
     }
@@ -47,6 +48,10 @@ public class DefinitionList extends ElementChildren<DefinitionList.Item> {
     @Override
     public String toWikitext() {
         return toHtml(0);
+    }
+
+    public interface Item extends ElementOutputs {
+
     }
 
     public static class Term extends ElementChildren<InlineElement> implements Item {
@@ -76,7 +81,7 @@ public class DefinitionList extends ElementChildren<DefinitionList.Item> {
         }
     }
 
-    public static class Def extends ElementChildren<InlineElement> implements Item{
+    public static class Def extends ElementChildren<InlineElement> implements Item {
         public static String DD = "dd";
 
         public Def(InlineElement element) {
@@ -101,9 +106,5 @@ public class DefinitionList extends ElementChildren<DefinitionList.Item> {
         public String toWikitext() {
             return toHtml(0);
         }
-    }
-
-    public interface Item extends ElementOutputs {
-
     }
 }

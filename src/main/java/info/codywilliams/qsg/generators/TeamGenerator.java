@@ -24,8 +24,11 @@ import java.util.ResourceBundle;
 
 public class TeamGenerator {
     private static final NameGenerator teamNames = new NameGenerator("teamNames");
-    private TeamGenerator(){}
-    static public Team randomTeam(){
+
+    private TeamGenerator() {
+    }
+
+    static public Team randomTeam() {
         Team team = new Team();
         String name = teamNames.getNextName();
         String[] parts = name.split(" ");
@@ -36,22 +39,22 @@ public class TeamGenerator {
         team.setShortName(shortName);
 
 
-        for(int i = 0; i < Team.TOTAL_BEATERS; i++)
+        for (int i = 0; i < Team.TOTAL_BEATERS; i++)
             team.getBeaters().add(PlayerGenerator.randomBeater());
 
-        for(int i = 0; i < Team.TOTAL_CHASERS; i++)
+        for (int i = 0; i < Team.TOTAL_CHASERS; i++)
             team.getChasers().add(PlayerGenerator.randomChaser());
 
-        for(int i = 0; i < Team.TOTAL_KEEPERS; i++)
+        for (int i = 0; i < Team.TOTAL_KEEPERS; i++)
             team.getKeepers().add(PlayerGenerator.randomKeeper());
 
-        for(int i = 0; i < Team.TOTAL_SEEKERS; i++)
+        for (int i = 0; i < Team.TOTAL_SEEKERS; i++)
             team.getSeekers().add(PlayerGenerator.randomSeeker());
 
         return team;
     }
 
-    static public Team newTeam(int num, ResourceBundle resources){
+    static public Team newTeam(int num, ResourceBundle resources) {
         Team team = new Team();
         String teamName = resources.getString("gen.team.newName") + ' ' + num;
 
@@ -60,28 +63,27 @@ public class TeamGenerator {
         team.setHome(teamName + ' ' + resources.getString("gen.team.newHome"));
 
         String name;
-        for(int i = 1; i <= Team.TOTAL_BEATERS; i++) {
+        for (int i = 1; i <= Team.TOTAL_BEATERS; i++) {
             name = resources.getString("player.beater") + ' ' + i;
             team.getBeaters().add(PlayerGenerator.newBeater(name));
         }
 
-        for(int i = 1; i <= Team.TOTAL_CHASERS; i++) {
+        for (int i = 1; i <= Team.TOTAL_CHASERS; i++) {
             name = resources.getString("player.chaser") + ' ' + i;
             team.getChasers().add(PlayerGenerator.newChaser(name));
         }
 
-        for(int i = 1; i <= Team.TOTAL_KEEPERS; i++) {
+        for (int i = 1; i <= Team.TOTAL_KEEPERS; i++) {
             name = resources.getString("player.keeper") + ' ' + i;
             team.getKeepers().add(PlayerGenerator.newKeeper(name));
         }
 
-        for(int i = 1; i <= Team.TOTAL_SEEKERS; i++) {
+        for (int i = 1; i <= Team.TOTAL_SEEKERS; i++) {
             name = resources.getString("player.seeker") + ' ' + i;
             team.getSeekers().add(PlayerGenerator.newSeeker(name));
         }
         return team;
     }
-
 
 
 }

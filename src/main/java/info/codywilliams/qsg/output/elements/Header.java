@@ -21,15 +21,15 @@ package info.codywilliams.qsg.output.elements;
 import info.codywilliams.qsg.output.ElementChildren;
 
 public class Header extends ElementChildren<Text> {
-    public static String H = "h";
     public final static String wikitextTag = "======";
+    public static String H = "h";
     public int level;
 
     public Header(int level, String text) {
         super(new Text(text));
-        if(level > 6)
+        if (level > 6)
             this.level = 6;
-        else if(level < 1)
+        else if (level < 1)
             this.level = 1;
         else
             this.level = level;
@@ -51,7 +51,7 @@ public class Header extends ElementChildren<Text> {
         stringBuilder.append('\n');
         addWikitextTag(stringBuilder);
 
-        for(Text text: children) {
+        for (Text text : children) {
             stringBuilder.append(text.toWikitext());
         }
 

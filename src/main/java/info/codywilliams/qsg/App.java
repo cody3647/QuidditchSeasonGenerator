@@ -47,6 +47,10 @@ import java.util.ResourceBundle;
  * JavaFX App
  */
 public class App extends Application {
+    final static public ObjectMapper mapper = JsonMapper.builder()
+            .addModule(new JavaTimeModule())
+            .build();
+
     public static void main(String[] args) {
         launch();
     }
@@ -79,6 +83,10 @@ public class App extends Application {
         alert.show();
     }
 
+    public static void close() {
+        //Platform.exit();
+    }
+
     @Override
     public void start(Stage window) throws IOException {
         setupLocale();
@@ -96,7 +104,7 @@ public class App extends Application {
                         actionEvent.getEventType(), actionEvent.getSource(), actionEvent.getTarget()));
     }
 
-    private void setupDependencyInjector(){
+    private void setupDependencyInjector() {
         Locale locale = Locale.getDefault();
         ResourceBundle resources = ResourceBundle.getBundle("info.codywilliams.qsg.language.Text", locale);
 
@@ -106,24 +114,16 @@ public class App extends Application {
         DependencyInjector.addInjectionMethod(AppController.class, type -> new AppController(context));
         DependencyInjector.addInjectionMethod(MenuController.class, type -> new MenuController(context));
         DependencyInjector.addInjectionMethod(TeamEditorController.class, type -> new TeamEditorController(context));
-        DependencyInjector.addInjectionMethod(TournamentEditorController.class, type-> new TournamentEditorController(context));
-        DependencyInjector.addInjectionMethod(TournamentInfoController.class, type-> new TournamentInfoController(context));
-        DependencyInjector.addInjectionMethod(MediawikiSetupController.class, type-> new MediawikiSetupController(context));
+        DependencyInjector.addInjectionMethod(TournamentEditorController.class, type -> new TournamentEditorController(context));
+        DependencyInjector.addInjectionMethod(TournamentInfoController.class, type -> new TournamentInfoController(context));
+        DependencyInjector.addInjectionMethod(MediawikiSetupController.class, type -> new MediawikiSetupController(context));
     }
 
-    private void setupLocale(){
-    // Setup custom locale with first day of the week being Monday
+    private void setupLocale() {
+        // Setup custom locale with first day of the week being Monday
         Locale.setDefault(Locale.Category.FORMAT, new Locale.Builder()
                 .setLocale(Locale.getDefault())
                 .setExtension(Locale.UNICODE_LOCALE_EXTENSION, "fw-" + DayOfWeek.MONDAY.toString().substring(0, 3))
                 .build());
     }
-
-    public static void close(){
-        //Platform.exit();
-    }
-
-    final static public ObjectMapper mapper = JsonMapper.builder()
-            .addModule(new JavaTimeModule())
-            .build();
 }

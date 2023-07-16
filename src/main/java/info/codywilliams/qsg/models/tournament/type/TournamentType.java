@@ -40,7 +40,7 @@ public enum TournamentType {
         }
     }
 
-    public Constructor<Tournament> getConstructor(){
+    public Constructor<Tournament> getConstructor() {
         return constructor;
     }
 }

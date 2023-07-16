@@ -18,7 +18,6 @@
 package info.codywilliams.qsg.models.player;
 
 
-
 public class Beater extends Player {
 
     @Override

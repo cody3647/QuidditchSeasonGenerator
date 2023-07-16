@@ -48,11 +48,11 @@ public class TournamentInfoController {
     ResourceBundle resources;
     Context context;
 
-    public TournamentInfoController(Context context){
+    public TournamentInfoController(Context context) {
         this.context = context;
     }
 
-    public void initialize(){
+    public void initialize() {
         TournamentOptions tournamentOptions = context.getTournamentOptions();
 
         numTeamsLabel.textProperty().bind(Bindings.format("%s %d", resources.getString("info.tournament.numTeams"), context.numTeamsProperty()));
@@ -62,7 +62,7 @@ public class TournamentInfoController {
         startDateLabel.textProperty().bind(Bindings.format("%s %s", resources.getString("info.tournament.startDate"), startDate));
 
         context.currentTournamentProperty().addListener(((observableValue, oldTournament, newTournament) -> {
-            if(context.getCurrentTournament() != null){
+            if (context.getCurrentTournament() != null) {
                 if (oldTournament != null) {
                     endDateLabel.textProperty().unbind();
                     numRoundsLabel.textProperty().unbind();
@@ -71,7 +71,7 @@ public class TournamentInfoController {
 
                 if (newTournament != null) {
                     Tournament tournament = context.getCurrentTournament();
-                    typeLabel.textProperty().set(String.format("%s %s", resources.getString("info.tournament.type") , resources.getString(tournament.getType().key)));
+                    typeLabel.textProperty().set(String.format("%s %s", resources.getString("info.tournament.type"), resources.getString(tournament.getType().key)));
                     numRoundsLabel.textProperty().bind(Bindings.format("%s %d", resources.getString("info.tournament.numRounds"), tournament.numRoundsProperty()));
                     numMatchesLabel.textProperty().bind(Bindings.format("%s %d", resources.getString("info.tournament.numMatches"), tournament.numMatchesProperty()));
                     endDateLabel.textProperty().bind(Bindings.format("%s %s", resources.getString("info.tournament.endDate"), tournament.endDateStringBinding()));
@@ -79,7 +79,6 @@ public class TournamentInfoController {
             }
 
         }));
-
 
 
     }

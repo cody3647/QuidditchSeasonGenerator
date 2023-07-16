@@ -41,10 +41,8 @@ import java.util.ResourceBundle;
 public class MediawikiSetupController {
     private final Context context;
     private final Logger logger;
-
     @FXML
     TextField apiUrlTextField;
-
     @FXML
     TextField usernameTextField;
     @FXML
@@ -53,12 +51,23 @@ public class MediawikiSetupController {
     Button loginButton;
     @FXML
     Text loginStatusText;
-
     @FXML
     ResourceBundle resources;
-    public MediawikiSetupController(Context context){
+
+    public MediawikiSetupController(Context context) {
         this.context = context;
         logger = LoggerFactory.getLogger(MediawikiSetupController.class);
+    }
+
+    public static void displayMediawikiSetupWindow() throws IOException {
+        Stage mediawikiSetupWindow = new Stage();
+        mediawikiSetupWindow.initModality(Modality.NONE);
+        ScrollPane scrollPane = new ScrollPane();
+        Scene setupScene = new Scene(scrollPane, 640, 480);
+
+        DependencyInjector.setUpAndShowStage(mediawikiSetupWindow, setupScene, "app.mediawiki.title");
+
+        scrollPane.setContent(DependencyInjector.load("mediawikiSetup"));
     }
 
     public void initialize() {
@@ -67,7 +76,7 @@ public class MediawikiSetupController {
             apiUrlTextField.setText(mediawiki.getApiUrlString());
         if (mediawiki.getUsername() != null)
             usernameTextField.setText(mediawiki.getUsername());
-        if(mediawiki.isLoggedIn())
+        if (mediawiki.isLoggedIn())
             loginStatusText.setText("Logged in to: " + mediawiki.getApiUrlString());
 
     }
@@ -85,17 +94,6 @@ public class MediawikiSetupController {
 
         Thread thread = new Thread(task);
         thread.start();
-    }
-
-    public static void displayMediawikiSetupWindow() throws IOException {
-        Stage mediawikiSetupWindow = new Stage();
-        mediawikiSetupWindow.initModality(Modality.NONE);
-        ScrollPane scrollPane = new ScrollPane();
-        Scene setupScene = new Scene(scrollPane, 640, 480);
-
-        DependencyInjector.setUpAndShowStage(mediawikiSetupWindow, setupScene, "app.mediawiki.title");
-
-        scrollPane.setContent(DependencyInjector.load("mediawikiSetup"));
     }
 
     public class LoginTask extends Task<Mediawiki.Response> {
@@ -133,8 +131,6 @@ public class MediawikiSetupController {
             loginButton.setDisable(false);
             loginStatusText.setText(getValue().message);
         }
-
-
 
 
     }

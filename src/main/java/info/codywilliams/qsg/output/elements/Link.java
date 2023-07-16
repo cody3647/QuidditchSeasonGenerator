@@ -35,20 +35,6 @@ public class Link {
             wikipage = page;
         }
 
-        @Override
-        public String getTagName() {
-            return A;
-        }
-
-        @Override
-        public boolean isTagClosedOnNewLine() {
-            return false;
-        }
-
-        public void setWikipage(String wikipage) {
-            this.wikipage = wikipage;
-        }
-
         static public TextLink createTeamLink(String teamName) {
             return new TextLink(teamName, TEAMS_DIR, teamName, "html");
         }
@@ -61,6 +47,20 @@ public class Link {
             TextLink tournamentLink = new TextLink(text, "", "index", "html");
             tournamentLink.wikipage = tournamentTitle;
             return tournamentLink;
+        }
+
+        @Override
+        public String getTagName() {
+            return A;
+        }
+
+        @Override
+        public boolean isTagClosedOnNewLine() {
+            return false;
+        }
+
+        public void setWikipage(String wikipage) {
+            this.wikipage = wikipage;
         }
 
         @Override
@@ -83,10 +83,15 @@ public class Link {
     public static class ImageLink extends Element {
         private final Image image;
         String wikipage;
+
         public ImageLink(String alt, String imageName, String pageDir, String page, String pageExt) {
             image = new Image(alt, imageName);
             addAttribute("href", pageDir + Formatters.sanitizeFileNames(page) + '.' + pageExt);
             wikipage = page;
+        }
+
+        static public ImageLink createTeamLink(String teamName) {
+            return new ImageLink(teamName, teamName + ".png", TEAMS_DIR, teamName, "html");
         }
 
         @Override
@@ -97,10 +102,6 @@ public class Link {
         @Override
         public boolean isTagClosedOnNewLine() {
             return false;
-        }
-
-        static public ImageLink createTeamLink(String teamName) {
-            return new ImageLink(teamName, teamName + ".png", TEAMS_DIR, teamName, "html");
         }
 
         public void addImageAttribute(String name, String value) {

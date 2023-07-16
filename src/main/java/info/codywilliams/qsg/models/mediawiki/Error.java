@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import static info.codywilliams.qsg.App.mapper;
+
 public class Error extends MediaikiApiResponse {
     public static final String field = "Error";
     String code;

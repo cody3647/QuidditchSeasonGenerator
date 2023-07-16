@@ -28,6 +28,15 @@ import java.time.LocalTime;
 import java.util.Map;
 
 public class MatchDayTime implements Comparable<MatchDayTime> {
+    static private final Map<DayOfWeek, Integer> dayOfWeekPriorityMap = Map.of(
+            DayOfWeek.MONDAY, 7,
+            DayOfWeek.TUESDAY, 6,
+            DayOfWeek.WEDNESDAY, 5,
+            DayOfWeek.THURSDAY, 4,
+            DayOfWeek.FRIDAY, 1,
+            DayOfWeek.SATURDAY, 2,
+            DayOfWeek.SUNDAY, 3
+    );
     private final ObjectProperty<DayOfWeek> dayOfWeek;
     private final ObjectProperty<LocalTime> localTime;
     private final IntegerProperty priority;
@@ -46,37 +55,37 @@ public class MatchDayTime implements Comparable<MatchDayTime> {
         return dayOfWeek.get();
     }
 
-    public ObjectProperty<DayOfWeek> dayOfWeekProperty() {
-        return dayOfWeek;
-    }
-
     public void setDayOfWeek(DayOfWeek dayOfWeek) {
         this.dayOfWeek.set(dayOfWeek);
         this.dayOfWeekPriority = dayOfWeekPriorityMap.get(dayOfWeek);
+    }
+
+    public ObjectProperty<DayOfWeek> dayOfWeekProperty() {
+        return dayOfWeek;
     }
 
     public LocalTime getLocalTime() {
         return localTime.get();
     }
 
-    public ObjectProperty<LocalTime> localTimeProperty() {
-        return localTime;
-    }
-
     public void setLocalTime(LocalTime localTime) {
         this.localTime.set(localTime);
+    }
+
+    public ObjectProperty<LocalTime> localTimeProperty() {
+        return localTime;
     }
 
     public int getCount() {
         return count.get();
     }
 
-    public IntegerProperty countProperty() {
-        return count;
-    }
-
     public void setCount(int count) {
         this.count.set(count);
+    }
+
+    public IntegerProperty countProperty() {
+        return count;
     }
 
     public void incrementCount() {
@@ -87,12 +96,12 @@ public class MatchDayTime implements Comparable<MatchDayTime> {
         return priority.get();
     }
 
-    public IntegerProperty priorityProperty() {
-        return priority;
-    }
-
     public void setPriority(int priority) {
         this.priority.set(priority);
+    }
+
+    public IntegerProperty priorityProperty() {
+        return priority;
     }
 
     private int getDayOfWeekPriority() {
@@ -112,11 +121,11 @@ public class MatchDayTime implements Comparable<MatchDayTime> {
     @Override
     public int compareTo(MatchDayTime other) {
         int comparePriority = getPriority() - other.getPriority();
-        if(comparePriority != 0)
+        if (comparePriority != 0)
             return comparePriority;
 
         comparePriority = getDayOfWeekPriority() - other.getDayOfWeekPriority();
-        if(comparePriority != 0)
+        if (comparePriority != 0)
             return comparePriority;
 
         return getLocalTime().compareTo(other.getLocalTime());
@@ -139,14 +148,4 @@ public class MatchDayTime implements Comparable<MatchDayTime> {
         result = 31 * result + getLocalTime().hashCode();
         return result;
     }
-
-    static private final Map<DayOfWeek, Integer> dayOfWeekPriorityMap = Map.of(
-            DayOfWeek.MONDAY, 7,
-            DayOfWeek.TUESDAY, 6,
-            DayOfWeek.WEDNESDAY, 5,
-            DayOfWeek.THURSDAY, 4,
-            DayOfWeek.FRIDAY, 1,
-            DayOfWeek.SATURDAY, 2,
-            DayOfWeek.SUNDAY, 3
-    );
 }

@@ -22,8 +22,8 @@ import info.codywilliams.qsg.output.Element;
 import info.codywilliams.qsg.output.InlineElement;
 
 public class Text extends Element implements InlineElement {
-    private String text;
     public static String SPAN = "span";
+    private String text;
 
     public Text(String text) {
         this.text = text;
@@ -49,7 +49,7 @@ public class Text extends Element implements InlineElement {
 
     @Override
     public String toHtml(int tabs) {
-        if(id != null || title != null || !classes.isEmpty() || !attributes.isEmpty()) {
+        if (id != null || title != null || !classes.isEmpty() || !attributes.isEmpty()) {
             StringBuilder stringBuilder = new StringBuilder();
             openHtmlTag(stringBuilder, 0).append(text);
             return closeHtmlTag(stringBuilder, 0).toString();

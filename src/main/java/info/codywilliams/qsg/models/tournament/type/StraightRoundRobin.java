@@ -57,7 +57,6 @@ public class StraightRoundRobin extends Tournament {
     @Override
     protected LocalDate calculateMatchDates() {
         List<MatchDayTime> matchDayTimeList = tournamentOptions.getSortedMatchDayTimeList();
-        System.out.println(matchDayTimeList);
 
         if (matchDayTimeList.isEmpty()) return null;
 
@@ -77,32 +76,32 @@ public class StraightRoundRobin extends Tournament {
         int roundMatchCount = 0;
         int round = 1;
 
-        while(totalMatchCount < totalMatches) {
-            if(roundMatchCount == totalRoundMatches) {
+        while (totalMatchCount < totalMatches) {
+            if (roundMatchCount == totalRoundMatches) {
                 // Round is over, New Round
                 roundMatchCount = 0;
                 round++;
             }
 
-            if(!matchDayIterator.hasNext()) {
+            if (!matchDayIterator.hasNext()) {
                 matchDayIterator = matchDayTimeList.iterator();
                 date = date.plusWeeks(1);
             }
 
             MatchDayTime matchDayTime = matchDayIterator.next();
             date = nextMatchDate(date, matchDayTime.getDayOfWeek());
-            if(blackoutDates.contains(date))
+            if (blackoutDates.contains(date))
                 continue;
 
             int count = matchDayTime.getCount();
             LocalDateTime localDateTime = matchDayTime.getLocalTime().atDate(date);
-            while(count > 0) {
+            while (count > 0) {
                 count--;
                 matches.add(new Match(roundMatchCount + 1, round, localDateTime));
                 roundMatchCount++;
                 totalMatchCount++;
 
-                if(roundMatchCount == getNumMatchesPerRound())
+                if (roundMatchCount == getNumMatchesPerRound())
                     break;
             }
         }
@@ -144,14 +143,13 @@ public class StraightRoundRobin extends Tournament {
             }
 
             // Balance out the home and away matches.  Reverse for the second half if home and away
-            if(getType() == TournamentType.STRAIGHT_ROUND_ROBIN || (round <= half && getType() == TournamentType.STRAIGHT_ROUND_ROBIN_HOME_AWAY)){
+            if (getType() == TournamentType.STRAIGHT_ROUND_ROBIN || (round <= half && getType() == TournamentType.STRAIGHT_ROUND_ROBIN_HOME_AWAY)) {
                 int aCount = homeTeamTimes.getOrDefault(teamArrayList.get(aIdx).getName(), 0);
                 int bCount = homeTeamTimes.getOrDefault(teamArrayList.get(bIdx).getName(), 0);
 
                 assignTeams(aCount < bCount, match, teamArrayList.get(aIdx), teamArrayList.get(bIdx), homeTeamTimes);
-            }
-            else {
-                if(!reset && round == half + 1){
+            } else {
+                if (!reset && round == half + 1) {
                     homeTeamTimes.clear();
                     reset = true;
                 }
@@ -170,13 +168,13 @@ public class StraightRoundRobin extends Tournament {
         int randInt = 0;
         Match firstMatch = null;
         Match otherMatch;
-        for(Match match: getMatches()){
+        for (Match match : getMatches()) {
             // Swap first match with random other match in round
-            if(match.getNumber() == 1){
+            if (match.getNumber() == 1) {
                 firstMatch = match;
                 randInt = rand.nextInt(getNumMatchesPerRound()) + 1;
             }
-            if(match.getNumber() == randInt){
+            if (match.getNumber() == randInt) {
                 otherMatch = match;
                 swapMatchTeams(firstMatch, otherMatch);
                 randInt = 0;
@@ -190,18 +188,16 @@ public class StraightRoundRobin extends Tournament {
 
     @Override
     protected void assignPoints() {
-        if(matches.isEmpty())
+        if (matches.isEmpty())
             return;
 
-        for(Match match: getMatches()) {
-            if(match.getWinner() == null)
+        for (Match match : getMatches()) {
+            if (match.getWinner() == null)
                 continue; // Tie
 
-            switch(match.getWinner()) {
-                case HOME ->
-                    tournamentPoints.merge(match.getHomeTeam().getName(), getPoints(match), Integer::sum);
-                case AWAY ->
-                    tournamentPoints.merge(match.getAwayTeam().getName(), getPoints(match), Integer::sum);
+            switch (match.getWinner()) {
+                case HOME -> tournamentPoints.merge(match.getHomeTeam().getName(), getPoints(match), Integer::sum);
+                case AWAY -> tournamentPoints.merge(match.getAwayTeam().getName(), getPoints(match), Integer::sum);
             }
         }
     }
@@ -218,26 +214,25 @@ public class StraightRoundRobin extends Tournament {
             100-140 -> 5 points
             >=150 -> 7 points
          */
-        if(diff == 0)
+        if (diff == 0)
             return 0;
         else if (diff < 50)
             return 2;
-        else if(diff < 100)
+        else if (diff < 100)
             return 3;
-        else if(diff < 150)
+        else if (diff < 150)
             return 5;
         else
             return 7;
     }
 
-    private void assignTeams(boolean flag, Match match, Team aTeam, Team bTeam, Map<String, Integer> homeTeamTimes){
-        if(flag){
+    private void assignTeams(boolean flag, Match match, Team aTeam, Team bTeam, Map<String, Integer> homeTeamTimes) {
+        if (flag) {
             match.setHomeTeam(aTeam);
             match.setLocation(aTeam.getHome());
             match.setAwayTeam(bTeam);
             homeTeamTimes.merge(aTeam.getName(), 1, Integer::sum);
-        }
-        else {
+        } else {
             match.setHomeTeam(bTeam);
             match.setLocation(bTeam.getHome());
             match.setAwayTeam(aTeam);
@@ -245,8 +240,8 @@ public class StraightRoundRobin extends Tournament {
         }
     }
 
-    private void swapMatchTeams(Match first, Match other){
-        if(first == other)
+    private void swapMatchTeams(Match first, Match other) {
+        if (first == other)
             return;
         Team tempHome = first.getHomeTeam();
         Team tempAway = first.getAwayTeam();
@@ -263,7 +258,7 @@ public class StraightRoundRobin extends Tournament {
         DayOfWeek currentDay = currentDate.getDayOfWeek();
 
         int difference = nextDay.getValue() - currentDay.getValue();
-        if(difference == 0)
+        if (difference == 0)
             return currentDate;
 
         return currentDate.plusDays(difference);

@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Table extends ElementChildren<Table.Row>{
+public class Table extends ElementChildren<Table.Row> {
     public static String TABLE = "table";
     private String caption = null;
 
@@ -74,7 +74,7 @@ public class Table extends ElementChildren<Table.Row>{
         if (caption != null) {
             stringBuilder.append("\n|+").append(caption);
         }
-        for(Row row: children) {
+        for (Row row : children) {
             stringBuilder.append(row.toWikitext());
         }
 
@@ -83,7 +83,10 @@ public class Table extends ElementChildren<Table.Row>{
         return stringBuilder.toString();
     }
 
-    public static class Cell extends ElementChildren<Element> implements TableCell{
+    public interface TableCell extends ElementOutputs {
+    }
+
+    public static class Cell extends ElementChildren<Element> implements TableCell {
         public static String TD = "td";
 
         public Cell(Element... elements) {
@@ -92,6 +95,23 @@ public class Table extends ElementChildren<Table.Row>{
 
         public Cell(String text) {
             super(new Text(text));
+        }
+
+        private static String createWikiCellString(Set<String> classes, Map<String, String> attributes,
+                                                   List<Element> children, char firstChar) {
+            StringBuilder stringBuilder = new StringBuilder("\n").append(firstChar);
+
+            if (!classes.isEmpty() || !attributes.isEmpty()) {
+                createClassesString(classes, stringBuilder);
+                createAttributeString(attributes, stringBuilder);
+                stringBuilder.append("| ");
+            }
+
+            for (Element child : children) {
+                stringBuilder.append(child.toWikitext());
+            }
+
+            return stringBuilder.toString();
         }
 
         @Override
@@ -109,26 +129,9 @@ public class Table extends ElementChildren<Table.Row>{
             return createWikiCellString(classes, attributes, children, '|');
         }
 
-        private static String createWikiCellString(Set<String> classes, Map<String, String> attributes,
-                                                   List<Element> children, char firstChar) {
-            StringBuilder stringBuilder = new StringBuilder("\n").append(firstChar);
-
-            if(!classes.isEmpty() || !attributes.isEmpty()) {
-                createClassesString(classes, stringBuilder);
-                createAttributeString(attributes, stringBuilder);
-                stringBuilder.append("| ");
-            }
-
-            for(Element child: children) {
-                stringBuilder.append(child.toWikitext());
-            }
-
-            return stringBuilder.toString();
-        }
-
     }
 
-    static public class HeaderCell extends ElementChildren<Element> implements TableCell{
+    static public class HeaderCell extends ElementChildren<Element> implements TableCell {
         public static String TH = "th";
 
         public HeaderCell(Element... elements) {
@@ -151,11 +154,11 @@ public class Table extends ElementChildren<Table.Row>{
 
         @Override
         public String toWikitext() {
-            return Cell.createWikiCellString(classes, attributes, children,'!');
+            return Cell.createWikiCellString(classes, attributes, children, '!');
         }
     }
 
-    public static class Row extends ElementChildren<TableCell>{
+    public static class Row extends ElementChildren<TableCell> {
         public static String TR = "tr";
 
         public Row(TableCell... cells) {
@@ -181,7 +184,7 @@ public class Table extends ElementChildren<Table.Row>{
             StringBuilder stringBuilder = new StringBuilder();
 
             openHtmlTag(stringBuilder, tabs);
-            for(TableCell cell: children) {
+            for (TableCell cell : children) {
                 stringBuilder.append(cell.toHtml(tabs + 1));
             }
 
@@ -195,20 +198,17 @@ public class Table extends ElementChildren<Table.Row>{
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("\n|-");
 
-            if(!classes.isEmpty() || !attributes.isEmpty()) {
+            if (!classes.isEmpty() || !attributes.isEmpty()) {
                 createClassesString(classes, stringBuilder);
                 createAttributeString(attributes, stringBuilder);
             }
 
-            for(TableCell cell: children) {
+            for (TableCell cell : children) {
                 stringBuilder.append(cell.toWikitext());
             }
 
 
             return stringBuilder.toString();
         }
-    }
-
-    public interface TableCell extends ElementOutputs {
     }
 }

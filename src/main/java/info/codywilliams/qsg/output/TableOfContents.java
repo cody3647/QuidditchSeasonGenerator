@@ -18,7 +18,7 @@
 
 package info.codywilliams.qsg.output;
 
-public class TableOfContents extends Element implements ElementOutputs{
+public class TableOfContents extends Element implements ElementOutputs {
     /**
      * Returns the element as HTML string
      *

@@ -16,11 +16,11 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-.tree-table-view .tree-table-cell{
+.tree-table-view .tree-table-cell {
     -fx-font-size: 16px;
 }
 
-.tree-table-view .tree-table-cell .button{
+.tree-table-view .tree-table-cell .button {
     -fx-font-size: 12px;
 }
 
@@ -50,7 +50,7 @@
 }
 
 .calendar-entry {
-    -fx-fill-width:true;
+    -fx-fill-width: true;
     -fx-padding: 0.2em;
     -fx-min-width: 9em;
     -fx-min-height: 6em;

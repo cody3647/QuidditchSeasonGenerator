@@ -46,7 +46,10 @@ import java.time.Month;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjusters;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class TournamentCalendar extends GridPane {
     private final ObservableSet<Match> matches;
@@ -55,7 +58,21 @@ public class TournamentCalendar extends GridPane {
     private final boolean teamsAssigned;
     private final ResourceBundle resourceBundle;
 
-    public static void displayTournamentCalendarWindow(Context context, ResourceBundle resourceBundle){
+    public TournamentCalendar(Tournament tournament, TournamentOptions tournamentOptions, ResourceBundle resourceBundle) {
+        super();
+        matches = tournament.getMatches();
+        startDate = tournamentOptions.startDateProperty();
+        endDate = tournament.endDateProperty();
+        teamsAssigned = tournament.isTeamsAssigned();
+        this.resourceBundle = resourceBundle;
+
+        if (endDate.get() == null)
+            return;
+
+        drawCalendar();
+    }
+
+    public static void displayTournamentCalendarWindow(Context context, ResourceBundle resourceBundle) {
         Stage calendarWindow = new Stage();
         calendarWindow.initModality(Modality.NONE);
         ScrollPane scrollPane = new ScrollPane();
@@ -64,39 +81,25 @@ public class TournamentCalendar extends GridPane {
 
         DependencyInjector.setUpAndShowStage(calendarWindow, calendarScene, "tournament.calendar.window.title");
 
-        if(context.getCurrentTournament() == null) {
+        if (context.getCurrentTournament() == null) {
             scrollPane.setContent(new Text("No matches to show yet, please configure the tournament"));
             return;
         }
 
-        if(!context.getCurrentTournament().isTeamsAssigned())
+        if (!context.getCurrentTournament().isTeamsAssigned())
             context.getCurrentTournament().assignTeamsToMatches(context.getTeams(), context.getSeed());
 
         TournamentCalendar tournamentCalendar = new TournamentCalendar(context.getCurrentTournament(), context.getTournamentOptions(), resourceBundle);
         scrollPane.setContent(tournamentCalendar);
     }
 
-    public TournamentCalendar(Tournament tournament, TournamentOptions tournamentOptions, ResourceBundle resourceBundle) {
-        super();
-        matches = tournament.getMatches();
-        startDate = tournamentOptions.startDateProperty();
-        endDate = tournament.endDateProperty();
-        teamsAssigned = tournament.isTeamsAssigned();
-        this.resourceBundle =  resourceBundle;
-
-        if(endDate.get() == null)
-            return;
-
-        drawCalendar();
-    }
-
-    private void drawCalendar(){
+    private void drawCalendar() {
         setAlignment(Pos.CENTER);
         setMinHeight(300);
         ColumnConstraints columnConstraints = new ColumnConstraints();
         columnConstraints.setFillWidth(true);
 
-        for(int i = 0; i < 7; i++) {
+        for (int i = 0; i < 7; i++) {
             getColumnConstraints().add(columnConstraints);
         }
 
@@ -107,12 +110,12 @@ public class TournamentCalendar extends GridPane {
         int totalDates = (int) firstMonday.until(dayAfterLast, ChronoUnit.DAYS);
         TournamentCalendarDay[] calendarDays = new TournamentCalendarDay[totalDates];
 
-        firstMonday.datesUntil(dayAfterLast).forEach( date -> {
+        firstMonday.datesUntil(dayAfterLast).forEach(date -> {
             int index = (int) firstMonday.until(date, ChronoUnit.DAYS);
             calendarDays[index] = new TournamentCalendarDay(date);
         });
 
-        for(Match match: matches) {
+        for (Match match : matches) {
             int index = (int) firstMonday.until(match.getStartDateTime().toLocalDate(), ChronoUnit.DAYS);
             calendarDays[index].addMatch(match);
         }
@@ -143,11 +146,11 @@ public class TournamentCalendar extends GridPane {
             }
 
             Node entry = calendarDay.getNode();
-            if(date.getDayOfMonth() % 2 == 0)
+            if (date.getDayOfMonth() % 2 == 0)
                 entry.getStyleClass().add("calendar-entry-even");
             else
                 entry.getStyleClass().add("calendar-entry-odd");
-            add(entry, date.getDayOfWeek().getValue() - 1 , row);
+            add(entry, date.getDayOfWeek().getValue() - 1, row);
 
         }
     }
@@ -158,9 +161,9 @@ public class TournamentCalendar extends GridPane {
         add(monthTitle, 0, row++, 7, 1);
         setHalignment(monthTitle, HPos.CENTER);
 
-        for( DayOfWeek dayOfWeek: DayOfWeek.values()) {
+        for (DayOfWeek dayOfWeek : DayOfWeek.values()) {
             HBox dayBox = new HBox();
-            dayBox.getStyleClass().add( "calendar-header");
+            dayBox.getStyleClass().add("calendar-header");
 
             Label dayTitle = new Label(dayOfWeek.getDisplayName(TextStyle.FULL_STANDALONE, Locale.getDefault()));
             dayTitle.getStyleClass().add("calendar-header-title");
@@ -208,12 +211,12 @@ public class TournamentCalendar extends GridPane {
             calendarEntry.getChildren().add(hBox);
 
             Collections.sort(matches);
-            for(Match match: matches) {
+            for (Match match : matches) {
                 Label matchTime = new Label(match.getStartDateTime().format(Formatters.timeFormatter));
                 matchTime.getStyleClass().add("calendar-entry-time");
                 calendarEntry.getChildren().add(matchTime);
 
-                if(teamsAssigned) {
+                if (teamsAssigned) {
                     Label teams = new Label(match.getHomeTeam().getName() + " " + resourceBundle.getString("match.versus.abbr") + " " + match.getAwayTeam().getName());
                     teams.getStyleClass().add("calendar-entry-name");
                     calendarEntry.getChildren().add(teams);

@@ -20,7 +20,7 @@ package info.codywilliams.qsg.models.tournament.type;
 
 import info.codywilliams.qsg.models.tournament.TournamentOptions;
 
-public class StraightRoundRobinHomeAway extends StraightRoundRobin{
+public class StraightRoundRobinHomeAway extends StraightRoundRobin {
     public StraightRoundRobinHomeAway(TournamentOptions tournamentOptions) {
         super(tournamentOptions, TournamentType.STRAIGHT_ROUND_ROBIN_HOME_AWAY);
     }

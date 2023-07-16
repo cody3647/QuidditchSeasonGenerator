@@ -40,7 +40,10 @@ abstract public class Player implements Serializable, Comparable<Player> {
     final private IntegerProperty skillOffense;
     final private IntegerProperty skillTeamwork;
     final private IntegerProperty foulLikelihood;
-
+    @JsonIgnore
+    final private NumberBinding skillLevel;
+    @JsonIgnore
+    public boolean isCurrentlyInjured = false;
     @JsonIgnore
     private double defenseModifier;
     @JsonIgnore
@@ -49,12 +52,6 @@ abstract public class Player implements Serializable, Comparable<Player> {
     private double teamworkModifier;
     @JsonIgnore
     private double foulModifier;
-
-    @JsonIgnore
-    final private NumberBinding skillLevel;
-
-    @JsonIgnore
-    public boolean isCurrentlyInjured = false;
     @JsonIgnore
     private double injuryDivisor = 2;
 
@@ -68,21 +65,39 @@ abstract public class Player implements Serializable, Comparable<Player> {
         skillLevel = skillDefense.add(skillOffense).add(skillTeamwork).subtract(foulLikelihood);
     }
 
+    public static int validateSkill(int skillNumber) {
+        if (skillNumber < MIN)
+            skillNumber = MIN;
+        else if (skillNumber > MAX) {
+            skillNumber = MAX;
+        }
+
+        return skillNumber;
+    }
+
+    public static int validateSkill(Integer skillNumber) {
+        if (skillNumber == null)
+            return 1;
+
+        return validateSkill(skillNumber.intValue());
+
+    }
+
     public String getName() {
         return name.get();
+    }
+
+    public void setName(String name) {
+        this.name.set(name);
     }
 
     @JsonIgnore
     public String getShortName() {
         String[] nameParts = getName().split(" ");
-        if(nameParts.length == 1)
+        if (nameParts.length == 1)
             return getName();
 
         return nameParts[0].charAt(0) + ". " + nameParts[nameParts.length - 1];
-    }
-
-    public void setName(String name) {
-        this.name.set(name);
     }
 
     public StringProperty nameProperty() {
@@ -121,9 +136,9 @@ abstract public class Player implements Serializable, Comparable<Player> {
         this.injuryDivisor = injuryDivisor;
     }
 
-    public void addInjuryDate(LocalDate startDate, LocalDate endDate){
+    public void addInjuryDate(LocalDate startDate, LocalDate endDate) {
         LocalDate date = startDate;
-        while(date.isBefore(endDate) || date.isEqual(endDate)) {
+        while (date.isBefore(endDate) || date.isEqual(endDate)) {
             injuryHistory.add(date);
             date = date.plusDays(1);
         }
@@ -133,29 +148,11 @@ abstract public class Player implements Serializable, Comparable<Player> {
         if (!isInjured(startDate))
             return null;
         LocalDate date = startDate;
-        while(isInjured(date)) {
+        while (isInjured(date)) {
             date = date.plusDays(1);
         }
 
         return date.minusDays(1);
-    }
-
-    public static int validateSkill(int skillNumber){
-        if(skillNumber < MIN)
-            skillNumber = MIN;
-        else if (skillNumber > MAX) {
-            skillNumber = MAX;
-        }
-
-        return skillNumber;
-    }
-
-    public static int validateSkill(Integer skillNumber){
-        if(skillNumber == null)
-            return 1;
-
-        return validateSkill(skillNumber.intValue());
-
     }
 
     public int getSkillDefense() {
@@ -163,9 +160,9 @@ abstract public class Player implements Serializable, Comparable<Player> {
     }
 
     public void setSkillDefense(int skillDefense) {
-        if(skillDefense > MAX)
+        if (skillDefense > MAX)
             skillDefense = MAX;
-        else if(skillDefense < MIN)
+        else if (skillDefense < MIN)
             skillDefense = MIN;
 
         this.skillDefense.set(skillDefense);
@@ -181,9 +178,9 @@ abstract public class Player implements Serializable, Comparable<Player> {
     }
 
     public void setSkillOffense(int skillOffense) {
-        if(skillOffense > MAX)
-        skillOffense = MAX;
-        else if(skillOffense < MIN)
+        if (skillOffense > MAX)
+            skillOffense = MAX;
+        else if (skillOffense < MIN)
             skillOffense = MIN;
 
         this.skillOffense.set(skillOffense);
@@ -199,9 +196,9 @@ abstract public class Player implements Serializable, Comparable<Player> {
     }
 
     public void setSkillTeamwork(int skillTeamwork) {
-        if(skillTeamwork > MAX)
+        if (skillTeamwork > MAX)
             skillTeamwork = MAX;
-        else if(skillTeamwork < MIN)
+        else if (skillTeamwork < MIN)
             skillTeamwork = MIN;
         this.skillTeamwork.set(skillTeamwork);
         teamworkModifier = (double) skillTeamwork / MAX;
@@ -216,9 +213,9 @@ abstract public class Player implements Serializable, Comparable<Player> {
     }
 
     public void setFoulLikelihood(int foulLikelihood) {
-        if(foulLikelihood > MAX)
+        if (foulLikelihood > MAX)
             foulLikelihood = MAX;
-        else if(foulLikelihood < MIN)
+        else if (foulLikelihood < MIN)
             foulLikelihood = MIN;
         this.foulLikelihood.set(foulLikelihood);
         foulModifier = (double) foulLikelihood / MAX;
@@ -228,7 +225,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
         return foulLikelihood;
     }
 
-    public int getSkillLevel(){
+    public int getSkillLevel() {
         return skillLevel.intValue();
     }
 
@@ -259,8 +256,8 @@ abstract public class Player implements Serializable, Comparable<Player> {
 
     @Override
     public String toString() {
-         return String.format("{Name: %-25s SkillLevel: %2d, SkillOffense: %2d, Skill Defense: %2d, SkillTeamwork: %2d, FoulLikelihood: %2d, InjuryHistory: %s}",
-                 getName(), getSkillLevel(), getSkillOffense(), getSkillDefense(), getSkillTeamwork(), getFoulLikelihood(), getInjuryHistory());
+        return String.format("{Name: %-25s SkillLevel: %2d, SkillOffense: %2d, Skill Defense: %2d, SkillTeamwork: %2d, FoulLikelihood: %2d, InjuryHistory: %s}",
+                getName(), getSkillLevel(), getSkillOffense(), getSkillDefense(), getSkillTeamwork(), getFoulLikelihood(), getInjuryHistory());
     }
 
     @Override
@@ -278,7 +275,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
 
     @Override
     public int compareTo(@NotNull Player o) {
-        if(Math.abs(getModifiers() - o.getModifiers()) <= 0.0001)
+        if (Math.abs(getModifiers() - o.getModifiers()) <= 0.0001)
             return 0;
         else if (getModifiers() > o.getModifiers())
             return 1;
