@@ -29,6 +29,7 @@ import java.util.Set;
 
 public class Table extends ElementChildren<Table.Row>{
     public static String TABLE = "table";
+    private String caption = null;
 
     public Table(Row... rows) {
         super(rows);
@@ -36,6 +37,22 @@ public class Table extends ElementChildren<Table.Row>{
 
     public Table(Collection<Row> rows) {
         super(rows);
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public void setCaption(String caption) {
+        this.caption = caption;
+    }
+
+    @Override
+    protected StringBuilder openHtmlTag(StringBuilder stringBuilder, int tabs) {
+        super.openHtmlTag(stringBuilder, tabs);
+        appendNewLineAndTabs(stringBuilder, tabs);
+        stringBuilder.append("<caption>").append(caption).append("</caption");
+        return stringBuilder;
     }
 
     @Override
@@ -51,10 +68,12 @@ public class Table extends ElementChildren<Table.Row>{
     @Override
     public String toWikitext() {
         StringBuilder stringBuilder = new StringBuilder("\n{|");
-
         createClassesString(classes, stringBuilder);
         createAttributeString(attributes, stringBuilder);
 
+        if (caption != null) {
+            stringBuilder.append("\n|+").append(caption);
+        }
         for(Row row: children) {
             stringBuilder.append(row.toWikitext());
         }

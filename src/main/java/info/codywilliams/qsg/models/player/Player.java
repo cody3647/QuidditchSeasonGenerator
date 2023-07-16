@@ -23,6 +23,7 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -55,7 +56,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
     @JsonIgnore
     public boolean isCurrentlyInjured = false;
     @JsonIgnore
-    final private double injuryDivisor = 2;
+    private double injuryDivisor = 2;
 
     public Player() {
         name = new SimpleStringProperty(this, "name", "");
@@ -104,12 +105,39 @@ abstract public class Player implements Serializable, Comparable<Player> {
         return injuryHistory.contains(date);
     }
 
+    public boolean isCurrentlyInjured() {
+        return isCurrentlyInjured;
+    }
+
+    public void setCurrentlyInjured(boolean currentlyInjured) {
+        isCurrentlyInjured = currentlyInjured;
+    }
+
+    public double getInjuryDivisor() {
+        return injuryDivisor;
+    }
+
+    public void setInjuryDivisor(double injuryDivisor) {
+        this.injuryDivisor = injuryDivisor;
+    }
+
     public void addInjuryDate(LocalDate startDate, LocalDate endDate){
         LocalDate date = startDate;
         while(date.isBefore(endDate) || date.isEqual(endDate)) {
             injuryHistory.add(date);
             date = date.plusDays(1);
         }
+    }
+
+    public @Nullable LocalDate findInjuryEndDate(LocalDate startDate) {
+        if (!isInjured(startDate))
+            return null;
+        LocalDate date = startDate;
+        while(isInjured(date)) {
+            date = date.plusDays(1);
+        }
+
+        return date.minusDays(1);
     }
 
     public static int validateSkill(int skillNumber){
@@ -222,6 +250,11 @@ abstract public class Player implements Serializable, Comparable<Player> {
 
     public double getModifiers() {
         return getOffenceModifier() + getDefenseModifier() + getTeamworkModifier() - getFoulModifier();
+    }
+
+    public String playerSkillsOutput() {
+        return "Offense: " + getSkillOffense() + ", Defense: " + getSkillDefense() + ", Teamwork: " + getSkillTeamwork() +
+                ", Foul Likelihood: " + getFoulLikelihood();
     }
 
     @Override

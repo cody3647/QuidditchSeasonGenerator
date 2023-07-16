@@ -20,20 +20,20 @@ package info.codywilliams.qsg.models.match;
 
 import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.models.match.Play.BludgerOutcome;
+import info.codywilliams.qsg.models.match.Play.InjuryType;
 import info.codywilliams.qsg.models.match.PlayChaser.QuaffleOutcome;
 import info.codywilliams.qsg.models.match.PlaySeeker.SnitchOutcome;
+import info.codywilliams.qsg.models.player.Player;
 import info.codywilliams.qsg.output.Element;
 import info.codywilliams.qsg.output.MatchInfobox;
 import info.codywilliams.qsg.output.Page;
-import info.codywilliams.qsg.output.elements.Div;
-import info.codywilliams.qsg.output.elements.Paragraph;
-import info.codywilliams.qsg.output.elements.Text;
-import info.codywilliams.qsg.output.elements.UnorderedList;
+import info.codywilliams.qsg.output.elements.*;
 import info.codywilliams.qsg.util.Formatters;
 import info.codywilliams.qsg.util.ResourceBundleReplacer;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -43,8 +43,11 @@ public class Match implements Comparable<Match> {
     private final LocalDateTime startDateTime;
     private Team homeTeam;
     private Team awayTeam;
+    private Map<String, List<? extends Player>> homeTeamRoster;
+    private Map<String, List<? extends Player>> awayTeamRoster;
     private String location;
     private Duration matchLength;
+    private Duration snitchReleaseTime;
     private int scoreHome;
     private int scoreAway;
     private int foulsHome;
@@ -53,8 +56,10 @@ public class Match implements Comparable<Match> {
     private String title;
     private ResourceBundleReplacer resources;
     private TeamType winner;
-    private int homePlays;
-    private int awayPlays;
+    private final Map<String, LocalDate> homeInjuredBefore;
+    private final Map<String, LocalDate> homeInjuredDuring;
+    private final Map<String, LocalDate> awayInjuredBefore;
+    private final Map<String, LocalDate> awayInjuredDuring;
 
     private final EnumMap<QuaffleOutcome, Integer> homeQuaffleOutcomes;
     private final EnumMap<QuaffleOutcome, Integer> awayQuaffleOutcomes;
@@ -62,17 +67,27 @@ public class Match implements Comparable<Match> {
     private final EnumMap<BludgerOutcome, Integer> awayBludgerOutcomes;
     private final EnumMap<SnitchOutcome, Integer> homeSnitchOutcomes;
     private final EnumMap<SnitchOutcome, Integer> awaySnitchOutcomes;
+    private final EnumMap<InjuryType, Integer> homeInjuryTypes;
+    private final EnumMap<InjuryType, Integer> awayInjuryTypes;
 
     public Match(int number, int round, LocalDateTime startDateTime) {
         this.number = number;
         this.round = round;
         this.startDateTime = startDateTime;
+        homeInjuredBefore = new TreeMap<>();
+        homeInjuredDuring = new TreeMap<>();
+        awayInjuredBefore = new TreeMap<>();
+        awayInjuredDuring = new TreeMap<>();
+
         homeQuaffleOutcomes = new EnumMap<>(QuaffleOutcome.class);
         awayQuaffleOutcomes = new EnumMap<>(QuaffleOutcome.class);
         homeBludgerOutcomes = new EnumMap<>(BludgerOutcome.class);
         awayBludgerOutcomes = new EnumMap<>(BludgerOutcome.class);
         homeSnitchOutcomes = new EnumMap<>(SnitchOutcome.class);
         awaySnitchOutcomes = new EnumMap<>(SnitchOutcome.class);
+        homeInjuryTypes = new EnumMap<>(InjuryType.class);
+        awayInjuryTypes = new EnumMap<>(InjuryType.class);
+
         clear();
     }
 
@@ -96,6 +111,10 @@ public class Match implements Comparable<Match> {
         for (BludgerOutcome outcome : BludgerOutcome.values()) {
             homeBludgerOutcomes.put(outcome, 0);
             awayBludgerOutcomes.put(outcome, 0);
+        }
+        for (InjuryType type : InjuryType.values()) {
+            homeInjuryTypes.put(type, 0);
+            awayInjuryTypes.put(type, 0);
         }
 
     }
@@ -125,6 +144,15 @@ public class Match implements Comparable<Match> {
         matchPage.addMetadata("keywords", null, resources.getString("meta.match.keywords"), null);
         matchPage.addBodyContent(new MatchInfobox(this));
 
+        matchPage.addBodyContent(new Header(2, "Match Rosters"));
+        matchPage.addBodyContent(buildRosters(homeTeam.getName(), getHomeTeamRoster()));
+        matchPage.addBodyContent(buildRosters(awayTeam.getName(), getAwayTeamRoster()));
+
+        matchPage.addBodyContent(new Header(2, "Injured Players"));
+        matchPage.addBodyContent(buildInjuredPlayersTable(homeTeam.getName(), homeInjuredBefore, homeInjuredDuring));
+        matchPage.addBodyContent(buildInjuredPlayersTable(awayTeam.getName(), awayInjuredBefore, awayInjuredDuring));
+
+        matchPage.addBodyContent(new Header(2, "Match"));
         UnorderedList playList = new UnorderedList();
         playList.addClass("quidditch-match");
 
@@ -165,8 +193,15 @@ public class Match implements Comparable<Match> {
                     i = 0;
                 }
             }
+            if (play.getInjuryType() != InjuryType.NONE) {
+                Div injuryDiv = new Div(new Text(play.outputInjuryWithDetails(resources)));
+                injuryDiv.addClass("quidditch-injury");
+                liChildren.add(injuryDiv);
+            }
             if (i == 5) {
-                liChildren.add(new Div(new Text(resources.getString("match.time") + ": " + Formatters.formatDuration(play.getMatchLength()))));
+                Div time = new Div(new Text(resources.getString("match.time") + ": " + Formatters.formatDuration(play.getMatchLength())));
+                time.addClass("quidditch-time");
+                liChildren.add(time);
                 i = 0;
             }
             li.addChildren(liChildren);
@@ -174,6 +209,83 @@ public class Match implements Comparable<Match> {
 
         matchPage.addBodyContent(playList);
         return matchPage;
+    }
+
+    private Table buildRosters(String teamName, Map<String, List<? extends Player>> rosterMap) {
+        ArrayList<Table.TableCell> headerCells = new ArrayList<>();
+        ArrayList<Table.TableCell> playerCells = new ArrayList<>();
+        for (Map.Entry<String, List<? extends Player>> entry : rosterMap.entrySet()) {
+            headerCells.add(new Table.HeaderCell(entry.getKey()));
+            List<UnorderedList.Item> playerItems = entry.getValue().stream()
+                    .map(player -> {
+                        Text tooltip = new Text(player.playerSkillsOutput());
+                        tooltip.addClass("player-tooltip-text");
+
+                        Div playerDiv = new Div(new Text(player.getName()), tooltip);
+                        playerDiv.addClass("player-tooltip");
+
+                        return new UnorderedList.Item(playerDiv);
+                    }).toList();
+            playerCells.add(new Table.Cell(new UnorderedList(playerItems)));
+        }
+
+        Table.Row headerRow = new Table.Row(headerCells);
+        Table.Row playerRow = new Table.Row(playerCells);
+        headerRow.addClass("quidditch-roster-positions");
+        playerRow.addClass("quidditch-roster-players");
+        Table rosterTable = new Table(headerRow, playerRow);
+        rosterTable.addClass("quidditch-roster");
+        rosterTable.setCaption(teamName);
+
+        return rosterTable;
+    }
+
+    private Table buildInjuredPlayersTable(String teamName, Map<String, LocalDate> injuredBefore, Map<String, LocalDate> injuredDuring) {
+        Table injuredTable = new Table();
+        injuredTable.setCaption(teamName);
+        injuredTable.addClass("quidditch-roster");
+
+        Table.HeaderCell headerCell;
+        Table.Row row = new Table.Row();
+        headerCell = new Table.HeaderCell(new Text("Before Match"));
+        headerCell.addAttribute("colspan", "2");
+        row.addChildren(headerCell);
+        headerCell = new Table.HeaderCell(new Text("During Match"));
+        headerCell.addAttribute("colspan", "2");
+        row.addChildren(headerCell);
+        injuredTable.addChildren(row);
+
+        row = new Table.Row(
+                new Table.HeaderCell(new Text("Player")),
+                new Table.HeaderCell(new Text("Injured Through")),
+                new Table.HeaderCell(new Text("Player")),
+                new Table.HeaderCell(new Text("Injured Through"))
+        );
+        row.addClass("quiddtion-roster-header-row");
+        injuredTable.addChildren(row);
+
+        Iterator<Map.Entry<String, LocalDate>> beforeIt = injuredBefore.entrySet().iterator();
+        Iterator<Map.Entry<String, LocalDate>> duringIt = injuredDuring.entrySet().iterator();
+        while(beforeIt.hasNext() || duringIt.hasNext()) {
+            row = new Table.Row();
+            injuredRowCells(row, beforeIt);
+            injuredRowCells(row, duringIt);
+            injuredTable.addChildren(row);
+        }
+
+        return injuredTable;
+    }
+
+    private void injuredRowCells(Table.Row row, Iterator<Map.Entry<String, LocalDate>> it) {
+        if(it.hasNext()) {
+            Map.Entry<String, LocalDate> entry = it.next();
+            row.addChildren(
+                    new Table.Cell(new Text(entry.getKey())),
+                    new Table.Cell(new Text(Formatters.dateFormatter.format(entry.getValue())))
+            );
+        } else {
+            row.addChildren(new Table.Cell(), new Table.Cell());
+        }
     }
 
     private Div buildScoreDiv(Play play, boolean finalScore) {
@@ -240,6 +352,14 @@ public class Match implements Comparable<Match> {
         return matchLength;
     }
 
+    public Duration getSnitchReleaseTime() {
+        return snitchReleaseTime;
+    }
+
+    public void setSnitchReleaseTime(Duration snitchReleaseTime) {
+        this.snitchReleaseTime = snitchReleaseTime;
+    }
+
     public LinkedList<Play> getPlays() {
         return plays;
     }
@@ -250,30 +370,56 @@ public class Match implements Comparable<Match> {
         play.setMatchLength(getMatchLength());
         this.plays.add(play);
 
-        if (play.attackingTeamType == TeamType.HOME)
-            homePlays++;
-        else
-            awayPlays++;
-
         Map<BludgerOutcome, Integer> bludgerOutcome =
                 play.getAttackingTeamType() == TeamType.HOME
-                ? homeBludgerOutcomes
-                : awayBludgerOutcomes;
+                        ? homeBludgerOutcomes
+                        : awayBludgerOutcomes;
         bludgerOutcome.merge(play.getBludgerOutcome(), 1, Integer::sum);
+
+        if (play.getInjuryType() != InjuryType.NONE) {
+            Map<InjuryType, Integer> injuryTypeMap;
+            Map<String, LocalDate> injuredDuringMap;
+
+            if (play.getInjuredPlayerTeam() == TeamType.HOME) {
+                injuryTypeMap = homeInjuryTypes;
+                injuredDuringMap = homeInjuredDuring;
+            } else {
+                injuryTypeMap = awayInjuryTypes;
+                injuredDuringMap = awayInjuredDuring;
+            }
+
+            injuryTypeMap.merge(
+                    play.getInjuryType(),
+                    1,
+                    Integer::sum
+            );
+
+            injuredDuringMap.merge(
+                    play.getInjuredPlayer().getName(),
+                    play.getInjuryEndDate(),
+                    (prev, next) -> prev.isAfter(next) ? prev : next
+            );
+        }
 
         if (play instanceof PlayChaser playChaser) {
             Map<QuaffleOutcome, Integer> quaffleOutcome =
                     play.getAttackingTeamType() == TeamType.HOME
-                    ? homeQuaffleOutcomes
-                    : awayQuaffleOutcomes;
+                            ? homeQuaffleOutcomes
+                            : awayQuaffleOutcomes;
             quaffleOutcome.merge(playChaser.getQuaffleOutcome(), 1, Integer::sum);
         } else if (play instanceof PlaySeeker playSeeker) {
             Map<SnitchOutcome, Integer> snitchOutcome =
                     play.getAttackingTeamType() == TeamType.HOME
-                    ? homeSnitchOutcomes
-                    : awaySnitchOutcomes;
+                            ? homeSnitchOutcomes
+                            : awaySnitchOutcomes;
             snitchOutcome.merge(playSeeker.getSnitchOutcome(), 1, Integer::sum);
         }
+    }
+
+    public void addInjuredBeforePlayer(TeamType teamType, Player player) {
+        Map<String, LocalDate> injuredMap = teamType == TeamType.HOME ? homeInjuredBefore : awayInjuredBefore;
+        LocalDate endDate = player.findInjuryEndDate(getStartDateTime().toLocalDate());
+        injuredMap.put(player.getName(), endDate);
     }
 
     public int getScoreHome() {
@@ -332,15 +478,33 @@ public class Match implements Comparable<Match> {
         this.winner = winner;
     }
 
+    public Map<String, List<? extends Player>> getHomeTeamRoster() {
+        return homeTeamRoster;
+    }
+
+    public void setHomeTeamRoster(Map<String, List<? extends Player>> homeTeamRoster) {
+        this.homeTeamRoster = homeTeamRoster;
+    }
+
+    public Map<String, List<? extends Player>> getAwayTeamRoster() {
+        return awayTeamRoster;
+    }
+
+    public void setAwayTeamRoster(Map<String, List<? extends Player>> awayTeamRoster) {
+        this.awayTeamRoster = awayTeamRoster;
+    }
+
     public String outcomesToString() {
         return "Outcomes:\n" +
                 "\tHome: " +
                 "\n\t\tQuaffle: " + homeQuaffleOutcomes.toString() +
                 "\n\t\tBludger: " + homeBludgerOutcomes.toString() +
                 "\n\t\tSnitch: " + homeSnitchOutcomes.toString() +
+                "\n\t\tInjuries: " + homeInjuryTypes.toString() +
                 "\n\tAway:\n\t\tQuaffle: " + awayQuaffleOutcomes.toString() +
                 "\n\t\tBludger: " + awayBludgerOutcomes.toString() +
-                "\n\t\tSnitch: " + awaySnitchOutcomes.toString();
+                "\n\t\tSnitch: " + awaySnitchOutcomes.toString() +
+                "\n\t\tInjuries: " + awayInjuryTypes.toString();
     }
 
     @Override

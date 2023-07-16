@@ -77,6 +77,7 @@ public class MatchInfobox extends Element implements ElementOutputs {
                 addInfoboxRow(resources.getString("match.ib.start"), match.getStartDateTime().format(Formatters.dateTimeFormatter)),
                 addInfoboxRow(resources.getString("match.ib.end"), endTime.format(Formatters.dateTimeFormatter)),
                 addInfoboxRow(resources.getString("match.ib.length"), Formatters.formatDuration(match.getMatchLength())),
+                addInfoboxRow(resources.getString("match.ib.snitchRelease"), Formatters.formatDuration(match.getSnitchReleaseTime())),
                 addInfoboxHeader(resources.getString("match.ib.fouls")),
                 addInfoboxRow(homeTeamName, String.valueOf(match.getFoulsHome())),
                 addInfoboxRow(awayTeamName, String.valueOf(match.getFoulsAway())),
@@ -120,16 +121,74 @@ public class MatchInfobox extends Element implements ElementOutputs {
                 "\n|start=" + match.getStartDateTime().format(Formatters.dateTimeFormatter) +
                 "\n|end=" + endTime.format(Formatters.dateTimeFormatter) +
                 "\n|length=" + Formatters.formatDuration(match.getMatchLength()) +
+                "\n|snitchReleaseTime=" + Formatters.formatDuration(match.getSnitchReleaseTime()) +
                 "\n|homeFouls=" + match.getFoulsHome() +
                 "\n|awayFouls=" + match.getFoulsAway() +
                 "\n|homeScore=" + match.getScoreHome() +
                 "\n|awayScore=" + match.getScoreAway() +
                 "\n|leagueYear=" + resources.getString("yearRange") +
                 "\n|leagueName=" + resources.getString("leagueName") +
-                "\n}}\n";
+                "\n}}";
     }
 
     public String wikitextTemplate() {
-        return null;
+        return """
+                <includeonly><div class="ib ib-quidditch-match">
+                {| cellspacing="0" cellpadding="4" style="border-width: 0px;"
+                {{!}}-
+                {{!}} class="ib-image" colspan="2" {{!}}<div style="display:flex;">
+                <div>[[File:{{{homeTeam}}}.png|125px|link={{{homeTeam}}}|alt={{{homeTeam}}}]]</div>
+                <div>[[File:{{{awayTeam}}}.png|125px|link={{{awayTeam}}}|alt={{{awayTeam}}}]]</div>
+                </div>
+                {{!}}-
+                ! class="plainlinks" colspan="2"{{!}}<div style="display:flex;">
+                <div style="flex:2">[[{{{homeTeam}}}]]</div>
+                <div style="flex:1">vs</div>
+                <div style="flex:2">[[{{{awayTeam}}}]]</div>
+                </div>
+                {{!}}-
+                ! colspan="2" {{!}} Quidditch Match
+                {{!}}-
+                {{!}} class="ib-label" {{!}} Match Location
+                {{!}} class="ib-value" {{!}} {{{location|}}}
+                {{!}}-
+                {{!}} class="ib-label" {{!}} Start of Game
+                {{!}} class="ib-value" {{!}} {{{start|}}}
+                {{!}}-
+                {{!}} class="ib-label" {{!}} End of Game
+                {{!}} class="ib-value" {{!}} {{{end|}}}
+                {{!}}-
+                {{!}} class="ib-label" {{!}} Length
+                {{!}} class="ib-value" {{!}} {{{length|}}}
+                {{!}}-
+                {{!}} class="ib-label" {{!}} Snitch Release
+                {{!}} class="ib-value" {{!}} {{{snitchReleaseTime|}}}
+                {{!}}-
+                ! " colspan="2" {{!}} Fouls
+                {{!}}-
+                {{!}} class="ib-label" {{!}} {{{homeTeam}}}
+                {{!}} class="ib-value" {{!}} {{{homeFouls}}}
+                {{!}}-
+                {{!}} class="ib-label" {{!}} {{{awayTeam}}}
+                {{!}} class="ib-value" {{!}} {{{awayFouls}}}
+                {{!}}-
+                ! colspan="2" {{!}} Final Score
+                {{!}}-
+                {{!}} class="ib-label" {{!}} {{{homeTeam}}}
+                {{!}} class="ib-value" {{!}} {{{homeScore}}}
+                {{!}}-
+                {{!}} class="ib-label" {{!}} {{{awayTeam}}}
+                {{!}} class="ib-value" {{!}} {{{awayScore}}}
+                {{!}}- class="ib-footer"
+                {{!}} colspan="2" {{!}} [[{{{leagueName}}} Cup ({{{leagueYear}}}) | {{{leagueYear}}} Season]]
+                |}
+                [[Category:{{{leagueYear}}} {{{leagueName}}} Matches]]
+                </div></includeonly>
+                <noinclude>
+                {{Quidditch match infobox/doc}}
+                                
+                [[Category: Infoboxes]]
+                </noinclude>
+                """;
     }
 }

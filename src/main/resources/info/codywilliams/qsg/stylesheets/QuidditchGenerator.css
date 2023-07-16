@@ -79,32 +79,56 @@ div.ib table .ib-footer {
     }
 }
 
-/*Quidditch Matches and League Schdules*/
-ul {
-    list-style: none;
-    margin:0;
+/*Quidditch Matches*/
+table.quidditch-roster {
+    width: calc(100% - 300px);
+    table-layout: fixed;
+    margin-bottom: 2em;
 }
 
-li div{
+.quidditch-roster td {
+    vertical-align: top;
+}
+
+.quidditch-roster th {
+    text-align: left;
+}
+
+.quidditch-roster caption {
+    font-size: large;
+    font-weight: bold;
+    border-bottom: solid 1px #72777d;
+}
+
+.quidditch-match li, .quidditch-roster-players li {
+    list-style: none;
+}
+
+ul.quidditch-match, .quidditch-match ul, .quidditch-roster ul {
+    margin: 0;
+    padding: 0;
+}
+
+.quidditch-match div, .quidditch-time div {
     margin: .5em 2em;
-    width:25em;
+    width: 25em;
     padding: .5em;
-    text-align:center;
-    background-color:#464646;
-    border:1px solid #545454;
+    text-align: center;
+    background-color: #464646;
+    border: 1px solid #545454;
 }
 
 .quaffle-scored div{
-    border:1px solid #580000;
+    border: 1px solid #580000;
 }
 
 .quidditch-foul div{
     background-color: #412626;
-    border:1px solid #972000;
+    border: 1px solid #972000;
 }
 
 .snitch-caught div, .snitch-stolen div {
-    border:1px solid #a68600;
+    border: 1px solid #a68600;
 }
 
 .snitch-caught, .snitch-stolen, .snitch-seen, .snitch-feint, .snitch-missed {
@@ -146,4 +170,32 @@ table.league-rankings tr {
 
 table.league-rankings td:first-child:before {
     content: counter( rank )": ";
+}
+
+/* Player Tooltips */
+/* Tooltip container */
+.player-tooltip {
+    position: relative;
+    display: inline-block;
+    border-bottom: 1px dotted #00817b; /* If you want dots under the hoverable text */
+}
+
+/* Tooltip text */
+.player-tooltip .player-tooltip-text {
+    visibility: hidden;
+    position: absolute;
+    z-index: 1;
+    width: 30em;
+    color: white;
+    background-color: #00817b;
+    border-radius: 10px;
+    padding: 10px 15px 10px 15px;
+    top: -2.7em;
+    right:-12.5em;
+    text-align: center;
+}
+
+/* Show the tooltip text when you mouse over the tooltip container */
+.player-tooltip:hover .player-tooltip-text {
+    visibility: visible;
 }

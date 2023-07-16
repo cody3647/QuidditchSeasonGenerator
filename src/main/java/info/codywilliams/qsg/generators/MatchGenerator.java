@@ -20,21 +20,27 @@ package info.codywilliams.qsg.generators;
 
 import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.models.match.*;
+import info.codywilliams.qsg.models.match.Play.InjuryType;
 import info.codywilliams.qsg.models.player.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class MatchGenerator {
     final static int BEATERS = 2;
     final static int CHASERS = 3;
     final static long[] SNITCH_VALUE_RANGE = new long[]{10, 90};
     final static long[] SNITCH_CHANCE_RANGE_STARTING_VALUE = new long[]{0, 100};
-    final static long[] SNITCH_RELEASE_SECONDS_RANGE = new long[]{13 * 60, 17 * 60};
+    final static long[] SNITCH_RELEASE_MINUTES_RANGE = new long[]{15, 30};
     final static long SNITCH_BASE_INTERACTION_RANGE = 10;
     final long seed;
     final Random random;
@@ -112,6 +118,11 @@ public class MatchGenerator {
         homeTeam = new MatchTeam(match.getHomeTeam(), TeamType.HOME, match.getStartDateTime().toLocalDate());
         awayTeam = new MatchTeam(match.getAwayTeam(), TeamType.AWAY, match.getStartDateTime().toLocalDate());
 
+        match.setHomeTeamRoster(homeTeam.getMatchRoster());
+        match.setAwayTeamRoster(awayTeam.getMatchRoster());
+        setInjuredPlayers(match.getHomeTeam(), TeamType.HOME, match.getStartDateTime().toLocalDate());
+        setInjuredPlayers(match.getAwayTeam(), TeamType.AWAY, match.getStartDateTime().toLocalDate());
+
         // Snitch values
         snitchValue = randomNumber(SNITCH_VALUE_RANGE);
         // Combine the skills of the two teams seekers, and take the average
@@ -122,10 +133,28 @@ public class MatchGenerator {
         snitchInteractionRange = new long[]{snitchValue - snitchRangeAdjuster, snitchValue + snitchRangeAdjuster};
         // Set starting snitch chance range
         snitchChanceRange = Arrays.copyOf(SNITCH_CHANCE_RANGE_STARTING_VALUE, 2);
-        snitchReleaseSeconds = randomNumber(SNITCH_RELEASE_SECONDS_RANGE);
+        snitchReleaseSeconds = (randomNumber(SNITCH_RELEASE_MINUTES_RANGE) * 60L) + randomNumber(0, 60);
+        match.setSnitchReleaseTime(Duration.ofSeconds(snitchReleaseSeconds));
         snitchReleased = false;
         seekerRoundLoops = 1;
         hours = 0;
+    }
+
+    private void setInjuredPlayers(Team team, TeamType teamType, LocalDate date) {
+        Predicate<Player> filterInjured = player -> player.isInjured(date);
+        Consumer<Player> addInjuredToMatch = player -> this.match.addInjuredBeforePlayer(teamType, player);
+        team.getBeaters().stream()
+                .filter(filterInjured)
+                .forEach(addInjuredToMatch);
+        team.getChasers().stream()
+                .filter(filterInjured)
+                .forEach(addInjuredToMatch);
+        team.getKeepers().stream()
+                .filter(filterInjured)
+                .forEach(addInjuredToMatch);
+        team.getSeekers().stream()
+                .filter(filterInjured)
+                .forEach(addInjuredToMatch);
     }
 
     private void generate() {
@@ -205,10 +234,12 @@ public class MatchGenerator {
 
             if (block > hit) {
                 play.setBludgerOutcome(Play.BludgerOutcome.BLOCKED);
+                playerInjuredDuringPlay(play, play.getBeaterBlocker(), targetTeam.type, InjuryType.BLUDGER_BLOCKED);
             } else if (miss > hit) {
                 play.setBludgerOutcome(Play.BludgerOutcome.MISSED);
             } else {
                 play.setBludgerOutcome(Play.BludgerOutcome.HIT);
+                playerInjuredDuringPlay(play, target, targetTeam.type, InjuryType.BLUDGER_HIT);
                 outcome = true;
             }
 
@@ -252,6 +283,8 @@ public class MatchGenerator {
             attemptGoal(score, block, miss, play);
         }
 
+        playerInjuredDuringPlay(play, keeper, defendingTeam.type, InjuryType.KEEPER);
+        chaserInjuredDuringPlay(play);
         // AddPlay finalizes scores and match length assigned to the play
         match.addPlay(play);
         swapTeams(defender);
@@ -265,7 +298,8 @@ public class MatchGenerator {
         PlayChaser play = new PlayChaser(attackingTeam.type, defendingTeam.type, attacker, defender, null);
         // Does the attacker get hit by a bludger
         bludgerHit(play, getRandomBeater(defendingTeam), attacker, defendingTeam, attackingTeam);
-
+        // Possible injury?
+        chaserInjuredDuringPlay(play);
         // Set the outcome, add the play to the list and update the duration.
         play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.TURNOVER);
         play.setPlayDurationSeconds(randomNumber(15, 60));
@@ -289,6 +323,7 @@ public class MatchGenerator {
             case HOME -> match.incrementFoulsHome();
             case AWAY -> match.incrementFoulsAway();
         }
+        playerInjuredDuringPlay(playFoul, keeper, foulerTeam.type, InjuryType.KEEPER);
         attemptGoal(score, block, miss, playFoul);
     }
 
@@ -327,6 +362,7 @@ public class MatchGenerator {
         if (!snitchReleased && match.getMatchLength().toSeconds() <= snitchReleaseSeconds)
             return false;
 
+        snitchReleased = true;
         // Get the chance of something happening this iteration
         int snitchChance = randomNumber(snitchChanceRange);
 
@@ -453,6 +489,66 @@ public class MatchGenerator {
             snitchChanceRange[1] -= 1;
 
         logger.trace("Shrink Snitch Chance Range: Divisor: {}, Snitch Chance: {}, Snitch Chance Range: {}, Snitch Interaction Range, {}", divisor, snitchChance, snitchChanceRange, snitchInteractionRange);
+    }
+
+    private void chaserInjuredDuringPlay(Play play) {
+        if (random.nextBoolean())
+            playerInjuredDuringPlay(play, getRandomChaser(homeTeam), homeTeam.type, InjuryType.CHASER);
+        else
+            playerInjuredDuringPlay(play, getRandomChaser(awayTeam), awayTeam.type, InjuryType.CHASER);
+    }
+
+    private void playerInjuredDuringPlay(Play play, Player player, TeamType playerTeam, InjuryType injuryType) {
+        if (play.getInjuryType() != InjuryType.NONE)
+            return;
+
+        List<Integer> injuryChance = List.of(
+                randomNumber(1, 1000),
+                randomNumber(1, 1000),
+                randomNumber(1, 1000),
+                randomNumber(1, 1000)
+        );
+        List<Boolean> willBeInjured = List.of(
+                injuryChance.get(0) % 2 == 0,
+                injuryChance.get(1) % 3 == 0,
+                injuryChance.get(2) % 4 == 0,
+                injuryChance.get(3) % 5 == 0
+        );
+        logger.trace("Injury: {}, {}", injuryChance, willBeInjured);
+
+        if ( willBeInjured.stream().allMatch(bool -> bool)) {
+            int injury = randomNumber(1, 6);
+            logger.trace("Injured: {} % 6 = {}", injury, injury % 6);
+            LocalDate endDate;
+            switch (injury % 6) {
+                case 0, 1 -> {
+                    int weeks = randomNumber(0, 2);
+                    double severity = random.nextDouble(1.4, 2.5);
+                    endDate = injuryCalculation(player, weeks, ChronoUnit.WEEKS, severity);
+                }
+                case 2 -> {
+                    int weeks = randomNumber(0, 3);
+                    double severity = random.nextDouble(1.7, 2.5);
+                    endDate = injuryCalculation(player, weeks, ChronoUnit.WEEKS, severity);
+                }
+                default -> {
+                    double severity = random.nextDouble(1.1, 1.7);
+                    endDate = injuryCalculation(player, 0, ChronoUnit.DAYS, severity);
+                }
+            }
+            play.setInjury(injuryType, player, playerTeam, endDate);
+        }
+    }
+
+    private LocalDate injuryCalculation(Player player, int amount, TemporalUnit unit, double severity) {
+        LocalDate startDate = match.getStartDateTime().toLocalDate();
+        LocalDate endDate = startDate.plus(amount, unit);
+        logger.debug("Injury: {}, {} {}, {}, {} - {}", player.getName(), amount, unit, severity, startDate, endDate);
+        player.setCurrentlyInjured(true);
+        player.setInjuryDivisor(severity);
+        player.addInjuryDate(startDate, endDate);
+
+        return endDate;
     }
 
     private int randomNumber(long lowestNumber, long largestNumber) {
@@ -591,6 +687,15 @@ public class MatchGenerator {
 
         CollectiveSkills getTeamSkills() {
             return teamSkills;
+        }
+
+        Map<String, List<? extends Player>> getMatchRoster() {
+            return Map.of(
+                    "Beaters", beaters,
+                    "Chasers", chasers,
+                    "Keeper", List.of(keeper),
+                    "Seeker", List.of(seeker)
+            );
         }
     }
 
