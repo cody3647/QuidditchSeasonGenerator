@@ -36,6 +36,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class MatchGenerator {
+    final public String version = "1.0";
     final static int BEATERS = 2;
     final static int CHASERS = 3;
     final static long[] SNITCH_VALUE_RANGE = new long[]{10, 90};

@@ -63,6 +63,8 @@ public abstract class Tournament {
     private String tournamentTitle;
     @JsonIgnore
     private String yearRange;
+    @JsonIgnore
+    private String generatorVersionUsed;
     Logger logger = LoggerFactory.getLogger(Tournament.class);
 
 
@@ -151,6 +153,7 @@ public abstract class Tournament {
     }
 
     public void generateMatches(List<Team> teams, long seed) {
+        System.out.println(seed);
         if (!isTeamsAssigned())
             assignTeamsToMatches(teams, seed);
 
@@ -158,6 +161,7 @@ public abstract class Tournament {
             tournamentPoints.put(team.getName(), 0);
 
         MatchGenerator matchGenerator = new MatchGenerator(seed);
+        generatorVersionUsed = matchGenerator.version;
         long now = System.currentTimeMillis();
         for (Match match : getMatches()) {
             matchGenerator.run(match);
@@ -187,13 +191,13 @@ public abstract class Tournament {
             pages.add(match.buildMatchPage());
         }
 
-        pages.add(buildTournamentPage(tournamentTitle));
+        pages.add(buildTournamentPage(tournamentTitle, seed));
         now = System.currentTimeMillis() - now;
         logger.info("{} seconds to generate pages", now / 1000.0);
         return pages;
     }
 
-    public Page buildTournamentPage(String title) {
+    public Page buildTournamentPage(String title, long seed) {
         Page seasonPage = new Page(title, "index");
         seasonPage.addStyle("QuidditchGenerator.css");
         seasonPage.addMetadata("keywords", null, resources.getString("meta.tournament.keywords"), null);
@@ -280,6 +284,23 @@ public abstract class Tournament {
         }
 
         seasonPage.addBodyContent(rankingsHeader, rankingsDesc, rankingTable);
+
+        DefinitionList version = new DefinitionList(
+                new DefinitionList.Term(resources.getString("generator.version")),
+                new DefinitionList.Def(generatorVersionUsed)
+        );
+        version.addClass("generator-version");
+
+
+        DefinitionList seedDl = new DefinitionList(
+                new DefinitionList.Term(resources.getString("generator.seed")),
+                new DefinitionList.Def(HexFormat.of().withUpperCase().toHexDigits(seed))
+        );
+        seedDl.addClass("generator-seed");
+
+        Div footer = new Div(version, seedDl);
+        footer.addClass("league-footer");
+        seasonPage.addBodyContent(footer);
 
         return seasonPage;
     }

@@ -152,13 +152,13 @@ ul.quidditch-match, .quidditch-match ul, .quidditch-roster ul {
 }
 
 /* Tournament Page */
-.league-schedule-topper {
+.league-schedule-topper, .league-footer {
     display: flex;
     width: 100%;
     justify-content: space-between;
 }
 
-.tournament-key dt, .tournament-key dd {
+.tournament-key dt, .tournament-key dd , .generator-seed dt, .generator-seed dd {
     text-align: right;
 }
 

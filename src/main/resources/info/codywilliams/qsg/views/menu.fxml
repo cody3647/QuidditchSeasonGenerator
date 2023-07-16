@@ -19,6 +19,15 @@
             <MenuItem mnemonicParsing="false" onAction="#loadRandomBritishQuidditchLeague" text="%tournament.BIQL.menu.random" />
         </items>
       </Menu>
+      <Menu mnemonicParsing="false" text="%app.menu.seed">
+        <items>
+          <MenuItem mnemonicParsing="false" text="%app.menu.seed.set">
+               <graphic>
+                  <TextField fx:id="seedTextField" />
+               </graphic>
+            </MenuItem>
+        </items>
+      </Menu>
         <Menu mnemonicParsing="false" text="%app.menu.mediawiki">
             <items>
                 <MenuItem mnemonicParsing="false" onAction="#displayMediawikiSetupWindow" text="%app.menu.mediawiki.setup" />

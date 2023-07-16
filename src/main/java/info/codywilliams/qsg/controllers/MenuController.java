@@ -18,22 +18,31 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.stage.FileChooser;
 import javafx.stage.Window;
+import javafx.util.converter.NumberStringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalTime;
+import java.util.HexFormat;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MenuController {
     private final Context context;
     private final Logger logger;
+    @FXML
+    TextField seedTextField;
     @FXML
     ResourceBundle resources;
 
@@ -48,6 +57,8 @@ public class MenuController {
     }
 
     public void initialize() {
+        seedTextField.textProperty().bindBidirectional(context.seedProperty(), new HexConverter());
+        seedTextField.setTextFormatter(new TextFormatter<>(new HexConverter(), context.getSeed(), HexConverter::filter));
     }
 
     @FXML
@@ -243,6 +254,57 @@ public class MenuController {
 
     private enum FileAction {
         OPEN, SAVE
+    }
+
+    public static class HexConverter extends NumberStringConverter {
+        final static Pattern pattern = Pattern.compile(
+                "^[0-9A-F ]+?",
+                Pattern.CASE_INSENSITIVE
+        );
+
+        static TextFormatter.Change filter(TextFormatter.Change change) {
+            if (change.isContentChange()) {
+                Matcher matcher = pattern.matcher(change.getControlNewText());
+                if (change.getControlNewText().length() > 16) {
+                    change.setText("");
+                    return change;
+                }
+                if (matcher.matches()) {
+                    change.setText(change.getText().toUpperCase());
+                    return change;
+                }
+                change.setText("");
+            }
+            return change;
+        }
+
+        @Override
+        public Number fromString(String s) {
+            if (s == null)
+                return null;
+            else {
+                s = s.trim();
+                if (s.isEmpty())
+                    return null;
+                else
+                    return HexFormat.fromHexDigitsToLong(s);
+            }
+        }
+
+        @Override
+        public String toString(Number number) {
+
+
+            if (number == null)
+                return "";
+            else
+                return HexFormat.of().withUpperCase().toHexDigits((long) number);
+        }
+
+        @Override
+        protected NumberFormat getNumberFormat() {
+            return super.getNumberFormat();
+        }
     }
 
 }
