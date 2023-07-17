@@ -182,8 +182,12 @@ public class MatchGenerator {
 
             long h = hours;
             hours = match.getMatchLength().toHours();
-            if (h != hours && hours > 2)
-                seekerRoundLoops *= 2;
+            if (h != hours && hours > 1) {
+                if (seekerRoundLoops >= 4)
+                    seekerRoundLoops += 2;
+                else
+                    seekerRoundLoops *= 2;
+            }
         }
 
         int scoreHome = match.getScoreHome();
@@ -471,11 +475,11 @@ public class MatchGenerator {
         int divisor;
         long minutes = match.getMatchLength().toMinutes();
 
-        if (minutes > 180)
+        if (minutes > 150)
             divisor = 1;
-        else if (minutes > 120)
+        else if (minutes > 110)
             divisor = 2;
-        else if (minutes > 60)
+        else if (minutes > 85)
             divisor = 3;
         else
             divisor = 4;
