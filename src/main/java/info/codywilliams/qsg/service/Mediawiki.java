@@ -56,6 +56,7 @@ public class Mediawiki {
     public Mediawiki() {
         client = HttpClient.newBuilder()
                 .cookieHandler(new CookieManager())
+                .version(HttpClient.Version.HTTP_1_1)
                 .build();
 
         if (client.cookieHandler().isEmpty()) {

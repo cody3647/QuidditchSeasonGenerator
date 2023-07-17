@@ -65,6 +65,11 @@ abstract public class Player implements Serializable, Comparable<Player> {
         skillLevel = skillDefense.add(skillOffense).add(skillTeamwork).subtract(foulLikelihood);
     }
 
+    public void clear() {
+        injuryHistory.clear();
+        isCurrentlyInjured = false;
+    }
+
     public static int validateSkill(int skillNumber) {
         if (skillNumber < MIN)
             skillNumber = MIN;

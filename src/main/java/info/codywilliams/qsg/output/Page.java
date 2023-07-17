@@ -71,7 +71,7 @@ public class Page implements ElementOutputs {
     public String toHtml(int tabs) {
         StringBuilder stringBuilder = new StringBuilder();
 
-        stringBuilder.append("<!DOCTYPE html>\n<html>\n\t<head>");
+        stringBuilder.append("<!DOCTYPE html>\n<html>\n\t<head>\n\t\t<meta charset=\"utf-8\">");
         if (pageTitle != null)
             stringBuilder.append("\n\t\t<title>").append(pageTitle).append("</title>");
         if (!metadata.isEmpty())

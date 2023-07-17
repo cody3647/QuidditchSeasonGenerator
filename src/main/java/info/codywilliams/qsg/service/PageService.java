@@ -80,6 +80,8 @@ public class PageService {
         MatchGenerator matchGenerator = new MatchGenerator(seed);
         generatorVersionUsed = matchGenerator.version;
         long now = System.currentTimeMillis();
+
+        tournament.getTeamList().forEach(Team::clear);
         for (Match match : tournament.getMatches()) {
             matchGenerator.run(match);
         }

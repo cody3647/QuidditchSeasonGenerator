@@ -85,6 +85,7 @@ public class Match implements Comparable<Match> {
 
     public void clear() {
         matchLength = Duration.ZERO;
+        snitchReleaseTime = Duration.ZERO;
         plays = new LinkedList<>();
         scoreHome = 0;
         scoreAway = 0;
@@ -108,6 +109,11 @@ public class Match implements Comparable<Match> {
             homeInjuryTypes.put(type, 0);
             awayInjuryTypes.put(type, 0);
         }
+
+        homeInjuredBefore.clear();
+        homeInjuredDuring.clear();
+        awayInjuredBefore.clear();
+        awayInjuredDuring.clear();
 
     }
 

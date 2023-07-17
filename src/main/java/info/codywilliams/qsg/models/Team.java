@@ -58,6 +58,13 @@ public class Team implements Comparable<Team> {
         seekers = new SimpleListProperty<>(this, "seekers", FXCollections.observableArrayList());
     }
 
+    public void clear() {
+        beaters.forEach(Beater::clear);
+        chasers.forEach(Chaser::clear);
+        keepers.forEach(Keeper::clear);
+        seekers.forEach(Seeker::clear);
+    }
+
     public String getName() {
         return name.get();
     }
