@@ -18,6 +18,8 @@
 
 package info.codywilliams.qsg.models.tournament;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -43,7 +45,8 @@ public class MatchDayTime implements Comparable<MatchDayTime> {
     private final IntegerProperty count;
     private int dayOfWeekPriority;
 
-    public MatchDayTime(DayOfWeek dayOfWeek, LocalTime localTime, int priority) {
+    @JsonCreator
+    public MatchDayTime(@JsonProperty("dayOfWeek") DayOfWeek dayOfWeek, @JsonProperty("localTime") LocalTime localTime, @JsonProperty("priority") int priority) {
         count = new SimpleIntegerProperty(this, "count", 1);
         this.dayOfWeek = new SimpleObjectProperty<>(this, "dayOfWeek", dayOfWeek);
         this.localTime = new SimpleObjectProperty<>(this, "localTime", localTime);

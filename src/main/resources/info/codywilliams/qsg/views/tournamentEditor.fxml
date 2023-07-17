@@ -4,269 +4,218 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
-<AnchorPane xmlns:fx="http://javafx.com/fxml/1" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-            xmlns="http://javafx.com/javafx/18"
-            fx:controller="info.codywilliams.qsg.controllers.TournamentEditorController">
+<AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="info.codywilliams.qsg.controllers.TournamentEditorController">
     <children>
         <HBox alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="5.0">
             <children>
-                <VBox fx:id="tournamentVBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                      spacing="5.0" HBox.hgrow="ALWAYS">
+                <VBox fx:id="tournamentVBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="5.0" HBox.hgrow="ALWAYS">
                     <children>
                         <GridPane hgap="5.0" vgap="5.0">
                             <columnConstraints>
-                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="150.0"
-                                                   prefWidth="150.0"/>
-                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="250.0"
-                                                   prefWidth="250.0"/>
-                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="250.0"
-                                                   prefWidth="250.0"/>
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="150.0" minWidth="150.0" prefWidth="150.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="250.0" prefWidth="250.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" maxWidth="250.0" minWidth="250.0" prefWidth="250.0" />
                             </columnConstraints>
                             <rowConstraints>
-                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
-                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES"/>
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                             <children>
                                 <Label text="%tournament.label.startDate" wrapText="true" GridPane.rowIndex="3">
                                     <font>
-                                        <Font size="18.0"/>
+                                        <Font size="18.0" />
                                     </font>
                                 </Label>
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%tournament.editor.title"
-                                      textAlignment="CENTER" GridPane.columnSpan="2147483647"
-                                      GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER">
+                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%tournament.editor.title" textAlignment="CENTER" GridPane.columnSpan="2147483647" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER">
                                     <font>
-                                        <Font size="30.0"/>
+                                        <Font size="30.0" />
                                     </font>
                                     <GridPane.margin>
-                                        <Insets/>
+                                        <Insets />
                                     </GridPane.margin>
                                 </Text>
                                 <VBox GridPane.rowIndex="4">
                                     <children>
                                         <Label text="%tournament.label.matchDayTimes" wrapText="true">
                                             <font>
-                                                <Font size="18.0"/>
+                                                <Font size="18.0" />
                                             </font>
                                         </Label>
                                         <Label text="%tournament.label.matchDay.matches" wrapText="true">
                                             <font>
-                                                <Font size="14.0"/>
+                                                <Font size="14.0" />
                                             </font>
                                         </Label>
-                                        <Label fx:id="matchesPerWeekLabel"
-                                               text="%tournament.label.matchDay.matchesPerWeek" wrapText="true">
+                                        <Label fx:id="matchesPerWeekLabel" text="%tournament.label.matchDay.matchesPerWeek" wrapText="true">
                                             <font>
-                                                <Font size="14.0"/>
+                                                <Font size="14.0" />
                                             </font>
                                             <padding>
-                                                <Insets left="14.0"/>
+                                                <Insets left="14.0" />
                                             </padding>
                                         </Label>
                                     </children>
                                 </VBox>
                                 <Label text="%tournament.label.blackoutDates" wrapText="true" GridPane.rowIndex="6">
                                     <font>
-                                        <Font size="18.0"/>
+                                        <Font size="18.0" />
                                     </font>
                                 </Label>
-                                <DatePicker fx:id="startDatePicker" maxHeight="1.7976931348623157E308"
-                                            maxWidth="1.7976931348623157E308" promptText="%tournament.label.startDate"
-                                            GridPane.columnIndex="1" GridPane.rowIndex="3"/>
-                                <TableView fx:id="matchDayTimeTableView" editable="true"
-                                           maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
-                                           prefHeight="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2147483647"
-                                           GridPane.rowIndex="4">
+                                <DatePicker fx:id="startDatePicker" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="%tournament.label.startDate" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                                <TableView fx:id="matchDayTimeTableView" editable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="4">
                                     <columns>
-                                        <TableColumn fx:id="matchDayTimeDayCol" maxWidth="350.0" minWidth="100.0"
-                                                     prefWidth="200.0" sortable="false"
-                                                     text="%tournament.col.matchDayOfWeek"/>
-                                        <TableColumn fx:id="matchDayTimeStartTimeCol" maxWidth="300.0" minWidth="100.0"
-                                                     prefWidth="200.0" sortable="false"
-                                                     text="%tournament.col.matchStartTime"/>
-                                        <TableColumn fx:id="matchDayTimePriorityCol" maxWidth="100.0" minWidth="50.0"
-                                                     prefWidth="75.0" sortable="false"
-                                                     text="%tournament.col.matchPriority"/>
-                                        <TableColumn fx:id="matchDayTimeCountCol" maxWidth="100.0" minWidth="50.0"
-                                                     prefWidth="75.0" sortable="false"
-                                                     text="%tournament.col.matchCount"/>
-                                        <TableColumn fx:id="matchDayTimeRemoveCol" editable="false" maxWidth="100.0"
-                                                     minWidth="50.0" prefWidth="75.0" sortable="false"
-                                                     text="%tournament.col.matchDayTimeRemove"/>
+                                        <TableColumn fx:id="matchDayTimeDayCol" maxWidth="350.0" minWidth="100.0" prefWidth="200.0" sortable="false" text="%tournament.col.matchDayOfWeek" />
+                                        <TableColumn fx:id="matchDayTimeStartTimeCol" maxWidth="300.0" minWidth="100.0" prefWidth="200.0" sortable="false" text="%tournament.col.matchStartTime" />
+                                        <TableColumn fx:id="matchDayTimePriorityCol" maxWidth="100.0" minWidth="50.0" prefWidth="75.0" sortable="false" text="%tournament.col.matchPriority" />
+                                        <TableColumn fx:id="matchDayTimeCountCol" maxWidth="100.0" minWidth="50.0" prefWidth="75.0" sortable="false" text="%tournament.col.matchCount" />
+                                        <TableColumn fx:id="matchDayTimeRemoveCol" editable="false" maxWidth="100.0" minWidth="50.0" prefWidth="75.0" sortable="false" text="%tournament.col.matchDayTimeRemove" />
                                     </columns>
                                     <columnResizePolicy>
-                                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                     </columnResizePolicy>
                                 </TableView>
                                 <HBox GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="5">
                                     <children>
-                                        <ComboBox fx:id="matchDayTimeDayComboBox" maxWidth="-Infinity" minWidth="100.0"
-                                                  prefWidth="190.0"/>
-                                        <TextField fx:id="matchDayTimeTimeTextField" maxWidth="-Infinity"
-                                                   minWidth="100.0" prefWidth="190.0"/>
-                                        <TextField fx:id="matchDayTimePriorityTextField" maxWidth="-Infinity"
-                                                   minWidth="50.0" prefWidth="50.0"/>
-                                        <Button fx:id="matchDayTimeAddButton" mnemonicParsing="false"
-                                                text="%tournament.button.blackoutAdd">
+                                        <ComboBox fx:id="matchDayTimeDayComboBox" maxWidth="-Infinity" minWidth="100.0" prefWidth="190.0" />
+                                        <TextField fx:id="matchDayTimeTimeTextField" maxWidth="-Infinity" minWidth="100.0" prefWidth="190.0" />
+                                        <TextField fx:id="matchDayTimePriorityTextField" maxWidth="-Infinity" minWidth="50.0" prefWidth="50.0" />
+                                        <Button fx:id="matchDayTimeAddButton" mnemonicParsing="false" text="%tournament.button.blackoutAdd">
                                             <HBox.margin>
-                                                <Insets left="20.0"/>
+                                                <Insets left="20.0" />
                                             </HBox.margin>
                                         </Button>
                                     </children>
                                 </HBox>
-                                <TableView fx:id="blackoutDatesTable" editable="true" prefHeight="250.0"
-                                           GridPane.columnIndex="1" GridPane.columnSpan="2147483647"
-                                           GridPane.rowIndex="6">
+                                <TableView fx:id="blackoutDatesTable" editable="true" prefHeight="250.0" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="6">
                                     <columns>
-                                        <TableColumn fx:id="blackoutStartCol" minWidth="100.0" prefWidth="185.0"
-                                                     text="%tournament.col.blackoutStart"/>
-                                        <TableColumn fx:id="blackoutEndCol" minWidth="100.0" prefWidth="185.0"
-                                                     text="%tournament.col.blackoutEnd"/>
-                                        <TableColumn fx:id="blackoutRemoveCol" editable="false" maxWidth="55.0"
-                                                     minWidth="55.0" prefWidth="55.0" resizable="false" sortable="false"
-                                                     text="%tournament.col.blackoutRemove"/>
+                                        <TableColumn fx:id="blackoutStartCol" minWidth="100.0" prefWidth="185.0" text="%tournament.col.blackoutStart" />
+                                        <TableColumn fx:id="blackoutEndCol" minWidth="100.0" prefWidth="185.0" text="%tournament.col.blackoutEnd" />
+                                        <TableColumn fx:id="blackoutRemoveCol" editable="false" maxWidth="55.0" minWidth="55.0" prefWidth="55.0" resizable="false" sortable="false" text="%tournament.col.blackoutRemove" />
                                     </columns>
                                     <columnResizePolicy>
-                                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                     </columnResizePolicy>
                                 </TableView>
                                 <Label text="%tournament.label.type" wrapText="true" GridPane.rowIndex="1">
                                     <font>
-                                        <Font size="18.0"/>
+                                        <Font size="18.0" />
                                     </font>
                                 </Label>
-                                <ComboBox fx:id="tournamentTypeComboBox" maxHeight="1.7976931348623157E308"
-                                          maxWidth="1.7976931348623157E308" GridPane.columnIndex="1"
-                                          GridPane.columnSpan="2147483647" GridPane.rowIndex="1"/>
+                                <ComboBox fx:id="tournamentTypeComboBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="1" />
                                 <HBox GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="7">
                                     <children>
-                                        <DatePicker fx:id="blackoutStartDatePicker" prefWidth="190.0"/>
-                                        <DatePicker fx:id="blackoutEndDatePicker" prefWidth="190.0"/>
-                                        <Button fx:id="blackoutAddButton" mnemonicParsing="false"
-                                                text="%tournament.button.blackoutAdd">
+                                        <DatePicker fx:id="blackoutStartDatePicker" prefWidth="190.0" />
+                                        <DatePicker fx:id="blackoutEndDatePicker" prefWidth="190.0" />
+                                        <Button fx:id="blackoutAddButton" mnemonicParsing="false" text="%tournament.button.blackoutAdd">
                                             <HBox.margin>
-                                                <Insets left="20.0"/>
+                                                <Insets left="20.0" />
                                             </HBox.margin>
                                         </Button>
                                     </children>
                                 </HBox>
                                 <Label text="%tournament.label.leagueName" wrapText="true" GridPane.rowIndex="2">
                                     <font>
-                                        <Font size="18.0"/>
+                                        <Font size="18.0" />
                                     </font>
                                 </Label>
-                                <TextField fx:id="leagueNameTextField" maxHeight="1.7976931348623157E308"
-                                           maxWidth="1.7976931348623157E308" promptText="%tournament.label.leagueName"
-                                           GridPane.columnIndex="1" GridPane.columnSpan="2147483647"
-                                           GridPane.rowIndex="2">
+                                <TextField fx:id="leagueNameTextField" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" promptText="%tournament.label.leagueName" GridPane.columnIndex="1" GridPane.columnSpan="2147483647" GridPane.rowIndex="2">
                                     <font>
-                                        <Font size="18.0"/>
+                                        <Font size="18.0" />
                                     </font>
                                 </TextField>
                             </children>
                         </GridPane>
                     </children>
                 </VBox>
-                <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308"
-                            maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
+                <ScrollPane fitToHeight="true" fitToWidth="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS">
                     <content>
-                        <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="783.0"
-                              prefWidth="200.0">
+                        <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="783.0" prefWidth="200.0">
                             <children>
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%team.desc.title"
-                                      wrappingWidth="190.0">
+                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%tournament.desc.title" wrappingWidth="190.0">
                                     <font>
-                                        <Font size="22.0"/>
+                                        <Font size="22.0" />
                                     </font>
                                 </Text>
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="desc-title"
-                                      text="%team.desc.name.title" wrappingWidth="190.0">
+                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="desc-title" text="%tournament.desc.type.title" wrappingWidth="190.0">
                                     <font>
-                                        <Font size="18.0"/>
+                                        <Font size="18.0" />
                                     </font>
                                     <VBox.margin>
-                                        <Insets top="5.0"/>
+                                        <Insets top="5.0" />
                                     </VBox.margin>
                                 </Text>
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%team.desc.name"
-                                      textAlignment="JUSTIFY" wrappingWidth="180.0">
+                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%tournament.desc.type" textAlignment="JUSTIFY" wrappingWidth="180.0">
                                     <VBox.margin>
-                                        <Insets left="10.0"/>
+                                        <Insets left="10.0" />
                                     </VBox.margin>
                                     <font>
-                                        <Font size="14.0"/>
+                                        <Font size="14.0" />
                                     </font>
                                 </Text>
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="desc-title"
-                                      text="%team.desc.home.title" wrappingWidth="190.0">
+                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="desc-title" text="%tournament.desc.name.title" wrappingWidth="190.0">
                                     <font>
-                                        <Font size="18.0"/>
+                                        <Font size="18.0" />
                                     </font>
                                     <VBox.margin>
-                                        <Insets top="5.0"/>
+                                        <Insets top="5.0" />
                                     </VBox.margin>
                                 </Text>
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%team.desc.home"
-                                      textAlignment="JUSTIFY" wrappingWidth="180.0">
+                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%tournament.desc.name" textAlignment="JUSTIFY" wrappingWidth="180.0">
                                     <font>
-                                        <Font size="14.0"/>
+                                        <Font size="14.0" />
                                     </font>
                                     <VBox.margin>
-                                        <Insets left="10.0"/>
+                                        <Insets left="10.0" />
                                     </VBox.margin>
                                 </Text>
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="desc-title"
-                                      text="%team.desc.playerName.title" wrappingWidth="190.0">
+                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="desc-title" text="%tournament.desc.matchDays.title" wrappingWidth="190.0">
                                     <font>
-                                        <Font size="18.0"/>
+                                        <Font size="18.0" />
                                     </font>
                                     <VBox.margin>
-                                        <Insets top="5.0"/>
+                                        <Insets top="5.0" />
                                     </VBox.margin>
                                 </Text>
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%team.desc.playerName"
-                                      textAlignment="JUSTIFY" wrappingWidth="180.0">
+                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%tournament.desc.matchDays" textAlignment="JUSTIFY" wrappingWidth="180.0">
                                     <font>
-                                        <Font size="14.0"/>
+                                        <Font size="14.0" />
                                     </font>
                                     <VBox.margin>
-                                        <Insets left="10.0"/>
+                                        <Insets left="10.0" />
                                     </VBox.margin>
                                 </Text>
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="desc-title"
-                                      text="%team.desc.playerSkills.title" wrappingWidth="190.0">
+                                <Text strokeType="OUTSIDE" strokeWidth="0.0" styleClass="desc-title" text="%tournament.desc.blackout.title" wrappingWidth="190.0">
                                     <font>
-                                        <Font size="18.0"/>
+                                        <Font size="18.0" />
                                     </font>
                                     <VBox.margin>
-                                        <Insets top="5.0"/>
+                                        <Insets top="5.0" />
                                     </VBox.margin>
                                 </Text>
-                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%team.desc.playerSkills"
-                                      textAlignment="JUSTIFY" wrappingWidth="180.0">
+                                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="%tournament.desc.playerSkills" textAlignment="JUSTIFY" wrappingWidth="180.0">
                                     <font>
-                                        <Font size="14.0"/>
+                                        <Font size="14.0" />
                                     </font>
                                     <VBox.margin>
-                                        <Insets left="10.0"/>
+                                        <Insets left="10.0" />
                                     </VBox.margin>
                                 </Text>
                             </children>
                             <padding>
-                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0"/>
+                                <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                             </padding>
                         </VBox>
                     </content>
                 </ScrollPane>
             </children>
             <padding>
-                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0"/>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
             </padding>
         </HBox>
     </children>

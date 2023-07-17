@@ -25,6 +25,7 @@ import info.codywilliams.qsg.controllers.*;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.util.DependencyInjector;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -84,7 +85,7 @@ public class App extends Application {
     }
 
     public static void close() {
-        //Platform.exit();
+        Platform.exit();
     }
 
     @Override

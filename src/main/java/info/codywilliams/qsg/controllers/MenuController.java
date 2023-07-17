@@ -144,6 +144,11 @@ public class MenuController {
     }
 
     @FXML
+    void close(ActionEvent ignoredEvent) {
+        App.close();
+    }
+
+    @FXML
     void displayMediawikiSetupWindow(ActionEvent ignoredEvent) {
         try {
             MediawikiSetupController.displayMediawikiSetupWindow();
@@ -293,8 +298,6 @@ public class MenuController {
 
         @Override
         public String toString(Number number) {
-
-
             if (number == null)
                 return "";
             else

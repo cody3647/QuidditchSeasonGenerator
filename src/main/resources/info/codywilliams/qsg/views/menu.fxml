@@ -8,7 +8,7 @@
                 <MenuItem mnemonicParsing="false" onAction="#menuFileNew" text="%app.menu.new" />
                 <MenuItem mnemonicParsing="false" onAction="#fileOpen" text="%app.menu.open" />
                 <SeparatorMenuItem mnemonicParsing="false" />
-                <MenuItem mnemonicParsing="false" text="%app.menu.close" />
+                <MenuItem mnemonicParsing="false" onAction="#close" text="%app.menu.close" />
                 <MenuItem mnemonicParsing="false" onAction="#fileSaveAction" text="%app.menu.save" />
                 <MenuItem mnemonicParsing="false" onAction="#fileSaveAs" text="%app.menu.saveas" />
             </items>

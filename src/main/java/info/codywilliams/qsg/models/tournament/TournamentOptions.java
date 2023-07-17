@@ -68,6 +68,7 @@ public class TournamentOptions {
 
     public void loadSettings(SaveSettings settings) {
         leagueName.setValue(settings.getLeagueName());
+        matchDayTimeList.clear();
         matchDayTimeList.addAll(settings.getMatchDayTimeList());
         startDate.setValue(settings.getStartDate());
         blackoutDates.addAll(settings.getBlackoutDates());

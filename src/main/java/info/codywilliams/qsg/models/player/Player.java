@@ -245,6 +245,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
         return foulModifier;
     }
 
+    @JsonIgnore
     public double getModifiers() {
         return getOffenceModifier() + getDefenseModifier() + getTeamworkModifier() - getFoulModifier();
     }
