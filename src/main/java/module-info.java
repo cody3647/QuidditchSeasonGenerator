@@ -14,6 +14,7 @@ module QuidditchSeasonGenerator {
     requires org.jetbrains.annotations;
     requires java.naming;
     requires java.net.http;
+    requires jdk.crypto.ec;
 
     opens info.codywilliams.qsg to javafx.fxml;
     exports info.codywilliams.qsg;

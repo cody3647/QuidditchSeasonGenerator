@@ -11,8 +11,36 @@
             <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
         </encoder>
     </appender>
+    <appender name="MATCH_GENERATOR" class="FileAppender">
+        <file>QSG-Match-Generator.log</file>
+        <append>true</append>
+        <immediateFlush>true</immediateFlush>
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %X{title}- %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="MEDIAWIKI" class="FileAppender">
+        <file>QSG-Mediawiki.log</file>
+        <append>true</append>
+        <immediateFlush>true</immediateFlush>
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %X{title}- %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%-10relative [%thread] %-5level %logger{36} -%kvp- %msg%n</pattern>
+        </encoder>
+    </appender>
 
     <root level="WARN">
         <appender-ref ref="FILE"/>
     </root>
+
+    <logger name="info.codywilliams.qsg.service.Mediawiki" level="WARN">
+        <appender-ref ref="MEDIAWIKI"/>
+    </logger>
+    <logger name="info.codywilliams.qsg.generators.MatchGenerator" level="WARN">
+        <appender-ref ref="MATCH_GENERATOR"/>
+    </logger>
 </configuration>

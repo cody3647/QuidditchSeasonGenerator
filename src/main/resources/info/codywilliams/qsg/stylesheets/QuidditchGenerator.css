@@ -183,10 +183,6 @@ table.league-rankings tr {
     counter-increment: rank;
 }
 
-table.league-rankings td:first-child:before {
-    content: counter(rank) ": ";
-}
-
 /* Player Tooltips */
 /* Tooltip container */
 .player-tooltip {

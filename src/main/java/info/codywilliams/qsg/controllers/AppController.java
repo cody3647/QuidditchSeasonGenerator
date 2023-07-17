@@ -218,13 +218,13 @@ public class AppController {
             InputStreamReader isr = new InputStreamReader(
                     getClass().getResourceAsStream("/info/codywilliams/qsg/stylesheets/Html.css"));
             BufferedReader br = new BufferedReader(isr);
-            css += br.lines().collect(Collectors.joining());
+            css += br.lines().collect(Collectors.joining("\n"));
         }
 
         InputStreamReader isr = new InputStreamReader(
                 getClass().getResourceAsStream("/info/codywilliams/qsg/stylesheets/QuidditchGenerator.css"));
         BufferedReader br = new BufferedReader(isr);
-        css += br.lines().collect(Collectors.joining());
+        css += br.lines().collect(Collectors.joining("\n"));
 
         return css;
     }
