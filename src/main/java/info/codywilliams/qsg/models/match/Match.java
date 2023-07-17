@@ -24,12 +24,6 @@ import info.codywilliams.qsg.models.match.Play.InjuryType;
 import info.codywilliams.qsg.models.match.PlayChaser.QuaffleOutcome;
 import info.codywilliams.qsg.models.match.PlaySeeker.SnitchOutcome;
 import info.codywilliams.qsg.models.player.Player;
-import info.codywilliams.qsg.output.Element;
-import info.codywilliams.qsg.output.MatchInfobox;
-import info.codywilliams.qsg.output.Page;
-import info.codywilliams.qsg.output.elements.*;
-import info.codywilliams.qsg.util.Formatters;
-import info.codywilliams.qsg.util.ResourceBundleReplacer;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
@@ -66,7 +60,6 @@ public class Match implements Comparable<Match> {
     private int foulsAway;
     private LinkedList<Play> plays;
     private String title;
-    private ResourceBundleReplacer resources;
     private TeamType winner;
 
     public Match(int number, int round, LocalDateTime startDateTime) {
@@ -116,199 +109,6 @@ public class Match implements Comparable<Match> {
             awayInjuryTypes.put(type, 0);
         }
 
-    }
-
-    public ResourceBundleReplacer getResources() {
-        return resources;
-    }
-
-    public void setResources(ResourceBundleReplacer resources) {
-        this.resources = new ResourceBundleReplacer(resources);
-        this.resources.addToken("date", startDateTime.toLocalDate().format(Formatters.dateFormatter));
-        this.resources.addToken("homeTeam", homeTeam.getName());
-        if (homeTeam.getShortName().isEmpty())
-            this.resources.addToken("homeTeamShort", homeTeam.getName());
-        else
-            this.resources.addToken("homeTeamShort", homeTeam.getShortName());
-        this.resources.addToken("awayTeam", awayTeam.getName());
-        if (awayTeam.getShortName().isEmpty())
-            this.resources.addToken("awayTeamShort", awayTeam.getName());
-        else
-            this.resources.addToken("awayTeamShort", awayTeam.getShortName());
-    }
-
-    public Page buildMatchPage() {
-        Page matchPage = new Page(getTitle(), getTitle());
-        matchPage.addStyle("QuidditchGenerator.css");
-        matchPage.addMetadata("keywords", null, resources.getString("meta.match.keywords"), null);
-        matchPage.addBodyContent(new MatchInfobox(this));
-
-        matchPage.addBodyContent(new Header(2, "Match Rosters"));
-        matchPage.addBodyContent(buildRosters(homeTeam.getName(), getHomeTeamRoster()));
-        matchPage.addBodyContent(buildRosters(awayTeam.getName(), getAwayTeamRoster()));
-
-        matchPage.addBodyContent(new Header(2, "Injured Players"));
-        matchPage.addBodyContent(buildInjuredPlayersTable(homeTeam.getName(), homeInjuredBefore, homeInjuredDuring));
-        matchPage.addBodyContent(buildInjuredPlayersTable(awayTeam.getName(), awayInjuredBefore, awayInjuredDuring));
-
-        matchPage.addBodyContent(new Header(2, "Match"));
-        UnorderedList playList = new UnorderedList();
-        playList.addClass("quidditch-match");
-
-        int i = 0;
-        for (Play play : plays) {
-            i++;
-            UnorderedList.Item li = new UnorderedList.Item();
-            playList.addChildren(li);
-            List<Element> liChildren = new ArrayList<>();
-            liChildren.add(new Text(play.outputWithDetails(resources, getHomeTeam().getName(), getAwayTeam().getName())));
-
-            if (play instanceof PlayFoul playFoul) {
-                li.addClass(
-                        "quidditch-foul",
-                        "quaffle-" + playFoul.getQuaffleOutcome().name().toLowerCase(),
-                        play.attackingTeamType.name().toLowerCase()
-                );
-                if (playFoul.getQuaffleOutcome() == QuaffleOutcome.SCORED) {
-                    liChildren.add(buildScoreDiv(playFoul, false));
-                    i = 0;
-                }
-            } else if (play instanceof PlayChaser playChaser) {
-                li.addClass(
-                        "quaffle-" + playChaser.getQuaffleOutcome().name().toLowerCase(),
-                        play.attackingTeamType.name().toLowerCase()
-                );
-                if (playChaser.getQuaffleOutcome() == QuaffleOutcome.SCORED) {
-                    liChildren.add(buildScoreDiv(playChaser, false));
-                    i = 0;
-                }
-            } else if (play instanceof PlaySeeker playSeeker) {
-                li.addClass(
-                        "snitch-" + playSeeker.getSnitchOutcome().name().toLowerCase(),
-                        play.attackingTeamType.name().toLowerCase()
-                );
-                if (playSeeker.isSnitchCaught()) {
-                    liChildren.add(buildScoreDiv(playSeeker, true));
-                    i = 0;
-                }
-            }
-            if (play.getInjuryType() != InjuryType.NONE) {
-                Div injuryDiv = new Div(new Text(play.outputInjuryWithDetails(resources)));
-                injuryDiv.addClass("quidditch-injury");
-                liChildren.add(injuryDiv);
-            }
-            if (i == 5) {
-                Div time = new Div(new Text(resources.getString("match.time") + ": " + Formatters.formatDuration(play.getMatchLength())));
-                time.addClass("quidditch-time");
-                liChildren.add(time);
-                i = 0;
-            }
-            li.addChildren(liChildren);
-        }
-
-        matchPage.addBodyContent(playList);
-        return matchPage;
-    }
-
-    private Table buildRosters(String teamName, Map<String, List<? extends Player>> rosterMap) {
-        ArrayList<Table.TableCell> headerCells = new ArrayList<>();
-        ArrayList<Table.TableCell> playerCells = new ArrayList<>();
-        for (Map.Entry<String, List<? extends Player>> entry : rosterMap.entrySet()) {
-            headerCells.add(new Table.HeaderCell(entry.getKey()));
-            List<UnorderedList.Item> playerItems = entry.getValue().stream()
-                    .map(player -> {
-                        Text tooltip = new Text(player.playerSkillsOutput());
-                        tooltip.addClass("player-tooltip-text");
-
-                        Div playerDiv = new Div(new Text(player.getName()), tooltip);
-                        playerDiv.addClass("player-tooltip");
-
-                        return new UnorderedList.Item(playerDiv);
-                    }).toList();
-            playerCells.add(new Table.Cell(new UnorderedList(playerItems)));
-        }
-
-        Table.Row headerRow = new Table.Row(headerCells);
-        Table.Row playerRow = new Table.Row(playerCells);
-        headerRow.addClass("quidditch-roster-positions");
-        playerRow.addClass("quidditch-roster-players");
-        Table rosterTable = new Table(headerRow, playerRow);
-        rosterTable.addClass("quidditch-roster");
-        rosterTable.setCaption(teamName);
-
-        return rosterTable;
-    }
-
-    private Table buildInjuredPlayersTable(String teamName, Map<String, LocalDate> injuredBefore, Map<String, LocalDate> injuredDuring) {
-        Table injuredTable = new Table();
-        injuredTable.setCaption(teamName);
-        injuredTable.addClass("quidditch-roster");
-
-        Table.HeaderCell headerCell;
-        Table.Row row = new Table.Row();
-        headerCell = new Table.HeaderCell(new Text("Before Match"));
-        headerCell.addAttribute("colspan", "2");
-        row.addChildren(headerCell);
-        headerCell = new Table.HeaderCell(new Text("During Match"));
-        headerCell.addAttribute("colspan", "2");
-        row.addChildren(headerCell);
-        injuredTable.addChildren(row);
-
-        row = new Table.Row(
-                new Table.HeaderCell(new Text("Player")),
-                new Table.HeaderCell(new Text("Injured Through")),
-                new Table.HeaderCell(new Text("Player")),
-                new Table.HeaderCell(new Text("Injured Through"))
-        );
-        row.addClass("quiddtion-roster-header-row");
-        injuredTable.addChildren(row);
-
-        Iterator<Map.Entry<String, LocalDate>> beforeIt = injuredBefore.entrySet().iterator();
-        Iterator<Map.Entry<String, LocalDate>> duringIt = injuredDuring.entrySet().iterator();
-        while (beforeIt.hasNext() || duringIt.hasNext()) {
-            row = new Table.Row();
-            injuredRowCells(row, beforeIt);
-            injuredRowCells(row, duringIt);
-            injuredTable.addChildren(row);
-        }
-
-        return injuredTable;
-    }
-
-    private void injuredRowCells(Table.Row row, Iterator<Map.Entry<String, LocalDate>> it) {
-        if (it.hasNext()) {
-            Map.Entry<String, LocalDate> entry = it.next();
-            row.addChildren(
-                    new Table.Cell(new Text(entry.getKey())),
-                    new Table.Cell(new Text(Formatters.dateFormatter.format(entry.getValue())))
-            );
-        } else {
-            row.addChildren(new Table.Cell(), new Table.Cell());
-        }
-    }
-
-    private Div buildScoreDiv(Play play, boolean finalScore) {
-        Div div = new Div();
-
-        String text = finalScore ? resources.getString("match.final") : resources.getString("match.score");
-        div.addChildren(new Paragraph(text));
-        UnorderedList ul = new UnorderedList();
-        div.addChildren(ul);
-        ul.addChildren(
-                new UnorderedList.Item(getHomeTeam().getName() + ": " + play.getScoreHome()),
-                new UnorderedList.Item(getAwayTeam().getName() + ": " + play.getScoreAway()),
-                new UnorderedList.Item(resources.getString("match.time") + ": " + Formatters.formatDuration(play.getMatchLength()))
-        );
-
-        return div;
-    }
-
-    public String getTitle() {
-        if (title != null)
-            return title;
-        title = resources.getString("match.title");
-
-        return title;
     }
 
     public int getNumber() {
@@ -491,6 +291,30 @@ public class Match implements Comparable<Match> {
 
     public void setAwayTeamRoster(Map<String, List<? extends Player>> awayTeamRoster) {
         this.awayTeamRoster = awayTeamRoster;
+    }
+
+    public Map<String, LocalDate> getHomeInjuredBefore() {
+        return homeInjuredBefore;
+    }
+
+    public Map<String, LocalDate> getHomeInjuredDuring() {
+        return homeInjuredDuring;
+    }
+
+    public Map<String, LocalDate> getAwayInjuredBefore() {
+        return awayInjuredBefore;
+    }
+
+    public Map<String, LocalDate> getAwayInjuredDuring() {
+        return awayInjuredDuring;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String outcomesToString() {

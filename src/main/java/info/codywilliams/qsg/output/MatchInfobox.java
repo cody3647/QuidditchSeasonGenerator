@@ -35,9 +35,9 @@ public class MatchInfobox extends Element implements ElementOutputs {
     String homeTeamName;
     String awayTeamName;
 
-    public MatchInfobox(Match match) {
+    public MatchInfobox(Match match, ResourceBundleReplacer resources) {
         this.match = match;
-        resources = match.getResources();
+        this.resources = resources;
         endTime = match.getStartDateTime().plus(match.getMatchLength());
         homeTeamName = match.getHomeTeam().getName();
         awayTeamName = match.getAwayTeam().getName();

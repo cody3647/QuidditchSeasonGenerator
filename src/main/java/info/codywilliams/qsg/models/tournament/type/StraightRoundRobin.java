@@ -198,7 +198,7 @@ public class StraightRoundRobin extends Tournament {
     }
 
     @Override
-    protected void assignPoints() {
+    public void assignPoints() {
         if (matches.isEmpty())
             return;
 

@@ -18,18 +18,10 @@
 package info.codywilliams.qsg.models.tournament;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import info.codywilliams.qsg.generators.MatchGenerator;
 import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.models.match.Match;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
-import info.codywilliams.qsg.output.Element;
-import info.codywilliams.qsg.output.Page;
-import info.codywilliams.qsg.output.QsgNote;
-import info.codywilliams.qsg.output.TableOfContents;
-import info.codywilliams.qsg.output.elements.*;
-import info.codywilliams.qsg.util.DependencyInjector;
 import info.codywilliams.qsg.util.Formatters;
-import info.codywilliams.qsg.util.ResourceBundleReplacer;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.*;
@@ -57,16 +49,8 @@ public abstract class Tournament {
     protected SimpleBooleanProperty teamsAssigned;
     @JsonIgnore
     protected ArrayList<Team> teamList;
-    @JsonIgnore
-    private ResourceBundleReplacer resources;
-    @JsonIgnore
-    private String tournamentTitle;
-    @JsonIgnore
-    private String yearRange;
-    @JsonIgnore
-    private String generatorVersionUsed;
-    protected Logger logger = LoggerFactory.getLogger(Tournament.class);
 
+    protected Logger logger = LoggerFactory.getLogger(Tournament.class);
 
     public Tournament(TournamentOptions tournamentOptions, TournamentType type) {
 
@@ -152,208 +136,10 @@ public abstract class Tournament {
         return dates;
     }
 
-    public void generateMatches(List<Team> teams, long seed) {
-        System.out.println(seed);
-        if (!isTeamsAssigned())
-            assignTeamsToMatches(teams, seed);
-
-        for (Team team : teams)
-            tournamentPoints.put(team.getName(), 0);
-
-        MatchGenerator matchGenerator = new MatchGenerator(seed);
-        generatorVersionUsed = matchGenerator.version;
-        long now = System.currentTimeMillis();
-        for (Match match : getMatches()) {
-            matchGenerator.run(match);
-        }
-        now = System.currentTimeMillis() - now;
-        assignPoints();
-        logger.info("{} seconds to generate matches", now / 1000.0);
-    }
-
     public abstract TreeSet<Match> assignTeamsToMatches(List<Team> teams, long seed);
 
-    public List<Page> buildPages(List<Team> teams, long seed) {
-        generateMatches(teams, seed);
 
-        long now = System.currentTimeMillis();
-        yearRange = getTournamentOptions().getStartDate().getYear() + "-" + getEndDate().getYear();
-        resources = new ResourceBundleReplacer(DependencyInjector.getBundle());
-        resources.addToken("leagueName", tournamentOptions.getLeagueName());
-        resources.addToken("yearRange", yearRange);
-
-        tournamentTitle = resources.getString("tournamentTitle");
-
-        List<Page> pages = new ArrayList<>();
-
-        for (Match match : matches) {
-            match.setResources(resources);
-            pages.add(match.buildMatchPage());
-        }
-
-        pages.add(0, buildTournamentPage(tournamentTitle, seed));
-
-        now = System.currentTimeMillis() - now;
-        logger.info("{} seconds to generate pages", now / 1000.0);
-        return pages;
-    }
-
-    public Page buildTournamentPage(String title, long seed) {
-        Page seasonPage = new Page(title, "index");
-        seasonPage.addStyle("QuidditchGenerator.css");
-        seasonPage.addMetadata("keywords", null, resources.getString("meta.tournament.keywords"), null);
-
-        Image.Gallery teamGallery = new Image.Gallery("packed");
-        teamList.stream()
-                .map(Team::getName)
-                .map(teamName -> new Image(teamName, teamName + ".png"))
-                .forEach(teamGallery::addImages);
-
-        seasonPage.addBodyContent(teamGallery);
-        seasonPage.addBodyContent(new TableOfContents());
-
-
-        LinkedList<Element> descriptionParagraphs = new LinkedList<>();
-        for (String text : resources.getString("description." + getType().key).split("\n"))
-            descriptionParagraphs.add(new Paragraph(text));
-        seasonPage.addBodyContent(descriptionParagraphs);
-
-        seasonPage.addBodyContent(new QsgNote());
-
-
-        Header scheduleHeader = new Header(2, resources.getString("header.schedule"));
-        seasonPage.addBodyContent(scheduleHeader);
-
-        DefinitionList openingDayDef = new DefinitionList(
-                new DefinitionList.Term(resources.getString("openingDay")),
-                new DefinitionList.Def(getTournamentOptions().getStartDate().format(Formatters.dateFormatter))
-        );
-        openingDayDef.addClass("opening-day");
-
-        DefinitionList.Def winner = new DefinitionList.Def(resources.getString("tournament.key.winner"));
-        winner.addClass("match-winner");
-        DefinitionList key = new DefinitionList(
-                new DefinitionList.Term(resources.getString("tournament.key.header")),
-                winner
-        );
-        key.addClass("tournament-key");
-
-        Div leagueScheduleTopper = new Div(openingDayDef, key);
-        leagueScheduleTopper.addClass("league-schedule-topper");
-        seasonPage.addBodyContent(leagueScheduleTopper);
-
-        Table matchTable = new Table();
-        matchTable.addClass("league-schedule", "wikitable");
-
-        int round = 0;
-        for (Match match : getMatches()) {
-            if (round != match.getRound()) {
-                round = match.getRound();
-                matchTable.addChildren(matchTableRoundHeader(round));
-            }
-
-            matchTable.addChildren(matchTableRow(match));
-        }
-
-        seasonPage.addBodyContent(matchTable);
-
-        Header rankingsHeader = new Header(2, resources.getString("header.rankings"));
-        Paragraph rankingsDesc = new Paragraph(resources.getString("rankings"));
-
-        ArrayList<Map.Entry<String, Integer>> rankings = new ArrayList<>(tournamentPoints.entrySet());
-        rankings.sort(Map.Entry.comparingByValue(Comparator.reverseOrder()));
-
-        Table rankingTable = new Table();
-        rankingTable.addClass("league-rankings", "wikitable");
-
-        rankingTable.addChildren(
-                new Table.Row(
-                        new Table.HeaderCell(resources.getString("header.rank.team")),
-                        new Table.HeaderCell(resources.getString("header.rank.points"))
-                )
-        );
-
-        int i = 1;
-        for (Map.Entry<String, Integer> entry : rankings) {
-            rankingTable.addChildren(
-                    new Table.Row(
-                            new Table.Cell(i + ": " + entry.getKey()),
-                            new Table.Cell(String.valueOf(entry.getValue()))
-                    )
-            );
-            i++;
-        }
-
-        seasonPage.addBodyContent(rankingsHeader, rankingsDesc, rankingTable);
-
-        DefinitionList version = new DefinitionList(
-                new DefinitionList.Term(resources.getString("generator.version")),
-                new DefinitionList.Def(generatorVersionUsed)
-        );
-        version.addClass("generator-version");
-
-
-        DefinitionList seedDl = new DefinitionList(
-                new DefinitionList.Term(resources.getString("generator.seed")),
-                new DefinitionList.Def(HexFormat.of().withUpperCase().toHexDigits(seed))
-        );
-        seedDl.addClass("generator-seed");
-
-        Div footer = new Div(version, seedDl);
-        footer.addClass("league-footer");
-        seasonPage.addBodyContent(footer);
-
-        return seasonPage;
-    }
-
-    public Table.Row[] matchTableRoundHeader(int roundNum) {
-        Table.HeaderCell roundHeaderCell = new Table.HeaderCell(resources.getString("header.round") + roundNum);
-        roundHeaderCell.addAttribute("colspan", "7");
-
-        Table.HeaderCell[] columnHeaderCells = new Table.HeaderCell[]{
-                new Table.HeaderCell(resources.getString("header.date")),
-                new Table.HeaderCell(resources.getString("header.home")),
-                new Table.HeaderCell(resources.getString("header.away")),
-                new Table.HeaderCell(resources.getString("header.location")),
-                new Table.HeaderCell(resources.getString("header.length")),
-                new Table.HeaderCell(resources.getString("header.score")),
-                new Table.HeaderCell(resources.getString("header.points"))
-        };
-
-        return new Table.Row[]{new Table.Row(roundHeaderCell), new Table.Row(columnHeaderCells)};
-    }
-
-    public Table.Row matchTableRow(Match match) {
-        Table.Cell date = new Table.Cell(Link.TextLink.createMatchLink(match.getStartDateTime().format(Formatters.dateFormatter) + " at " + match.getStartDateTime().format(Formatters.timeFormatter), match.getTitle()));
-        Table.Cell home = new Table.Cell(Link.TextLink.createTeamLink(match.getHomeTeam().getName()));
-        Table.Cell away = new Table.Cell(Link.TextLink.createTeamLink(match.getAwayTeam().getName()));
-        Table.Cell location = new Table.Cell(match.getLocation());
-        Table.Cell length = new Table.Cell(Formatters.formatDuration(match.getMatchLength()));
-        Table.Cell score = new Table.Cell(match.getScoreHome() + " - " + match.getScoreAway());
-        Table.Cell points = new Table.Cell(String.valueOf(getPoints(match)));
-
-        date.addClass("match-date");
-        home.addClass("match-home");
-        away.addClass("match-away");
-        location.addClass("match-location");
-        length.addClass("match-length");
-        score.addClass("match-score");
-        points.addClass("match-points");
-        if (match.getWinner() != null)
-            switch (match.getWinner()) {
-                case HOME -> {
-                    home.addClass("match-winner");
-                    away.addClass("match-loser");
-                }
-                case AWAY -> {
-                    home.addClass("match-loser");
-                    away.addClass("match-winner");
-                }
-            }
-        return new Table.Row(date, home, away, location, length, score, points);
-    }
-
-    protected abstract void assignPoints();
+    public abstract void assignPoints();
 
     public abstract int getPoints(Match match);
 
@@ -461,7 +247,11 @@ public abstract class Tournament {
         return tournamentPoints;
     }
 
-    public String getTournamentTitle() {
-        return tournamentTitle;
+    public ArrayList<Team> getTeamList() {
+        return teamList;
+    }
+
+    public void setTeamList(ArrayList<Team> teamList) {
+        this.teamList = teamList;
     }
 }

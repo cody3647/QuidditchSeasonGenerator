@@ -25,6 +25,7 @@ import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.output.Page;
 import info.codywilliams.qsg.service.Mediawiki;
+import info.codywilliams.qsg.service.PageService;
 import info.codywilliams.qsg.util.DependencyInjector;
 import info.codywilliams.qsg.util.Formatters;
 import javafx.beans.binding.Bindings;
@@ -144,9 +145,12 @@ public class AppController {
     @FXML
     void generateHTMLOutput(ActionEvent ignoredEvent) {
         // Get the list of pages
-        List<Page> pages = context.getCurrentTournament().buildPages(context.getTeams(), context.getSeed());
+        PageService pageService = PageService.getInstance();
+        List<Page> pages = pageService.buildPages(
+                context.getCurrentTournament(), context.getTeams(), context.getSeed()
+        );
         // Set up an output directory with a subdirectory named after the league and year
-        String tournamentTitle = context.getCurrentTournament().getTournamentTitle();
+        String tournamentTitle = PageService.getInstance().getTournamentTitle();
         Path outputPath = Paths.get("output", Formatters.sanitizeFileNames(tournamentTitle));
 
         try {
@@ -162,8 +166,11 @@ public class AppController {
 
     @FXML
     void generateWikitextOutput(ActionEvent ignoreEvent) {
-        List<Page> pages = context.getCurrentTournament().buildPages(context.getTeams(), context.getSeed());
-        String tournamentTitle = context.getCurrentTournament().getTournamentTitle();
+        PageService pageService = PageService.getInstance();
+        List<Page> pages = pageService.buildPages(
+                context.getCurrentTournament(), context.getTeams(), context.getSeed()
+        );
+        String tournamentTitle = pageService.getTournamentTitle();
         Mediawiki mediawiki = context.getMediawiki();
         if(!mediawiki.isLoggedIn())
             return;
