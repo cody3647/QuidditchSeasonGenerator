@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class PageService {
@@ -143,7 +145,9 @@ public class PageService {
 
         DefinitionList openingDayDef = new DefinitionList(
                 new DefinitionList.Term(resources.getString("openingDay")),
-                new DefinitionList.Def(tournamentOptions.getStartDate().format(Formatters.dateFormatter))
+                new DefinitionList.Def(tournamentOptions.getStartDate().format(
+                        DateTimeFormatter.ofPattern("EEEE',' d LLLL yyyy").withZone(ZoneId.systemDefault())
+                ))
         );
         openingDayDef.addClass("opening-day");
 
@@ -241,7 +245,7 @@ public class PageService {
     }
 
     private Table.Row matchTableRow(Match match) {
-        Table.Cell date = new Table.Cell(Link.TextLink.createMatchLink(match.getStartDateTime().format(Formatters.dateFormatter) + " at " + match.getStartDateTime().format(Formatters.timeFormatter), match.getTitle()));
+        Table.Cell date = new Table.Cell(Link.TextLink.createMatchLink(match.getStartDateTime().format(Formatters.dateTimeFormatter), match.getTitle()));
         Table.Cell home = new Table.Cell(Link.TextLink.createTeamLink(match.getHomeTeam().getName()));
         Table.Cell away = new Table.Cell(Link.TextLink.createTeamLink(match.getAwayTeam().getName()));
         Table.Cell location = new Table.Cell(match.getLocation());

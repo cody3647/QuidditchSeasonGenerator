@@ -26,7 +26,10 @@ import java.util.Locale;
 
 public class Formatters {
     public final static DateTimeFormatter dateTimeFormatter =
-            DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withLocale(Locale.getDefault()).withZone(ZoneId.systemDefault());
+            DateTimeFormatter.ofPattern("cccc',' d LLLL yyyy 'at' h':'mm a").withZone(ZoneId.systemDefault());
+
+    public final static DateTimeFormatter shortDateTimeFormatter =
+            DateTimeFormatter.ofPattern("ccc',' d LLLL yyyy 'at' h':'mm a").withZone(ZoneId.systemDefault());
 
     public final static DateTimeFormatter dateFormatter =
             DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.getDefault()).withZone(ZoneId.systemDefault());
@@ -42,6 +45,6 @@ public class Formatters {
         long hours = duration.toHours();
         int minutes = duration.toMinutesPart();
         int seconds = duration.toSecondsPart();
-        return String.format("%d:%d:%d", hours, minutes, seconds);
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 }

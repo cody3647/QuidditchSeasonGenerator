@@ -56,26 +56,39 @@ public class MatchInfobox extends Element implements ElementOutputs {
     @Override
     public String toHtml(int tabs) {
         // Build the infobox header
-        Link.ImageLink homeImageImageLink = Link.ImageLink.createTeamLink(homeTeamName);
-        Link.ImageLink awayImageImageLink = Link.ImageLink.createTeamLink(awayTeamName);
+        Div homeImageImageLink = new Div(Link.ImageLink.createTeamLink(homeTeamName));
+        Div awayImageImageLink = new Div(Link.ImageLink.createTeamLink(awayTeamName));
+        Div images = new Div(homeImageImageLink, awayImageImageLink);
+        images.addClass("team-vs-container");
 
-        Link.TextLink homeLink = Link.TextLink.createTeamLink(homeTeamName);
-        Link.TextLink awayLink = Link.TextLink.createTeamLink(awayTeamName);
+        Div homeLink = new Div(Link.TextLink.createTeamLink(homeTeamName));
+        homeLink.addClass("team-vs-link");
+        Div awayLink = new Div(Link.TextLink.createTeamLink(awayTeamName));
+        awayLink.addClass("team-vs-link");
+        Div vs = new Div(new Text(" " + resources.getString("match.versus.abbr")));
+        vs.addClass("team-vs");
+        Div teamVsTeam = new Div(homeLink, vs , awayLink);
+        teamVsTeam.addClass("team-vs-container");
 
-        Table.Cell imageData = new Table.Cell(homeImageImageLink, awayImageImageLink);
+        Table.Cell imageData = new Table.Cell(images);
         imageData.addAttribute("colspan", "2");
-        Table.Cell vsData = new Table.Cell(homeLink, new Text(resources.getString("match.versus.abbr")), awayLink);
+        Table.HeaderCell vsData = new Table.HeaderCell(teamVsTeam);
         vsData.addAttribute("colspan", "2");
 
         // Create the table with the header
         Table table = new Table(new Table.Row(imageData), new Table.Row(vsData));
 
+        Table.Cell footer = new Table.Cell(Link.TextLink.createTournamentLink(resources.getString("match.ib.footerText"), resources.getString("tournamentTitle")));
+        footer.addAttribute("colspan", "2");
+        Table.Row footerRow = new Table.Row(footer);
+        footerRow.addClass("ib-footer");
+
         // Add all the rows
         table.addChildren(
                 addInfoboxHeader(resources.getString("match.ib.title")),
                 addInfoboxRow(resources.getString("match.ib.location"), match.getLocation()),
-                addInfoboxRow(resources.getString("match.ib.start"), match.getStartDateTime().format(Formatters.dateTimeFormatter)),
-                addInfoboxRow(resources.getString("match.ib.end"), endTime.format(Formatters.dateTimeFormatter)),
+                addInfoboxRow(resources.getString("match.ib.start"), match.getStartDateTime().format(Formatters.shortDateTimeFormatter)),
+                addInfoboxRow(resources.getString("match.ib.end"), endTime.format(Formatters.shortDateTimeFormatter)),
                 addInfoboxRow(resources.getString("match.ib.length"), Formatters.formatDuration(match.getMatchLength())),
                 addInfoboxRow(resources.getString("match.ib.snitchRelease"), Formatters.formatDuration(match.getSnitchReleaseTime())),
                 addInfoboxHeader(resources.getString("match.ib.fouls")),
@@ -83,12 +96,11 @@ public class MatchInfobox extends Element implements ElementOutputs {
                 addInfoboxRow(awayTeamName, String.valueOf(match.getFoulsAway())),
                 addInfoboxHeader(resources.getString("match.ib.finalScore")),
                 addInfoboxRow(homeTeamName, String.valueOf(match.getScoreHome())),
-                addInfoboxRow(awayTeamName, String.valueOf(match.getScoreAway()))
+                addInfoboxRow(awayTeamName, String.valueOf(match.getScoreAway())),
+                footerRow
         );
 
-        // Create footer and add table and footer to infobox div
-        Div footer = new Div(Link.TextLink.createTournamentLink(resources.getString("match.ib.footerText"), resources.getString("tournamentTitle")));
-        Div infobox = new Div(table, footer);
+        Div infobox = new Div(table);
         infobox.addClass("ib ib-quidditch-match");
 
         return infobox.toHtml(tabs);
@@ -118,8 +130,8 @@ public class MatchInfobox extends Element implements ElementOutputs {
                 "\n|homeTeam=" + match.getHomeTeam().getName() +
                 "\n|awayTeam=" + match.getAwayTeam().getName() +
                 "\n|location=" + match.getLocation() +
-                "\n|start=" + match.getStartDateTime().format(Formatters.dateTimeFormatter) +
-                "\n|end=" + endTime.format(Formatters.dateTimeFormatter) +
+                "\n|start=" + match.getStartDateTime().format(Formatters.shortDateTimeFormatter) +
+                "\n|end=" + endTime.format(Formatters.shortDateTimeFormatter) +
                 "\n|length=" + Formatters.formatDuration(match.getMatchLength()) +
                 "\n|snitchReleaseTime=" + Formatters.formatDuration(match.getSnitchReleaseTime()) +
                 "\n|homeFouls=" + match.getFoulsHome() +
@@ -131,7 +143,7 @@ public class MatchInfobox extends Element implements ElementOutputs {
                 "\n}}";
     }
 
-    public String wikitextTemplate() {
+    public static String wikitextTemplate() {
         return """
                 <includeonly><div class="ib ib-quidditch-match">
                 {| cellspacing="0" cellpadding="4" style="border-width: 0px;"

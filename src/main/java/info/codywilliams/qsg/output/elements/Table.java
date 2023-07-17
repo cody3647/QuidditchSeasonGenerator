@@ -51,7 +51,8 @@ public class Table extends ElementChildren<Table.Row> {
     protected StringBuilder openHtmlTag(StringBuilder stringBuilder, int tabs) {
         super.openHtmlTag(stringBuilder, tabs);
         appendNewLineAndTabs(stringBuilder, tabs);
-        stringBuilder.append("<caption>").append(caption).append("</caption>");
+        if (caption != null)
+            stringBuilder.append("<caption>").append(caption).append("</caption>");
         return stringBuilder;
     }
 

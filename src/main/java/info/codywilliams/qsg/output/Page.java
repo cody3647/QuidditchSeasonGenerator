@@ -80,13 +80,15 @@ public class Page implements ElementOutputs {
         if (!styles.isEmpty())
             for (String style : styles)
                 stringBuilder.append("\n\t\t<link rel='stylesheet' href=\"").append(style).append("\">");
-        stringBuilder.append("\n</head>\n<body>");
+        stringBuilder.append("\n</head>\n<body>\n\t<div id=\"content\">");
+
+        stringBuilder.append("\n\t\t<h1 class=\"firstHeading\">").append(pageTitle).append("</h1>");
 
         if (!body.isEmpty()) {
             for (Element element : body)
-                stringBuilder.append(element.toHtml(1));
+                stringBuilder.append(element.toHtml(2));
         }
-
+        stringBuilder.append("\n\t</div>");
         stringBuilder.append("\n</body>\n</html>");
 
         return stringBuilder.toString();
