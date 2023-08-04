@@ -23,6 +23,8 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import info.codywilliams.qsg.controllers.*;
 import info.codywilliams.qsg.models.Context;
+import info.codywilliams.qsg.service.OutputService;
+import info.codywilliams.qsg.service.PageService;
 import info.codywilliams.qsg.util.DependencyInjector;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -110,9 +112,11 @@ public class App extends Application {
         ResourceBundle resources = ResourceBundle.getBundle("info.codywilliams.qsg.language.Text", locale);
 
         Context context = new Context();
+        PageService pageService = new PageService(resources);
+        OutputService outputService = new OutputService(resources);
         DependencyInjector.setBundle(resources);
 
-        DependencyInjector.addInjectionMethod(AppController.class, type -> new AppController(context));
+        DependencyInjector.addInjectionMethod(AppController.class, type -> new AppController(context, pageService, outputService));
         DependencyInjector.addInjectionMethod(MenuController.class, type -> new MenuController(context));
         DependencyInjector.addInjectionMethod(TeamEditorController.class, type -> new TeamEditorController(context));
         DependencyInjector.addInjectionMethod(TournamentEditorController.class, type -> new TournamentEditorController(context));

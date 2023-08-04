@@ -26,7 +26,6 @@ import info.codywilliams.qsg.models.tournament.Tournament;
 import info.codywilliams.qsg.models.tournament.TournamentOptions;
 import info.codywilliams.qsg.output.*;
 import info.codywilliams.qsg.output.elements.*;
-import info.codywilliams.qsg.util.DependencyInjector;
 import info.codywilliams.qsg.util.Formatters;
 import info.codywilliams.qsg.util.ResourceBundleReplacer;
 import org.slf4j.Logger;
@@ -40,7 +39,7 @@ import java.util.*;
 
 public class PageService {
     @JsonIgnore
-    private ResourceBundleReplacer resources;
+    final private ResourceBundleReplacer resources;
     @JsonIgnore
     private String tournamentTitle;
     @JsonIgnore
@@ -56,37 +55,8 @@ public class PageService {
     private Tournament tournament;
     private TournamentOptions tournamentOptions;
 
-    private static PageService INSTANCE;
-
-    private PageService() {
-    }
-
-    public synchronized static PageService getInstance() {
-        if (INSTANCE == null)
-            INSTANCE = new PageService();
-
-        return INSTANCE;
-    }
-
-    private void generateMatches() {
-        System.out.println(seed);
-        if (!tournament.isTeamsAssigned())
-            tournament.assignTeamsToMatches(teamList, seed);
-
-        for (Team team : teamList)
-            tournament.getTournamentPoints().put(team.getName(), 0);
-
-        MatchGenerator matchGenerator = new MatchGenerator(seed);
-        generatorVersionUsed = matchGenerator.version;
-        long now = System.currentTimeMillis();
-
-        tournament.getTeamList().forEach(Team::clear);
-        for (Match match : tournament.getMatches()) {
-            matchGenerator.run(match);
-        }
-        now = System.currentTimeMillis() - now;
-        tournament.assignPoints();
-        logger.info("{} seconds to generate matches", now / 1000.0);
+    public PageService(ResourceBundle resources) {
+        this.resources = new ResourceBundleReplacer(resources);
     }
 
     public List<Page> buildPages(Tournament tournament, List<Team> teamList, long seed) {
@@ -94,12 +64,13 @@ public class PageService {
         this.tournamentOptions = tournament.getTournamentOptions();
         this.teamList = teamList;
         this.seed = seed;
-        generateMatches();
+        MatchGenerator matchGenerator = MatchGenerator.create(this.seed, 1);
+        matchGenerator.generateMatches(tournament, teamList);
+        generatorVersionUsed = String.valueOf(matchGenerator.getVersion());
 
         long now = System.currentTimeMillis();
         yearRange = tournamentOptions.getStartDate().getYear()
                 + "-" + tournament.getEndDate().getYear();
-        resources = new ResourceBundleReplacer(DependencyInjector.getBundle());
         resources.addToken("leagueName", tournamentOptions.getLeagueName());
         resources.addToken("yearRange", yearRange);
 
@@ -275,8 +246,7 @@ public class PageService {
         return new Table.Row(date, home, away, location, length, score, points);
     }
 
-    public void setResourceMatchTokens(Team homeTeam, Team awayTeam, LocalDateTime startDateTime) {
-        this.resources = new ResourceBundleReplacer(resources);
+    private void setResourceMatchTokens(Team homeTeam, Team awayTeam, LocalDateTime startDateTime) {
         this.resources.addToken("date", startDateTime.toLocalDate().format(Formatters.dateFormatter));
         this.resources.addToken("homeTeam", homeTeam.getName());
         if (homeTeam.getShortName().isEmpty())

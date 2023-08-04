@@ -22,13 +22,12 @@ import info.codywilliams.qsg.App;
 import info.codywilliams.qsg.layout.TournamentCalendar;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.Team;
-import info.codywilliams.qsg.output.MatchInfobox;
 import info.codywilliams.qsg.output.Page;
 import info.codywilliams.qsg.service.Mediawiki;
+import info.codywilliams.qsg.service.OutputService;
 import info.codywilliams.qsg.service.PageService;
 import info.codywilliams.qsg.service.TeamFactory;
 import info.codywilliams.qsg.util.DependencyInjector;
-import info.codywilliams.qsg.util.Formatters;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -40,21 +39,16 @@ import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
 
 public class AppController {
 
     private final Context context;
+    private final PageService pageService;
+    private final OutputService outputService;
     @FXML
     VBox main;
     @FXML
@@ -89,8 +83,10 @@ public class AppController {
     private int teamNumber = 0;
     Logger logger = LoggerFactory.getLogger(AppController.class);
 
-    public AppController(Context context) {
+    public AppController(Context context, PageService pageService, OutputService outputService) {
         this.context = context;
+        this.pageService = pageService;
+        this.outputService = outputService;
     }
 
     public void initialize() {
@@ -148,39 +144,20 @@ public class AppController {
 
     @FXML
     void generateHTMLOutput(ActionEvent ignoredEvent) {
-        // Get the list of pages
-        PageService pageService = PageService.getInstance();
         List<Page> pages = pageService.buildPages(
                 context.getCurrentTournament(), context.getTeams(), context.getSeed()
         );
-        // Set up an output directory with a subdirectory named after the league and year
-        String tournamentTitle = PageService.getInstance().getTournamentTitle();
-        Path outputPath = Paths.get("output", Formatters.sanitizeFileNames(tournamentTitle));
-
-        try {
-            Files.createDirectories(outputPath);
-            for (Page page : pages) {
-                Path pageFile = outputPath.resolve(Formatters.sanitizeFileNames(page.getFileName()) + ".html");
-                Files.writeString(pageFile, page.toHtml(0), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-            }
-
-            Path pageFile = outputPath.resolve("QuidditchGenerator.css");
-            Files.writeString(pageFile, getStylesheet(true), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException e) {
-            logger.error("Problem with HTML files", e);
-        }
+        String tournamentTitle = pageService.getTournamentTitle();
+        outputService.writePagesToHtml(tournamentTitle, pages);
     }
 
     @FXML
     void generateWikitextOutput(ActionEvent ignoreEvent) {
-        PageService pageService = PageService.getInstance();
         List<Page> pages = pageService.buildPages(
                 context.getCurrentTournament(), context.getTeams(), context.getSeed()
         );
         String tournamentTitle = pageService.getTournamentTitle();
         Mediawiki mediawiki = context.getMediawiki();
-        if(!mediawiki.isLoggedIn())
-            return;
 
         try {
             if(mediawiki.pageExists(tournamentTitle)) {
@@ -193,40 +170,13 @@ public class AppController {
                     return;
             }
 
-            for (Page page : pages) {
-                logger.info("Writing: {}", page.getPageTitle());
-                mediawiki.createPage(page.getPageTitle(), page.toWikitext());
-                Thread.sleep(250);
-            }
-
-            mediawiki.createPage("Template:Quidditch match infobox", MatchInfobox.wikitextTemplate());
-            String css = getStylesheet(false);
-
-            mediawiki.createPage("Template:Styles/QuidditchGenerator.css", css);
+            outputService.writePagesToMediawiki(tournamentTitle, pages, mediawiki);
         } catch (IOException e) {
             logger.error("Error communicating with mediawiki instance", e);
             throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public String getStylesheet(boolean isHtml) {
-        String css = "";
-
-        if (isHtml) {
-            InputStreamReader isr = new InputStreamReader(
-                    getClass().getResourceAsStream("/info/codywilliams/qsg/stylesheets/Html.css"));
-            BufferedReader br = new BufferedReader(isr);
-            css += br.lines().collect(Collectors.joining("\n"));
         }
 
-        InputStreamReader isr = new InputStreamReader(
-                getClass().getResourceAsStream("/info/codywilliams/qsg/stylesheets/QuidditchGenerator.css"));
-        BufferedReader br = new BufferedReader(isr);
-        css += br.lines().collect(Collectors.joining("\n"));
 
-        return css;
     }
 
     public void createNewTeam() {
