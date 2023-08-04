@@ -26,7 +26,7 @@ import info.codywilliams.qsg.output.MatchInfobox;
 import info.codywilliams.qsg.output.Page;
 import info.codywilliams.qsg.service.Mediawiki;
 import info.codywilliams.qsg.service.PageService;
-import info.codywilliams.qsg.service.TeamGenerator;
+import info.codywilliams.qsg.service.TeamFactory;
 import info.codywilliams.qsg.util.DependencyInjector;
 import info.codywilliams.qsg.util.Formatters;
 import javafx.beans.binding.Bindings;
@@ -231,11 +231,11 @@ public class AppController {
 
     public void createNewTeam() {
         teamNumber++;
-        context.getTeams().add(TeamGenerator.newTeam(teamNumber, resources));
+        context.getTeams().add(TeamFactory.newTeam(teamNumber, resources));
     }
 
     public void createRandomTeam() {
-        context.getTeams().add(TeamGenerator.randomTeam());
+        context.getTeams().add(TeamFactory.randomTeam());
     }
 
     public void removeTeam() {

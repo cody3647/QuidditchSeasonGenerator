@@ -22,12 +22,12 @@ import info.codywilliams.qsg.models.player.*;
 
 import java.util.Random;
 
-public class PlayerGenerator {
+public class PlayerFactory {
     private static final NameGenerator femaleNames = new NameGenerator("femaleNames");
     private static final NameGenerator maleNames = new NameGenerator("maleNames");
     private static final NameGenerator nonBinaryNames = new NameGenerator("nonBinaryNames");
     private static final NameGenerator surnames = new NameGenerator("surnames");
-    private PlayerGenerator() {
+    private PlayerFactory() {
     }
 
     public static Beater randomBeater() {

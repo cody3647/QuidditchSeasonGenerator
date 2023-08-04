@@ -22,10 +22,10 @@ import info.codywilliams.qsg.models.Team;
 
 import java.util.ResourceBundle;
 
-public class TeamGenerator {
+public class TeamFactory {
     private static final NameGenerator teamNames = new NameGenerator("teamNames");
 
-    private TeamGenerator() {
+    private TeamFactory() {
     }
 
     static public Team randomTeam() {
@@ -43,16 +43,16 @@ public class TeamGenerator {
         team.setHome(home);
 
         for (int i = 0; i < Team.TOTAL_BEATERS; i++)
-            team.getBeaters().add(PlayerGenerator.randomBeater());
+            team.getBeaters().add(PlayerFactory.randomBeater());
 
         for (int i = 0; i < Team.TOTAL_CHASERS; i++)
-            team.getChasers().add(PlayerGenerator.randomChaser());
+            team.getChasers().add(PlayerFactory.randomChaser());
 
         for (int i = 0; i < Team.TOTAL_KEEPERS; i++)
-            team.getKeepers().add(PlayerGenerator.randomKeeper());
+            team.getKeepers().add(PlayerFactory.randomKeeper());
 
         for (int i = 0; i < Team.TOTAL_SEEKERS; i++)
-            team.getSeekers().add(PlayerGenerator.randomSeeker());
+            team.getSeekers().add(PlayerFactory.randomSeeker());
 
         return team;
     }
@@ -72,22 +72,22 @@ public class TeamGenerator {
         String playerName;
         for (int i = 1; i <= Team.TOTAL_BEATERS; i++) {
             playerName = resources.getString("player.beater") + ' ' + i;
-            team.getBeaters().add(PlayerGenerator.newBeater(playerName));
+            team.getBeaters().add(PlayerFactory.newBeater(playerName));
         }
 
         for (int i = 1; i <= Team.TOTAL_CHASERS; i++) {
             playerName = resources.getString("player.chaser") + ' ' + i;
-            team.getChasers().add(PlayerGenerator.newChaser(playerName));
+            team.getChasers().add(PlayerFactory.newChaser(playerName));
         }
 
         for (int i = 1; i <= Team.TOTAL_KEEPERS; i++) {
             playerName = resources.getString("player.keeper") + ' ' + i;
-            team.getKeepers().add(PlayerGenerator.newKeeper(playerName));
+            team.getKeepers().add(PlayerFactory.newKeeper(playerName));
         }
 
         for (int i = 1; i <= Team.TOTAL_SEEKERS; i++) {
             playerName = resources.getString("player.seeker") + ' ' + i;
-            team.getSeekers().add(PlayerGenerator.newSeeker(playerName));
+            team.getSeekers().add(PlayerFactory.newSeeker(playerName));
         }
 
         return team;

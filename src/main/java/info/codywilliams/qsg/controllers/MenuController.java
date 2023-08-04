@@ -12,7 +12,7 @@ import info.codywilliams.qsg.models.tournament.TournamentOptions;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
 import info.codywilliams.qsg.service.MatchGenerator;
 import info.codywilliams.qsg.service.Mediawiki;
-import info.codywilliams.qsg.service.TeamGenerator;
+import info.codywilliams.qsg.service.TeamFactory;
 import info.codywilliams.qsg.util.Formatters;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -161,7 +161,7 @@ public class MenuController {
     @FXML
     void loadBlankBritishQuidditchLeague(ActionEvent ignoredEvent) {
         standardBritishQuidditchLeague(britishTeams.stream()
-                .map(name -> TeamGenerator.newTeam(
+                .map(name -> TeamFactory.newTeam(
                                 resources.getString("tournament.BIQL." + name + ".name"),
                                 resources.getString("tournament.BIQL." + name + ".name.short"),
                                 resources.getString("tournament.BIQL." + name + ".home"),
@@ -175,7 +175,7 @@ public class MenuController {
     @FXML
     void loadRandomBritishQuidditchLeague(ActionEvent ignoredEvent) {
         standardBritishQuidditchLeague(britishTeams.stream()
-                .map(name -> TeamGenerator.randomTeam(
+                .map(name -> TeamFactory.randomTeam(
                                 resources.getString("tournament.BIQL." + name + ".name"),
                                 resources.getString("tournament.BIQL." + name + ".name.short"),
                                 resources.getString("tournament.BIQL." + name + ".home")
