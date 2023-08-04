@@ -40,7 +40,7 @@
     <logger name="info.codywilliams.qsg.service.Mediawiki" level="WARN">
         <appender-ref ref="MEDIAWIKI"/>
     </logger>
-    <logger name="info.codywilliams.qsg.generators.MatchGenerator" level="WARN">
+    <logger name="info.codywilliams.qsg.service.MatchGenerator" level="WARN">
         <appender-ref ref="MATCH_GENERATOR"/>
     </logger>
 </configuration>

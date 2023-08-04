@@ -19,7 +19,6 @@
 package info.codywilliams.qsg.controllers;
 
 import info.codywilliams.qsg.App;
-import info.codywilliams.qsg.generators.TeamGenerator;
 import info.codywilliams.qsg.layout.TournamentCalendar;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.Team;
@@ -27,6 +26,7 @@ import info.codywilliams.qsg.output.MatchInfobox;
 import info.codywilliams.qsg.output.Page;
 import info.codywilliams.qsg.service.Mediawiki;
 import info.codywilliams.qsg.service.PageService;
+import info.codywilliams.qsg.service.TeamGenerator;
 import info.codywilliams.qsg.util.DependencyInjector;
 import info.codywilliams.qsg.util.Formatters;
 import javafx.beans.binding.Bindings;

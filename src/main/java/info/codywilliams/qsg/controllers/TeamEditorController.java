@@ -18,11 +18,11 @@
 
 package info.codywilliams.qsg.controllers;
 
-import info.codywilliams.qsg.generators.PlayerGenerator;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.models.player.Player;
 import info.codywilliams.qsg.models.player.PlayerType;
+import info.codywilliams.qsg.service.PlayerGenerator;
 import javafx.beans.NamedArg;
 import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WritableValue;

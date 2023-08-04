@@ -19,7 +19,6 @@
 package info.codywilliams.qsg.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import info.codywilliams.qsg.generators.MatchGenerator;
 import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.models.match.*;
 import info.codywilliams.qsg.models.player.Player;

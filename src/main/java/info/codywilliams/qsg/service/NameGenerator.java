@@ -1,6 +1,6 @@
 /*
- * Quidditch Season NameGenerator
- * Copyright (C) 2022.  Cody Williams
+ * Quidditch Season Generator
+ * Copyright (C) 2023.  Cody Williams
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-package info.codywilliams.qsg.generators;
+package info.codywilliams.qsg.service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
