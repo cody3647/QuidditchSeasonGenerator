@@ -25,7 +25,8 @@ import java.lang.reflect.Constructor;
 
 public enum TournamentType {
     STRAIGHT_ROUND_ROBIN("tournament.type.StraightRoundRobin"),
-    STRAIGHT_ROUND_ROBIN_HOME_AWAY("tournament.type.StraightRoundRobinHomeAway");
+    STRAIGHT_ROUND_ROBIN_HOME_AWAY("tournament.type.StraightRoundRobinHomeAway"),
+    HOGWARTS("tournament.type.Hogwarts");
 
     public final String key;
     private final Constructor<Tournament> constructor;

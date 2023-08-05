@@ -17,6 +17,8 @@
         <items>
           <MenuItem mnemonicParsing="false" onAction="#loadBlankBritishQuidditchLeague" text="%tournament.BIQL.menu.blank" />
             <MenuItem mnemonicParsing="false" onAction="#loadRandomBritishQuidditchLeague" text="%tournament.BIQL.menu.random" />
+            <MenuItem mnemonicParsing="false" onAction="#loadBlankHogwartsQuidditch" text="%tournament.HOGW.menu.blank" />
+            <MenuItem mnemonicParsing="false" onAction="#loadRandomHogwartsQuidditch" text="%tournament.HOGW.menu.random" />
         </items>
       </Menu>
       <Menu mnemonicParsing="false" text="%app.menu.seed">

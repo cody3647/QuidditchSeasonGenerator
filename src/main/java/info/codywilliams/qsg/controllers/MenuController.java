@@ -51,6 +51,8 @@ public class MenuController {
             "portree", "puddlemere", "tutshill", "wigtown", "wimbourne"
     );
 
+    static final List<String> hogwartsTeams = List.of("gryffindor", "hufflepuff", "ravenclaw", "slytherin");
+
     public MenuController(Context context, TeamFactory teamFactory, SaveSettingsService saveSettingsService) {
         this.context = context;
         this.teamFactory = teamFactory;
@@ -182,7 +184,46 @@ public class MenuController {
 
         context.getTeams().clear();
         context.getTeams().addAll(teams);
+    }
 
+    @FXML
+    void loadBlankHogwartsQuidditch(ActionEvent ignoredEvent) {
+        standardHogwartsQuidditch(hogwartsTeams.stream()
+                .map(name -> teamFactory.newTeam(
+                                resources.getString("tournament.HOGW." + name + ".name"),
+                                resources.getString("tournament.HOGW." + name + ".name.short"),
+                                resources.getString("tournament.HOGW." + name + ".home")
+                        )
+                )
+                .toList()
+        );
+    }
+
+    @FXML
+    void loadRandomHogwartsQuidditch(ActionEvent ignoredEvent) {
+        standardHogwartsQuidditch(hogwartsTeams.stream()
+                .map(name -> teamFactory.randomTeam(
+                                resources.getString("tournament.HOGW." + name + ".name"),
+                                resources.getString("tournament.HOGW." + name + ".name.short"),
+                                resources.getString("tournament.HOGW." + name + ".home")
+                        )
+                )
+                .toList()
+        );
+    }
+
+    void standardHogwartsQuidditch(List<Team> teams) {
+        TournamentOptions options = context.getTournamentOptions();
+        options.setLeagueName(resources.getString("tournament.HOGW.name"));
+        options.matchDayTimeListProperty().get().clear();
+        List<MatchDayTime> matchDayTimeList = List.of(
+                new MatchDayTime(DayOfWeek.SATURDAY, LocalTime.of(11, 0, 0), 2)
+        );
+        options.matchDayTimeListProperty().addAll(matchDayTimeList);
+        context.changeCurrentTournament(TournamentType.HOGWARTS);
+
+        context.getTeams().clear();
+        context.getTeams().addAll(teams);
     }
 
     @FXML

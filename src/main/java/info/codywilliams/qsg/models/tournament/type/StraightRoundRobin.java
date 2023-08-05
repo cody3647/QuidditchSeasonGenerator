@@ -207,14 +207,14 @@ public class StraightRoundRobin extends Tournament {
                 continue; // Tie
 
             switch (match.getWinner()) {
-                case HOME -> tournamentPoints.merge(match.getHomeTeam().getName(), getPoints(match), Integer::sum);
-                case AWAY -> tournamentPoints.merge(match.getAwayTeam().getName(), getPoints(match), Integer::sum);
+                case HOME -> tournamentPoints.merge(match.getHomeTeam().getName(), Integer.valueOf(getPoints(match)), Integer::sum);
+                case AWAY -> tournamentPoints.merge(match.getAwayTeam().getName(), Integer.valueOf(getPoints(match)), Integer::sum);
             }
         }
     }
 
     @Override
-    public int getPoints(Match match) {
+    public String getPoints(Match match) {
         int diff = match.getScoreHome() - match.getScoreAway();
         diff = diff < 0 ? -diff : diff;
         /*
@@ -226,15 +226,15 @@ public class StraightRoundRobin extends Tournament {
             >=150 -> 7 points
          */
         if (diff == 0)
-            return 0;
+            return String.valueOf(0);
         else if (diff < 50)
-            return 2;
+            return String.valueOf(2);
         else if (diff < 100)
-            return 3;
+            return String.valueOf(3);
         else if (diff < 150)
-            return 5;
+            return String.valueOf(5);
         else
-            return 7;
+            return String.valueOf(7);
     }
 
     private void assignTeams(boolean flag, Match match, Team aTeam, Team bTeam, Map<String, Integer> homeTeamTimes) {

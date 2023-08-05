@@ -141,7 +141,7 @@ public abstract class Tournament {
 
     public abstract void assignPoints();
 
-    public abstract int getPoints(Match match);
+    public abstract String getPoints(Match match);
 
     public TournamentType getType() {
         return type.get();
