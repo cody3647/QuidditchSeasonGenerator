@@ -124,7 +124,7 @@ public class App extends Application {
         NameGenerator nonBinaryNames = new NameGenerator("nonBinaryNames");
         NameGenerator teamNames = new NameGenerator("teamNames");
         PlayerFactory playerFactory = new PlayerFactory(random, surnames, femaleNames, maleNames, nonBinaryNames);
-        TeamFactory teamFactory = new TeamFactory(teamNames, playerFactory);
+        TeamFactory teamFactory = new TeamFactory(teamNames, playerFactory, resourceBundle);
 
 
         DependencyInjector.setBundle(resourceBundle);

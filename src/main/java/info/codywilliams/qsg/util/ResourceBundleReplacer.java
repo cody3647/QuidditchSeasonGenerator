@@ -28,25 +28,25 @@ import java.util.regex.Pattern;
 
 public class ResourceBundleReplacer {
     static private final Pattern pattern = Pattern.compile("\\$\\{(\\w*)\\}");
-    private final ResourceBundle resources;
+    private final ResourceBundle resourceBundle;
     private final HashMap<String, String> tokenMap;
     private final Replacer replacer;
 
-    public ResourceBundleReplacer(ResourceBundle resources) {
-        this.resources = resources;
+    public ResourceBundleReplacer(ResourceBundle resourceBundle) {
+        this.resourceBundle = resourceBundle;
         this.tokenMap = new HashMap<>();
         replacer = new Replacer();
     }
 
     public String getString(String key) {
-        String text = resources.getString(key);
+        String text = resourceBundle.getString(key);
         Matcher matcher = pattern.matcher(text);
 
         return matcher.replaceAll(replacer);
     }
 
     public String getStringWithTempTokens(String key, Map<String, String> tempTokenMap) {
-        String text = resources.getString(key);
+        String text = resourceBundle.getString(key);
         Matcher matcher = pattern.matcher(text);
 
         replacer.setTempTokenMap(tempTokenMap);

@@ -145,8 +145,7 @@ public class MenuController {
                 .map(name -> teamFactory.newTeam(
                                 resources.getString("tournament.BIQL." + name + ".name"),
                                 resources.getString("tournament.BIQL." + name + ".name.short"),
-                                resources.getString("tournament.BIQL." + name + ".home"),
-                                resources
+                                resources.getString("tournament.BIQL." + name + ".home")
                         )
                 )
                 .toList()
