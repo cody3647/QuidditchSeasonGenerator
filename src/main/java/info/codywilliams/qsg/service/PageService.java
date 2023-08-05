@@ -58,6 +58,8 @@ public class PageService {
 
     private Tournament tournament;
     private TournamentOptions tournamentOptions;
+    private boolean createMatchPages = true;
+    private boolean includePlayerDetails = true;
 
     static private final Pattern ballPattern = Pattern.compile("((quaffle|bludger|snitch)\\w*)", Pattern.CASE_INSENSITIVE);
     static private final String ballReplacement = "<span class=\"$2\">$1</span>";
@@ -67,10 +69,12 @@ public class PageService {
         this.resourceBundle = resourceBundle;
     }
 
-    public List<Page> buildPages(Tournament tournament, List<Team> teamList, long seed) {
+    public List<Page> buildPages(Tournament tournament, List<Team> teamList, boolean createMatchPages, boolean includePlayerDetails, long seed) {
         this.tournament = tournament;
         this.tournamentOptions = tournament.getTournamentOptions();
         this.teamList = teamList;
+        this.createMatchPages = createMatchPages;
+        this.includePlayerDetails = includePlayerDetails;
         this.seed = seed;
         MatchGenerator matchGenerator = MatchGenerator.create(this.seed, 1);
         matchGenerator.generateMatches(tournament, teamList);

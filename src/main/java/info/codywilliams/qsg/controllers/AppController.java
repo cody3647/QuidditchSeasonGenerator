@@ -73,6 +73,10 @@ public class AppController {
     @FXML
     Button viewTournamentCalendarButton;
     @FXML
+    CheckBox matchPagesCheckBox;
+    @FXML
+    CheckBox playerDetailsCheckBox;
+    @FXML
     Button generateSeasonHtmlButton;
     @FXML
     Button generateSeasonWikitextButton;
@@ -147,7 +151,7 @@ public class AppController {
     @FXML
     void generateHTMLOutput(ActionEvent ignoredEvent) {
         List<Page> pages = pageService.buildPages(
-                context.getCurrentTournament(), context.getTeams(), context.getSeed()
+                context.getCurrentTournament(), context.getTeams(), matchPagesCheckBox.isSelected(), playerDetailsCheckBox.isSelected(), context.getSeed()
         );
         String tournamentTitle = pageService.getTournamentTitle();
         outputService.writePagesToHtml(tournamentTitle, pages);
@@ -156,7 +160,7 @@ public class AppController {
     @FXML
     void generateWikitextOutput(ActionEvent ignoreEvent) {
         List<Page> pages = pageService.buildPages(
-                context.getCurrentTournament(), context.getTeams(), context.getSeed()
+                context.getCurrentTournament(), context.getTeams(), matchPagesCheckBox.isSelected(), playerDetailsCheckBox.isSelected(), context.getSeed()
         );
         String tournamentTitle = pageService.getTournamentTitle();
         Mediawiki mediawiki = context.getMediawiki();
