@@ -36,10 +36,14 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class PageService {
     @JsonIgnore
     final private ResourceBundleReplacer resources;
+    @JsonIgnore
+    final private ResourceBundle resourceBundle;
     @JsonIgnore
     private String tournamentTitle;
     @JsonIgnore
@@ -55,8 +59,12 @@ public class PageService {
     private Tournament tournament;
     private TournamentOptions tournamentOptions;
 
+    static private final Pattern ballPattern = Pattern.compile("((quaffle|bludger|snitch)\\w*)", Pattern.CASE_INSENSITIVE);
+    static private final String ballReplacement = "<span class=\"$2\">$1</span>";
+
     public PageService(ResourceBundle resources) {
         this.resources = new ResourceBundleReplacer(resources);
+        this.resourceBundle = resources;
     }
 
     public List<Page> buildPages(Tournament tournament, List<Team> teamList, long seed) {
@@ -271,7 +279,7 @@ public class PageService {
         Page matchPage = new Page(title, title);
         matchPage.addStyle("QuidditchGenerator.css");
         matchPage.addMetadata("keywords", null, resources.getString("meta.match.keywords"), null);
-        matchPage.addBodyContent(new MatchInfobox(match, resources));
+        matchPage.addBodyContent(new MatchInfobox(match, tournamentTitle, resources.getString("leagueName"), resources.getString("yearRange"), resourceBundle));
 
         matchPage.addBodyContent(new Header(2, "Match Rosters"));
         matchPage.addBodyContent(buildRosters(homeTeam.getName(), match.getHomeTeamRoster()));
@@ -288,42 +296,31 @@ public class PageService {
         int i = 0;
         for (Play play : match.getPlays()) {
             i++;
+            String playResourceKey = buildPlayResourceKey(play, true);
+            Map<String, String> playTokenMap = buildPlayResourceTempTokenMap(play, match);
+
             UnorderedList.Item li = new UnorderedList.Item();
             playList.addChildren(li);
             List<Element> liChildren = new ArrayList<>();
-            liChildren.add(new Text(play.outputWithDetails(resources, homeTeam.getName(), awayTeam.getName())));
 
-            if (play instanceof PlayFoul playFoul) {
-                li.addClass(
-                        "quidditch-foul",
-                        "quaffle-" + playFoul.getQuaffleOutcome().name().toLowerCase(),
-                        play.getAttackingTeamType().name().toLowerCase()
-                );
-                if (playFoul.getQuaffleOutcome() == PlayChaser.QuaffleOutcome.SCORED) {
-                    liChildren.add(buildScoreDiv(homeTeam, awayTeam, playFoul, false));
-                    i = 0;
-                }
-            } else if (play instanceof PlayChaser playChaser) {
-                li.addClass(
-                        "quaffle-" + playChaser.getQuaffleOutcome().name().toLowerCase(),
-                        play.getAttackingTeamType().name().toLowerCase()
-                );
-                if (playChaser.getQuaffleOutcome() == PlayChaser.QuaffleOutcome.SCORED) {
-                    liChildren.add(buildScoreDiv(homeTeam, awayTeam, playChaser, false));
-                    i = 0;
-                }
-            } else if (play instanceof PlaySeeker playSeeker) {
-                li.addClass(
-                        "snitch-" + playSeeker.getSnitchOutcome().name().toLowerCase(),
-                        play.getAttackingTeamType().name().toLowerCase()
-                );
-                if (playSeeker.isSnitchCaught()) {
-                    liChildren.add(buildScoreDiv(homeTeam, awayTeam, playSeeker, true));
-                    i = 0;
-                }
+            String playText = resources.getStringWithTempTokens(playResourceKey, playTokenMap);
+            Matcher matcher = ballPattern.matcher(playText);
+            playText = matcher.replaceAll(ballReplacement);
+
+            liChildren.add(new Text(playText));
+
+
+            li.addClass(buildClassList(play));
+            Div scoreDiv = buildScoreDiv(homeTeam, awayTeam, play);
+            if (scoreDiv != null) {
+                liChildren.add(scoreDiv);
+                i = 0;
             }
-            if (play.getInjuryType() != Play.InjuryType.NONE) {
-                Div injuryDiv = new Div(new Text(play.outputInjuryWithDetails(resources)));
+
+            if (play.getInjuryType() != Injury.NONE) {
+                String injuryResourceKey = buildInjuryResourceKey(play, true);
+                String injuryText = resources.getStringWithTempTokens(injuryResourceKey, playTokenMap);
+                Div injuryDiv = new Div(new Text(injuryText));
                 injuryDiv.addClass("quidditch-injury");
                 liChildren.add(injuryDiv);
             }
@@ -417,7 +414,17 @@ public class PageService {
         }
     }
 
-    private Div buildScoreDiv(Team homeTeam, Team awayTeam, Play play, boolean finalScore) {
+    private Div buildScoreDiv(Team homeTeam, Team awayTeam, Play play) {
+        boolean finalScore;
+        if (play instanceof PlayFoul playFoul && playFoul.getQuaffleOutcome() == Quaffle.SCORED) {
+            finalScore = false;
+        } else if (play instanceof PlayChaser playChaser && playChaser.getQuaffleOutcome() == Quaffle.SCORED) {
+            finalScore = false;
+        } else if (play instanceof PlaySeeker playSeeker && playSeeker.isSnitchCaught()) {
+            finalScore = true;
+        } else {
+            return null;
+        }
         Div div = new Div();
 
         String text = finalScore ? resources.getString("match.final") : resources.getString("match.score");
@@ -431,6 +438,131 @@ public class PageService {
         );
 
         return div;
+    }
+
+    private String buildPlayResourceKey(Play play, boolean withDetails) {
+        String resourceKey = "";
+        if (play instanceof PlayFoul playFoul) {
+            resourceKey = "foul." + playFoul.getQuaffleOutcome().name().toLowerCase();
+        } else if (play instanceof PlayChaser playChaser) {
+            resourceKey = "chaser." + playChaser.getQuaffleOutcome().name().toLowerCase() + "." + play.getBludgerOutcome().name().toLowerCase();
+        } else if (play instanceof PlaySeeker playSeeker) {
+            resourceKey = "seeker." + playSeeker.getSnitchOutcome().name().toLowerCase() + "." + play.getBludgerOutcome().name().toLowerCase();
+        } else {
+            logger.error("Unknown play type, {}", play);
+        }
+
+        if (withDetails) {
+            resourceKey += ".player";
+        }
+        return resourceKey;
+    }
+
+    private String buildInjuryResourceKey(Play play, boolean withDetails) {
+        if (play.getInjuryType() == Injury.NONE)
+            return "";
+
+        String resourceKey = "injury." + play.getInjuryType().name().toLowerCase();
+        if (play.getInjuryType() == Injury.KEEPER && play instanceof PlayChaser playChaser) {
+            if (playChaser.getQuaffleOutcome() == Quaffle.MISSED || playChaser.getQuaffleOutcome() == Quaffle.SCORED)
+                resourceKey += ".missed";
+            if (playChaser.getQuaffleOutcome() == Quaffle.BLOCKED)
+                resourceKey += ".blocked";
+        }
+
+        if (withDetails) {
+            resourceKey += ".player";
+        }
+
+        return resourceKey;
+    }
+
+
+    private Map<String, String> buildPlayResourceTempTokenMap(Play play, Match match) {
+        Map<String, String> tokenMap = new HashMap<>();
+        if (play.getBeaterHitter() != null)
+            tokenMap.put("beaterHitter", play.getBeaterHitter().getShortName());
+        if (play.getBeaterBlocker() != null)
+            tokenMap.put("beaterBlocker", play.getBeaterBlocker().getShortName());
+
+        switch (play.getAttackingTeamType()) {
+            case HOME -> {
+                tokenMap.put("attackingTeam", match.getHomeTeam().getName());
+                tokenMap.put("attackingTeamShort", match.getHomeTeam().getShortName());
+                tokenMap.put("defendingTeam", match.getAwayTeam().getName());
+                tokenMap.put("defendingTeamShort", match.getAwayTeam().getShortName());
+            }
+            case AWAY -> {
+                tokenMap.put("attackingTeam", match.getAwayTeam().getName());
+                tokenMap.put("attackingTeamShort", match.getAwayTeam().getShortName());
+                tokenMap.put("defendingTeam", match.getHomeTeam().getName());
+                tokenMap.put("defendingTeamShort", match.getHomeTeam().getShortName());
+            }
+        }
+
+        if (play.getInjuryType() != Injury.NONE) {
+            tokenMap.put("injuredPlayer", play.getInjuredPlayer().getShortName());
+            switch (play.getInjuredPlayerTeam()) {
+                case HOME -> {
+                    tokenMap.put("injuredPlayerTeam", match.getHomeTeam().getName());
+                    tokenMap.put("injuredPlayerTeamShort", match.getHomeTeam().getName());
+                }
+                case AWAY -> {
+                    tokenMap.put("injuredPlayerTeam", match.getAwayTeam().getName());
+                    tokenMap.put("injuredPlayerTeamShort", match.getAwayTeam().getShortName());
+                }
+            }
+        }
+
+        if (play instanceof PlayChaser playChaser) {
+            tokenMap.put("attacker", playChaser.getAttacker().getShortName());
+            tokenMap.put("defender", playChaser.getDefender().getShortName());
+
+            if (playChaser.getDefendingKeeper() != null)
+                tokenMap.put("keeper", playChaser.getDefendingKeeper().getShortName());
+
+            if (play instanceof PlayFoul playFoul) {
+                tokenMap.put("fouler", playFoul.getFouler().getShortName());
+
+                switch (playFoul.getFoulerTeamType()) {
+                    case HOME -> {
+                        tokenMap.put("foulerTeam", match.getHomeTeam().getName());
+                        tokenMap.put("foulerTeamShort", match.getHomeTeam().getShortName());
+                    }
+                    case AWAY -> {
+                        tokenMap.put("foulerTeam", match.getAwayTeam().getName());
+                        tokenMap.put("foulerTeamShort", match.getAwayTeam().getShortName());
+                    }
+                }
+            }
+        } else if (play instanceof PlaySeeker playSeeker) {
+            tokenMap.put("seeker", playSeeker.getSeeker().getShortName());
+            tokenMap.put("otherSeeker", playSeeker.getOtherSeeker().getShortName());
+        }
+
+        return tokenMap;
+    }
+
+    private List<String> buildClassList(Play play) {
+
+        if (play instanceof PlayFoul playFoul) {
+            return List.of(
+                    "quidditch-foul",
+                    "quaffle-" + playFoul.getQuaffleOutcome().name().toLowerCase(),
+                    play.getAttackingTeamType().name().toLowerCase()
+            );
+        } else if (play instanceof PlayChaser playChaser) {
+            return List.of(
+                    "quaffle-" + playChaser.getQuaffleOutcome().name().toLowerCase(),
+                    play.getAttackingTeamType().name().toLowerCase()
+            );
+        } else if (play instanceof PlaySeeker playSeeker) {
+            return List.of(
+                    "snitch-" + playSeeker.getSnitchOutcome().name().toLowerCase(),
+                    play.getAttackingTeamType().name().toLowerCase()
+            );
+        }
+        return List.of();
     }
 
     public String getTournamentTitle() {

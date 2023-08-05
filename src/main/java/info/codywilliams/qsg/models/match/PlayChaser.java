@@ -20,14 +20,13 @@ package info.codywilliams.qsg.models.match;
 
 import info.codywilliams.qsg.models.player.Chaser;
 import info.codywilliams.qsg.models.player.Keeper;
-import info.codywilliams.qsg.util.ResourceBundleReplacer;
 
 public class PlayChaser extends Play {
     TeamType defendingTeamType;
     Chaser attacker;
     Chaser defender;
     Keeper defendingKeeper;
-    QuaffleOutcome quaffleOutcome;
+    Quaffle quaffle;
     PlayChaser() {
     }
 
@@ -63,34 +62,12 @@ public class PlayChaser extends Play {
         this.defendingKeeper = defendingKeeper;
     }
 
-    public QuaffleOutcome getQuaffleOutcome() {
-        return quaffleOutcome;
+    public Quaffle getQuaffleOutcome() {
+        return quaffle;
     }
 
-    public void setQuaffleOutcome(QuaffleOutcome quaffleOutcome) {
-        this.quaffleOutcome = quaffleOutcome;
-    }
-
-    @Override
-    protected String getOutcomeString() {
-        return quaffleOutcome.name().toLowerCase() + "." + bludgerOutcome.name().toLowerCase();
-    }
-
-    @Override
-    public String outputWithDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName) {
-        addCommonTokens(resources);
-        resources.addToken("attacker", attacker.getShortName());
-        resources.addToken("defender", defender.getShortName());
-        if (defendingKeeper != null)
-            resources.addToken("keeper", defendingKeeper.getShortName());
-
-        return resources.getString("chaser." + getOutcomeString() + ".player");
-    }
-
-    @Override
-    public String outputWithoutDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName) {
-        addCommonTokens(resources);
-        return resources.getString("chaser." + getOutcomeString());
+    public void setQuaffleOutcome(Quaffle quaffle) {
+        this.quaffle = quaffle;
     }
 
     @Override
@@ -100,13 +77,12 @@ public class PlayChaser extends Play {
                 ", defendingTeamType=" + defendingTeamType +
                 ", attacker=" + attacker.getName() +
                 ", defender=" + defender.getName() +
-                ", quaffleOutcome=" + quaffleOutcome +
-                ", bludgerOutcome=" + bludgerOutcome +
+                ", quaffleOutcome=" + quaffle +
+                ", bludgerOutcome=" + bludger +
                 ", beaterHitter=" + ((beaterHitter != null) ? beaterHitter.getName() : "") +
                 ", beaterBlocker=" + ((beaterBlocker != null) ? beaterBlocker.getName() : "") +
                 ", playDurationSeconds=" + playDurationSeconds +
                 '}';
     }
 
-    public enum QuaffleOutcome {TURNOVER, MISSED, BLOCKED, SCORED}
 }

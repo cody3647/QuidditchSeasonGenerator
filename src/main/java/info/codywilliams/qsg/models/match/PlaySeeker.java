@@ -19,12 +19,11 @@
 package info.codywilliams.qsg.models.match;
 
 import info.codywilliams.qsg.models.player.Seeker;
-import info.codywilliams.qsg.util.ResourceBundleReplacer;
 
 public class PlaySeeker extends Play {
     Seeker seeker;
     Seeker otherSeeker;
-    SnitchOutcome snitchOutcome;
+    Snitch snitch;
     public PlaySeeker(Seeker seeker, Seeker otherSeeker, TeamType attackingTeamType) {
         this.seeker = seeker;
         this.otherSeeker = otherSeeker;
@@ -50,36 +49,24 @@ public class PlaySeeker extends Play {
         this.seeker = seeker;
     }
 
-    public SnitchOutcome getSnitchOutcome() {
-        return snitchOutcome;
+    public Seeker getOtherSeeker() {
+        return otherSeeker;
     }
 
-    public void setSnitchOutcome(SnitchOutcome snitchOutcome) {
-        this.snitchOutcome = snitchOutcome;
+    public void setOtherSeeker(Seeker otherSeeker) {
+        this.otherSeeker = otherSeeker;
+    }
+
+    public Snitch getSnitchOutcome() {
+        return snitch;
+    }
+
+    public void setSnitchOutcome(Snitch snitch) {
+        this.snitch = snitch;
     }
 
     public boolean isSnitchCaught() {
-        return snitchOutcome == SnitchOutcome.CAUGHT || snitchOutcome == SnitchOutcome.STOLEN;
-    }
-
-    @Override
-    protected String getOutcomeString() {
-        return snitchOutcome.name().toLowerCase() + "." + bludgerOutcome.name().toLowerCase();
-    }
-
-    @Override
-    public String outputWithDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName) {
-        addCommonTokens(resources);
-        resources.addToken("seeker", seeker.getShortName());
-        resources.addToken("otherSeeker", otherSeeker.getShortName());
-
-        return resources.getString("seeker." + getOutcomeString() + ".player");
-    }
-
-    @Override
-    public String outputWithoutDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName) {
-        addCommonTokens(resources);
-        return resources.getString("seeker." + getOutcomeString());
+        return snitch == Snitch.CAUGHT || snitch == Snitch.STOLEN;
     }
 
     @Override
@@ -87,13 +74,12 @@ public class PlaySeeker extends Play {
         return "PlaySeeker{" +
                 "teamType=" + attackingTeamType +
                 ", seeker=" + seeker.getName() +
-                ", snitchOutcome=" + snitchOutcome +
-                ", bludgerOutcome=" + bludgerOutcome +
+                ", snitchOutcome=" + snitch +
+                ", bludgerOutcome=" + bludger +
                 ", beaterHitter=" + ((beaterHitter != null) ? beaterHitter.getName() : "") +
                 ", beaterBlocker=" + ((beaterBlocker != null) ? beaterBlocker.getName() : "") +
                 ", playDurationSeconds=" + playDurationSeconds +
                 '}';
     }
 
-    public enum SnitchOutcome {FEINT, SEEN, MISSED, CAUGHT, STOLEN}
 }

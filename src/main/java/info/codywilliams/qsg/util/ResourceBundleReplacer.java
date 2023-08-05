@@ -19,6 +19,7 @@
 package info.codywilliams.qsg.util;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 import java.util.regex.MatchResult;
@@ -27,8 +28,6 @@ import java.util.regex.Pattern;
 
 public class ResourceBundleReplacer {
     static private final Pattern pattern = Pattern.compile("\\$\\{(\\w*)\\}");
-    static private final Pattern ballPattern = Pattern.compile("((quaffle|bludger|snitch)\\w*)", Pattern.CASE_INSENSITIVE);
-    static private final String ballReplacement = "<span class=\"$2\">$1</span>";
     private final ResourceBundle resources;
     private final HashMap<String, String> tokenMap;
     private final Replacer replacer;
@@ -39,20 +38,21 @@ public class ResourceBundleReplacer {
         replacer = new Replacer();
     }
 
-    public ResourceBundleReplacer(ResourceBundleReplacer resourceBundleReplacer) {
-        this.resources = resourceBundleReplacer.resources;
-        this.tokenMap = new HashMap<>(resourceBundleReplacer.tokenMap);
-        replacer = new Replacer();
-    }
-
     public String getString(String key) {
         String text = resources.getString(key);
+        Matcher matcher = pattern.matcher(text);
 
-        Matcher matcher = ballPattern.matcher(text);
-        text = matcher.replaceAll(ballReplacement);
-
-        matcher = pattern.matcher(text);
         return matcher.replaceAll(replacer);
+    }
+
+    public String getStringWithTempTokens(String key, Map<String, String> tempTokenMap) {
+        String text = resources.getString(key);
+        Matcher matcher = pattern.matcher(text);
+
+        replacer.setTempTokenMap(tempTokenMap);
+        text = matcher.replaceAll(replacer);
+        replacer.clearTempTokenMap();
+        return text;
     }
 
     public void addToken(String key, String value) {
@@ -63,16 +63,22 @@ public class ResourceBundleReplacer {
         tokenMap.put(key, value);
     }
 
-    public void addTeamToken(String key, String team) {
-        String teamShort = team + "Short";
-        tokenMap.put(key, tokenMap.getOrDefault(team, team));
-        tokenMap.put(key + "Short", tokenMap.getOrDefault(teamShort, teamShort));
-    }
-
     private class Replacer implements Function<MatchResult, String> {
+        Map<String, String> tempTokenMap = Map.of();
         @Override
         public String apply(MatchResult matchResult) {
+            if (tempTokenMap.containsKey(matchResult.group(1))) {
+                return Matcher.quoteReplacement(tempTokenMap.get(matchResult.group(1)));
+            }
             return Matcher.quoteReplacement(tokenMap.getOrDefault(matchResult.group(1), matchResult.group()));
+        }
+
+        public void clearTempTokenMap() {
+            tempTokenMap = Map.of();
+        }
+
+        public void setTempTokenMap(Map<String, String> tempTokenMap) {
+            this.tempTokenMap = tempTokenMap;
         }
     }
 }

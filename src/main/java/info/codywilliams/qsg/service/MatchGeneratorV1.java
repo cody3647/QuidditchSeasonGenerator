@@ -20,7 +20,6 @@ package info.codywilliams.qsg.service;
 
 import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.models.match.*;
-import info.codywilliams.qsg.models.match.Play.InjuryType;
 import info.codywilliams.qsg.models.player.*;
 import info.codywilliams.qsg.models.tournament.Tournament;
 import org.slf4j.MDC;
@@ -257,13 +256,13 @@ public class MatchGeneratorV1 implements MatchGenerator {
             int miss = modifiedRandomNumbersSum(target.getDefenseModifier(), targetTeam.getChasersSkills().getAvgDefenseModifier() * targetTeam.getChasersSkills().getAvgTeamworkModifier());
 
             if (block > hit) {
-                play.setBludgerOutcome(Play.BludgerOutcome.BLOCKED);
-                playerInjuredDuringPlay(play, play.getBeaterBlocker(), targetTeam.type, InjuryType.BLUDGER_BLOCKED);
+                play.setBludgerOutcome(Bludger.BLOCKED);
+                playerInjuredDuringPlay(play, play.getBeaterBlocker(), targetTeam.type, Injury.BLUDGER_BLOCKED);
             } else if (miss > hit) {
-                play.setBludgerOutcome(Play.BludgerOutcome.MISSED);
+                play.setBludgerOutcome(Bludger.MISSED);
             } else {
-                play.setBludgerOutcome(Play.BludgerOutcome.HIT);
-                playerInjuredDuringPlay(play, target, targetTeam.type, InjuryType.BLUDGER_HIT);
+                play.setBludgerOutcome(Bludger.HIT);
+                playerInjuredDuringPlay(play, target, targetTeam.type, Injury.BLUDGER_HIT);
                 outcome = true;
             }
 
@@ -307,7 +306,7 @@ public class MatchGeneratorV1 implements MatchGenerator {
             attemptGoal(score, block, miss, play);
         }
 
-        playerInjuredDuringPlay(play, keeper, defendingTeam.type, InjuryType.KEEPER);
+        playerInjuredDuringPlay(play, keeper, defendingTeam.type, Injury.KEEPER);
         chaserInjuredDuringPlay(play);
         // AddPlay finalizes scores and match length assigned to the play
         match.addPlay(play);
@@ -325,7 +324,7 @@ public class MatchGeneratorV1 implements MatchGenerator {
         // Possible injury?
         chaserInjuredDuringPlay(play);
         // Set the outcome, add the play to the list and update the duration.
-        play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.TURNOVER);
+        play.setQuaffleOutcome(Quaffle.TURNOVER);
         play.setPlayDurationSeconds(randomNumber(15, 60));
         logger.trace("Turnover: Attacking team: {}, Quaffle Outcome: {}, Bludger Outcome: {}, Seconds: {}",
                 play.getAttackingTeamType(), play.getQuaffleOutcome(), play.getBludgerOutcome(), play.getPlayDurationSeconds());
@@ -347,7 +346,7 @@ public class MatchGeneratorV1 implements MatchGenerator {
             case HOME -> match.incrementFoulsHome();
             case AWAY -> match.incrementFoulsAway();
         }
-        playerInjuredDuringPlay(playFoul, keeper, foulerTeam.type, InjuryType.KEEPER);
+        playerInjuredDuringPlay(playFoul, keeper, foulerTeam.type, Injury.KEEPER);
         attemptGoal(score, block, miss, playFoul);
     }
 
@@ -366,15 +365,15 @@ public class MatchGeneratorV1 implements MatchGenerator {
 
     void attemptGoal(int score, int block, int miss, PlayChaser play) {
         if (score >= block && miss > 6) {
-            play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.SCORED);
+            play.setQuaffleOutcome(Quaffle.SCORED);
             switch (attackingTeam.type) {
                 case HOME -> match.homeScore();
                 case AWAY -> match.awayScore();
             }
         } else if (block >= score)
-            play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.BLOCKED);
+            play.setQuaffleOutcome(Quaffle.BLOCKED);
         else
-            play.setQuaffleOutcome(PlayChaser.QuaffleOutcome.MISSED);
+            play.setQuaffleOutcome(Quaffle.MISSED);
 
         play.setPlayDurationSeconds(randomNumber(20, 120));
         logger.trace("Attempt Goal: Outcome: {}, Seconds: {},  Score: {}, Block: {}, Miss: {}",
@@ -394,7 +393,7 @@ public class MatchGeneratorV1 implements MatchGenerator {
         if (!inRange(snitchChance, snitchInteractionRange)) {
             if (snitchChance % 13 == 0) {
                 PlaySeeker playSeeker = new PlaySeeker(attackingTeam.getSeeker(), attackingTeam.getSeeker(), attackingTeam.type);
-                playSeeker.setSnitchOutcome(PlaySeeker.SnitchOutcome.SEEN);
+                playSeeker.setSnitchOutcome(Snitch.SEEN);
                 match.addPlay(playSeeker);
                 logger.trace("Snitch Seen: Snitch Chance: {} {}, Snitch Outcome: {}", snitchChance, snitchInteractionRange, playSeeker.getSnitchOutcome());
             }
@@ -451,7 +450,7 @@ public class MatchGeneratorV1 implements MatchGenerator {
         // Snitch wasn't attempted, let's see if it was seen
         if (snitchChance % 4 == 0) {
             PlaySeeker playSeeker = new PlaySeeker(seeker, otherTeam.getSeeker(), seekerTeamType);
-            playSeeker.setSnitchOutcome(PlaySeeker.SnitchOutcome.SEEN);
+            playSeeker.setSnitchOutcome(Snitch.SEEN);
             match.addPlay(playSeeker);
             logger.trace("Seeker Play: Team Type: {}, Snitch Outcome: {}, Bludger Outcome: {}", playSeeker.getAttackingTeamType(), playSeeker.getSnitchOutcome(), playSeeker.getBludgerOutcome());
         }
@@ -474,13 +473,13 @@ public class MatchGeneratorV1 implements MatchGenerator {
 
         if (stolen) {
             playSeeker.swapTeam();
-            playSeeker.setSnitchOutcome(PlaySeeker.SnitchOutcome.STOLEN);
+            playSeeker.setSnitchOutcome(Snitch.STOLEN);
             playSeeker.setPlayDurationSeconds(randomNumber(15, 45));
         } else if (missed) {
-            playSeeker.setSnitchOutcome(PlaySeeker.SnitchOutcome.MISSED);
+            playSeeker.setSnitchOutcome(Snitch.MISSED);
             playSeeker.setPlayDurationSeconds(randomNumber(15, 45));
         } else {
-            playSeeker.setSnitchOutcome(PlaySeeker.SnitchOutcome.CAUGHT);
+            playSeeker.setSnitchOutcome(Snitch.CAUGHT);
             playSeeker.setPlayDurationSeconds(randomNumber(15, 60));
         }
         return playSeeker;
@@ -517,13 +516,13 @@ public class MatchGeneratorV1 implements MatchGenerator {
 
     private void chaserInjuredDuringPlay(Play play) {
         if (random.nextBoolean())
-            playerInjuredDuringPlay(play, getRandomChaser(homeTeam), homeTeam.type, InjuryType.CHASER);
+            playerInjuredDuringPlay(play, getRandomChaser(homeTeam), homeTeam.type, Injury.CHASER);
         else
-            playerInjuredDuringPlay(play, getRandomChaser(awayTeam), awayTeam.type, InjuryType.CHASER);
+            playerInjuredDuringPlay(play, getRandomChaser(awayTeam), awayTeam.type, Injury.CHASER);
     }
 
-    private void playerInjuredDuringPlay(Play play, Player player, TeamType playerTeam, InjuryType injuryType) {
-        if (play.getInjuryType() != InjuryType.NONE)
+    private void playerInjuredDuringPlay(Play play, Player player, TeamType playerTeam, Injury injuryType) {
+        if (play.getInjuryType() != Injury.NONE)
             return;
 
         List<Integer> injuryChance = List.of(

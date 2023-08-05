@@ -24,23 +24,29 @@ import info.codywilliams.qsg.output.elements.Link;
 import info.codywilliams.qsg.output.elements.Table;
 import info.codywilliams.qsg.output.elements.Text;
 import info.codywilliams.qsg.util.Formatters;
-import info.codywilliams.qsg.util.ResourceBundleReplacer;
 
 import java.time.LocalDateTime;
+import java.util.ResourceBundle;
 
 public class MatchInfobox extends Element implements ElementOutputs {
     public Match match;
-    ResourceBundleReplacer resources;
+    ResourceBundle resources;
     LocalDateTime endTime;
     String homeTeamName;
     String awayTeamName;
+    String tournamentTitle;
+    String leagueName;
+    String yearRange;
 
-    public MatchInfobox(Match match, ResourceBundleReplacer resources) {
+    public MatchInfobox(Match match, String tournamentTitle, String leagueName, String yearRange, ResourceBundle resources) {
         this.match = match;
         this.resources = resources;
         endTime = match.getStartDateTime().plus(match.getMatchLength());
         homeTeamName = match.getHomeTeam().getName();
         awayTeamName = match.getAwayTeam().getName();
+        this.tournamentTitle = tournamentTitle;
+        this.leagueName = leagueName;
+        this.yearRange = yearRange;
     }
 
     @Override
@@ -78,7 +84,7 @@ public class MatchInfobox extends Element implements ElementOutputs {
         // Create the table with the header
         Table table = new Table(new Table.Row(imageData), new Table.Row(vsData));
 
-        Table.Cell footer = new Table.Cell(Link.TextLink.createTournamentLink(resources.getString("match.ib.footerText"), resources.getString("tournamentTitle")));
+        Table.Cell footer = new Table.Cell(Link.TextLink.createTournamentLink(tournamentTitle, tournamentTitle));
         footer.addAttribute("colspan", "2");
         Table.Row footerRow = new Table.Row(footer);
         footerRow.addClass("ib-footer");
@@ -138,8 +144,8 @@ public class MatchInfobox extends Element implements ElementOutputs {
                 "\n|awayFouls=" + match.getFoulsAway() +
                 "\n|homeScore=" + match.getScoreHome() +
                 "\n|awayScore=" + match.getScoreAway() +
-                "\n|leagueYear=" + resources.getString("yearRange") +
-                "\n|leagueName=" + resources.getString("leagueName") +
+                "\n|leagueYear=" + yearRange +
+                "\n|leagueName=" + leagueName +
                 "\n}}";
     }
 

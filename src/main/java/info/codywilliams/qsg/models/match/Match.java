@@ -19,10 +19,6 @@
 package info.codywilliams.qsg.models.match;
 
 import info.codywilliams.qsg.models.Team;
-import info.codywilliams.qsg.models.match.Play.BludgerOutcome;
-import info.codywilliams.qsg.models.match.Play.InjuryType;
-import info.codywilliams.qsg.models.match.PlayChaser.QuaffleOutcome;
-import info.codywilliams.qsg.models.match.PlaySeeker.SnitchOutcome;
 import info.codywilliams.qsg.models.player.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -39,14 +35,14 @@ public class Match implements Comparable<Match> {
     private final Map<String, LocalDate> homeInjuredDuring;
     private final Map<String, LocalDate> awayInjuredBefore;
     private final Map<String, LocalDate> awayInjuredDuring;
-    private final EnumMap<QuaffleOutcome, Integer> homeQuaffleOutcomes;
-    private final EnumMap<QuaffleOutcome, Integer> awayQuaffleOutcomes;
-    private final EnumMap<BludgerOutcome, Integer> homeBludgerOutcomes;
-    private final EnumMap<BludgerOutcome, Integer> awayBludgerOutcomes;
-    private final EnumMap<SnitchOutcome, Integer> homeSnitchOutcomes;
-    private final EnumMap<SnitchOutcome, Integer> awaySnitchOutcomes;
-    private final EnumMap<InjuryType, Integer> homeInjuryTypes;
-    private final EnumMap<InjuryType, Integer> awayInjuryTypes;
+    private final EnumMap<Quaffle, Integer> homeQuaffleOutcomes;
+    private final EnumMap<Quaffle, Integer> awayQuaffleOutcomes;
+    private final EnumMap<Bludger, Integer> homeBludgerOutcomes;
+    private final EnumMap<Bludger, Integer> awayBludgerOutcomes;
+    private final EnumMap<Snitch, Integer> homeSnitchOutcomes;
+    private final EnumMap<Snitch, Integer> awaySnitchOutcomes;
+    private final EnumMap<Injury, Integer> homeInjuryTypes;
+    private final EnumMap<Injury, Integer> awayInjuryTypes;
     private Team homeTeam;
     private Team awayTeam;
     private Map<String, List<? extends Player>> homeTeamRoster;
@@ -71,14 +67,14 @@ public class Match implements Comparable<Match> {
         awayInjuredBefore = new TreeMap<>();
         awayInjuredDuring = new TreeMap<>();
 
-        homeQuaffleOutcomes = new EnumMap<>(QuaffleOutcome.class);
-        awayQuaffleOutcomes = new EnumMap<>(QuaffleOutcome.class);
-        homeBludgerOutcomes = new EnumMap<>(BludgerOutcome.class);
-        awayBludgerOutcomes = new EnumMap<>(BludgerOutcome.class);
-        homeSnitchOutcomes = new EnumMap<>(SnitchOutcome.class);
-        awaySnitchOutcomes = new EnumMap<>(SnitchOutcome.class);
-        homeInjuryTypes = new EnumMap<>(InjuryType.class);
-        awayInjuryTypes = new EnumMap<>(InjuryType.class);
+        homeQuaffleOutcomes = new EnumMap<>(Quaffle.class);
+        awayQuaffleOutcomes = new EnumMap<>(Quaffle.class);
+        homeBludgerOutcomes = new EnumMap<>(Bludger.class);
+        awayBludgerOutcomes = new EnumMap<>(Bludger.class);
+        homeSnitchOutcomes = new EnumMap<>(Snitch.class);
+        awaySnitchOutcomes = new EnumMap<>(Snitch.class);
+        homeInjuryTypes = new EnumMap<>(Injury.class);
+        awayInjuryTypes = new EnumMap<>(Injury.class);
 
         clear();
     }
@@ -93,19 +89,19 @@ public class Match implements Comparable<Match> {
         foulsAway = 0;
         winner = null;
 
-        for (QuaffleOutcome outcome : QuaffleOutcome.values()) {
+        for (Quaffle outcome : Quaffle.values()) {
             homeQuaffleOutcomes.put(outcome, 0);
             awayQuaffleOutcomes.put(outcome, 0);
         }
-        for (SnitchOutcome outcome : SnitchOutcome.values()) {
+        for (Snitch outcome : Snitch.values()) {
             homeSnitchOutcomes.put(outcome, 0);
             awaySnitchOutcomes.put(outcome, 0);
         }
-        for (BludgerOutcome outcome : BludgerOutcome.values()) {
+        for (Bludger outcome : Bludger.values()) {
             homeBludgerOutcomes.put(outcome, 0);
             awayBludgerOutcomes.put(outcome, 0);
         }
-        for (InjuryType type : InjuryType.values()) {
+        for (Injury type : Injury.values()) {
             homeInjuryTypes.put(type, 0);
             awayInjuryTypes.put(type, 0);
         }
@@ -175,14 +171,14 @@ public class Match implements Comparable<Match> {
         play.setMatchLength(getMatchLength());
         this.plays.add(play);
 
-        Map<BludgerOutcome, Integer> bludgerOutcome =
+        Map<Bludger, Integer> bludgerOutcome =
                 play.getAttackingTeamType() == TeamType.HOME
                         ? homeBludgerOutcomes
                         : awayBludgerOutcomes;
         bludgerOutcome.merge(play.getBludgerOutcome(), 1, Integer::sum);
 
-        if (play.getInjuryType() != InjuryType.NONE) {
-            Map<InjuryType, Integer> injuryTypeMap;
+        if (play.getInjuryType() != Injury.NONE) {
+            Map<Injury, Integer> injuryTypeMap;
             Map<String, LocalDate> injuredDuringMap;
 
             if (play.getInjuredPlayerTeam() == TeamType.HOME) {
@@ -207,13 +203,13 @@ public class Match implements Comparable<Match> {
         }
 
         if (play instanceof PlayChaser playChaser) {
-            Map<QuaffleOutcome, Integer> quaffleOutcome =
+            Map<Quaffle, Integer> quaffleOutcome =
                     play.getAttackingTeamType() == TeamType.HOME
                             ? homeQuaffleOutcomes
                             : awayQuaffleOutcomes;
             quaffleOutcome.merge(playChaser.getQuaffleOutcome(), 1, Integer::sum);
         } else if (play instanceof PlaySeeker playSeeker) {
-            Map<SnitchOutcome, Integer> snitchOutcome =
+            Map<Snitch, Integer> snitchOutcome =
                     play.getAttackingTeamType() == TeamType.HOME
                             ? homeSnitchOutcomes
                             : awaySnitchOutcomes;

@@ -21,7 +21,6 @@ package info.codywilliams.qsg.models.match;
 import info.codywilliams.qsg.models.player.Chaser;
 import info.codywilliams.qsg.models.player.Keeper;
 import info.codywilliams.qsg.models.player.Player;
-import info.codywilliams.qsg.util.ResourceBundleReplacer;
 
 public class PlayFoul extends PlayChaser {
     Player fouler;
@@ -55,32 +54,5 @@ public class PlayFoul extends PlayChaser {
         this.attacker = attacker;
         this.defender = defender;
         this.defendingKeeper = defendingKeeper;
-    }
-
-    @Override
-    protected String getOutcomeString() {
-        return "foul." + quaffleOutcome.name().toLowerCase();
-    }
-
-    @Override
-    public String outputWithDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName) {
-        addCommonTokens(resources);
-        resources.addToken("attacker", attacker.getShortName());
-        resources.addToken("defender", defender.getShortName());
-        resources.addToken("fouler", fouler.getShortName());
-        switch (foulerTeamType) {
-            case HOME -> resources.addTeamToken("foulerTeam", "homeTeam");
-            case AWAY -> resources.addTeamToken("foulerTeam", "awayTeam");
-        }
-        if (defendingKeeper != null)
-            resources.addToken("keeper", defendingKeeper.getShortName());
-
-        return resources.getString(getOutcomeString() + ".player");
-    }
-
-    @Override
-    public String outputWithoutDetails(ResourceBundleReplacer resources, String homeTeamName, String awayTeamName) {
-        addCommonTokens(resources);
-        return resources.getString(getOutcomeString());
     }
 }

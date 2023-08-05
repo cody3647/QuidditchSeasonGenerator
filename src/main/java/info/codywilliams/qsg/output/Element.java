@@ -67,6 +67,10 @@ public abstract class Element implements ElementOutputs {
         classes.addAll(Arrays.asList(names));
     }
 
+    public void addClass(List<String> names) {
+        classes.addAll(names);
+    }
+
     public HashMap<String, String> getAttributes() {
         return attributes;
     }
