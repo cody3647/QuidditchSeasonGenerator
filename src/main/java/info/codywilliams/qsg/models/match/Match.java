@@ -57,6 +57,7 @@ public class Match implements Comparable<Match> {
     private LinkedList<Play> plays;
     private String title;
     private TeamType winner;
+    private TeamType snitchCaughtBy;
 
     public Match(int number, int round, LocalDateTime startDateTime) {
         this.number = number;
@@ -259,11 +260,13 @@ public class Match implements Comparable<Match> {
 
     public int homeCaughtSnitch() {
         scoreHome += 150;
+        snitchCaughtBy = TeamType.HOME;
         return scoreHome;
     }
 
     public int awayCaughtSnitch() {
         scoreAway += 150;
+        snitchCaughtBy = TeamType.AWAY;
         return scoreAway;
     }
 
@@ -309,6 +312,10 @@ public class Match implements Comparable<Match> {
 
     public Map<String, LocalDate> getAwayInjuredDuring() {
         return awayInjuredDuring;
+    }
+
+    public TeamType getSnitchCaughtBy() {
+        return snitchCaughtBy;
     }
 
     public String getTitle() {

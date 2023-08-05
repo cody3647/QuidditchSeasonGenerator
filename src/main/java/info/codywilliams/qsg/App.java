@@ -109,11 +109,12 @@ public class App extends Application {
 
     private void setupDependencyInjector() {
         Locale locale = Locale.getDefault();
-        ResourceBundle resourceBundle = ResourceBundle.getBundle("info.codywilliams.qsg.language.Text", locale);
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("info.codywilliams.qsg.language.App", locale);
+        ResourceBundle outputResourceBundle = ResourceBundle.getBundle("info.codywilliams.qsg.language.Output", locale);
 
         Context context = new Context();
-        PageService pageService = new PageService(resourceBundle);
-        OutputService outputService = new OutputService(resourceBundle);
+        PageService pageService = new PageService(outputResourceBundle);
+        OutputService outputService = new OutputService();
         SaveSettingsService saveSettingsService = new SaveSettingsService(context, resourceBundle);
 
         Random random = new Random();

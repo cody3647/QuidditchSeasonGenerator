@@ -172,7 +172,7 @@ public class MenuController {
         List<MatchDayTime> matchDayTimeList = List.of(
                 new MatchDayTime(DayOfWeek.FRIDAY, LocalTime.of(19, 30, 0), 1),
                 new MatchDayTime(DayOfWeek.SATURDAY, LocalTime.of(10, 0, 0), 2),
-                new MatchDayTime(DayOfWeek.SATURDAY, LocalTime.of(2, 0, 0), 3),
+                new MatchDayTime(DayOfWeek.SATURDAY, LocalTime.of(14, 0, 0), 3),
                 new MatchDayTime(DayOfWeek.SATURDAY, LocalTime.of(19, 0, 0), 4),
                 new MatchDayTime(DayOfWeek.SUNDAY, LocalTime.of(13, 0, 0), 5),
                 new MatchDayTime(DayOfWeek.SUNDAY, LocalTime.of(16, 30, 0), 6)

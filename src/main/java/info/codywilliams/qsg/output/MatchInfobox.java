@@ -30,7 +30,7 @@ import java.util.ResourceBundle;
 
 public class MatchInfobox extends Element implements ElementOutputs {
     public Match match;
-    ResourceBundle resources;
+    ResourceBundle outputResourceBundle;
     LocalDateTime endTime;
     String homeTeamName;
     String awayTeamName;
@@ -38,9 +38,9 @@ public class MatchInfobox extends Element implements ElementOutputs {
     String leagueName;
     String yearRange;
 
-    public MatchInfobox(Match match, String tournamentTitle, String leagueName, String yearRange, ResourceBundle resources) {
+    public MatchInfobox(Match match, String tournamentTitle, String leagueName, String yearRange, ResourceBundle outputResourceBundle) {
         this.match = match;
-        this.resources = resources;
+        this.outputResourceBundle = outputResourceBundle;
         endTime = match.getStartDateTime().plus(match.getMatchLength());
         homeTeamName = match.getHomeTeam().getName();
         awayTeamName = match.getAwayTeam().getName();
@@ -71,7 +71,7 @@ public class MatchInfobox extends Element implements ElementOutputs {
         homeLink.addClass("team-vs-link");
         Div awayLink = new Div(Link.TextLink.createTeamLink(awayTeamName));
         awayLink.addClass("team-vs-link");
-        Div vs = new Div(new Text(" " + resources.getString("match.versus.abbr")));
+        Div vs = new Div(new Text(" " + outputResourceBundle.getString("match.versus.abbr")));
         vs.addClass("team-vs");
         Div teamVsTeam = new Div(homeLink, vs , awayLink);
         teamVsTeam.addClass("team-vs-container");
@@ -91,16 +91,16 @@ public class MatchInfobox extends Element implements ElementOutputs {
 
         // Add all the rows
         table.addChildren(
-                addInfoboxHeader(resources.getString("match.ib.title")),
-                addInfoboxRow(resources.getString("match.ib.location"), match.getLocation()),
-                addInfoboxRow(resources.getString("match.ib.start"), match.getStartDateTime().format(Formatters.shortDateTimeFormatter)),
-                addInfoboxRow(resources.getString("match.ib.end"), endTime.format(Formatters.shortDateTimeFormatter)),
-                addInfoboxRow(resources.getString("match.ib.length"), Formatters.formatDuration(match.getMatchLength())),
-                addInfoboxRow(resources.getString("match.ib.snitchRelease"), Formatters.formatDuration(match.getSnitchReleaseTime())),
-                addInfoboxHeader(resources.getString("match.ib.fouls")),
+                addInfoboxHeader(outputResourceBundle.getString("match.ib.title")),
+                addInfoboxRow(outputResourceBundle.getString("match.ib.location"), match.getLocation()),
+                addInfoboxRow(outputResourceBundle.getString("match.ib.start"), match.getStartDateTime().format(Formatters.shortDateTimeFormatter)),
+                addInfoboxRow(outputResourceBundle.getString("match.ib.end"), endTime.format(Formatters.shortDateTimeFormatter)),
+                addInfoboxRow(outputResourceBundle.getString("match.ib.length"), Formatters.formatDuration(match.getMatchLength())),
+                addInfoboxRow(outputResourceBundle.getString("match.ib.snitchRelease"), Formatters.formatDuration(match.getSnitchReleaseTime())),
+                addInfoboxHeader(outputResourceBundle.getString("match.ib.fouls")),
                 addInfoboxRow(homeTeamName, String.valueOf(match.getFoulsHome())),
                 addInfoboxRow(awayTeamName, String.valueOf(match.getFoulsAway())),
-                addInfoboxHeader(resources.getString("match.ib.finalScore")),
+                addInfoboxHeader(outputResourceBundle.getString("match.ib.finalScore")),
                 addInfoboxRow(homeTeamName, String.valueOf(match.getScoreHome())),
                 addInfoboxRow(awayTeamName, String.valueOf(match.getScoreAway())),
                 footerRow

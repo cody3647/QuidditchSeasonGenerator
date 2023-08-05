@@ -167,7 +167,11 @@ ul.quidditch-match, .quidditch-match ul, .quidditch-roster ul {
 }
 
 .match-loser a {
-    color: rgb(175, 175, 175);
+    color: #AFAFAFFF;
+}
+
+.match-tie a {
+    color: #cca466;
 }
 
 .league-schedule {

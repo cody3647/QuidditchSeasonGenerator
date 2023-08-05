@@ -32,15 +32,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
-import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class OutputService {
-    final ResourceBundle resources;
     final Logger logger = LoggerFactory.getLogger(OutputService.class);
 
-    public OutputService(ResourceBundle resources) {
-        this.resources = resources;
+    public OutputService() {
     }
 
     public void writePagesToHtml(String tournamentTitle, List<Page> pages) {
