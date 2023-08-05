@@ -40,7 +40,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.stream.Collectors;
 
 import static info.codywilliams.qsg.App.mapper;
@@ -74,11 +73,6 @@ public class Mediawiki {
                 .map(entry -> encodeValue(entry.getKey()) + '=' + encodeValue(entry.getValue()))
                 .collect(Collectors.joining("&"));
         return HttpRequest.BodyPublishers.ofString(formDataString);
-    }
-
-    private static String randomString() {
-        Random random = new Random();
-        return random.ints(50, 'a', 'z').mapToObj(i -> Character.toString((char) i)).collect(Collectors.joining());
     }
 
     synchronized public Response login(String apiUrlString, String username, String password) throws IOException {

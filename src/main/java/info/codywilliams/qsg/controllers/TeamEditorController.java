@@ -45,6 +45,7 @@ import java.util.function.Function;
 
 public class TeamEditorController {
     private final Context context;
+    private final PlayerFactory playerFactory;
     @FXML
     VBox teamVBox;
     @FXML
@@ -73,8 +74,9 @@ public class TeamEditorController {
     ResourceBundle resources;
     private Map<String, TreeItem<Player>> playerPositions;
 
-    public TeamEditorController(Context context) {
+    public TeamEditorController(Context context, PlayerFactory playerFactory) {
         this.context = context;
+        this.playerFactory = playerFactory;
     }
 
     public void initialize() {
@@ -143,12 +145,12 @@ public class TeamEditorController {
         foulingCol.setOnEditCommit(skillCommitHandler);
 
         Function<Player, Player> randomNameFunction = (Player player) -> {
-            PlayerFactory.randomFullName(player);
+            playerFactory.randomFullName(player);
             return player;
         };
 
         Function<Player, Player> randomSkillsFunction = (Player player) -> {
-            PlayerFactory.randomSkills(player);
+            playerFactory.randomSkills(player);
             return player;
         };
 

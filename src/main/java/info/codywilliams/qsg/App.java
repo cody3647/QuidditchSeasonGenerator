@@ -23,8 +23,7 @@ import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import info.codywilliams.qsg.controllers.*;
 import info.codywilliams.qsg.models.Context;
-import info.codywilliams.qsg.service.OutputService;
-import info.codywilliams.qsg.service.PageService;
+import info.codywilliams.qsg.service.*;
 import info.codywilliams.qsg.util.DependencyInjector;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -44,6 +43,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.time.DayOfWeek;
 import java.util.Locale;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 /**
@@ -114,11 +114,23 @@ public class App extends Application {
         Context context = new Context();
         PageService pageService = new PageService(resources);
         OutputService outputService = new OutputService(resources);
+
+        Random random = new Random();
+
+        NameGenerator surnames = new NameGenerator("surnames");
+        NameGenerator femaleNames = new NameGenerator("femaleNames");
+        NameGenerator maleNames = new NameGenerator("maleNames");
+        NameGenerator nonBinaryNames = new NameGenerator("nonBinaryNames");
+        NameGenerator teamNames = new NameGenerator("teamNames");
+        PlayerFactory playerFactory = new PlayerFactory(random, surnames, femaleNames, maleNames, nonBinaryNames);
+        TeamFactory teamFactory = new TeamFactory(teamNames, playerFactory);
+
+
         DependencyInjector.setBundle(resources);
 
-        DependencyInjector.addInjectionMethod(AppController.class, type -> new AppController(context, pageService, outputService));
-        DependencyInjector.addInjectionMethod(MenuController.class, type -> new MenuController(context));
-        DependencyInjector.addInjectionMethod(TeamEditorController.class, type -> new TeamEditorController(context));
+        DependencyInjector.addInjectionMethod(AppController.class, type -> new AppController(context, teamFactory, pageService, outputService));
+        DependencyInjector.addInjectionMethod(MenuController.class, type -> new MenuController(context, teamFactory));
+        DependencyInjector.addInjectionMethod(TeamEditorController.class, type -> new TeamEditorController(context, playerFactory));
         DependencyInjector.addInjectionMethod(TournamentEditorController.class, type -> new TournamentEditorController(context));
         DependencyInjector.addInjectionMethod(TournamentInfoController.class, type -> new TournamentInfoController(context));
         DependencyInjector.addInjectionMethod(MediawikiSetupController.class, type -> new MediawikiSetupController(context));

@@ -47,6 +47,7 @@ import java.util.ResourceBundle;
 public class AppController {
 
     private final Context context;
+    private final TeamFactory teamFactory;
     private final PageService pageService;
     private final OutputService outputService;
     @FXML
@@ -83,8 +84,9 @@ public class AppController {
     private int teamNumber = 0;
     Logger logger = LoggerFactory.getLogger(AppController.class);
 
-    public AppController(Context context, PageService pageService, OutputService outputService) {
+    public AppController(Context context, TeamFactory teamFactory, PageService pageService, OutputService outputService) {
         this.context = context;
+        this.teamFactory = teamFactory;
         this.pageService = pageService;
         this.outputService = outputService;
     }
@@ -181,11 +183,11 @@ public class AppController {
 
     public void createNewTeam() {
         teamNumber++;
-        context.getTeams().add(TeamFactory.newTeam(teamNumber, resources));
+        context.getTeams().add(teamFactory.newTeam(teamNumber, resources));
     }
 
     public void createRandomTeam() {
-        context.getTeams().add(TeamFactory.randomTeam());
+        context.getTeams().add(teamFactory.randomTeam());
     }
 
     public void removeTeam() {

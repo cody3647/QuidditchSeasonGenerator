@@ -40,6 +40,7 @@ import java.util.regex.Pattern;
 
 public class MenuController {
     private final Context context;
+    private final TeamFactory teamFactory;
     private final Logger logger;
     @FXML
     TextField seedTextField;
@@ -51,8 +52,9 @@ public class MenuController {
             "portree", "puddlemere", "tutshill", "wigtown", "wimbourne"
     );
 
-    public MenuController(Context context) {
+    public MenuController(Context context, TeamFactory teamFactory) {
         this.context = context;
+        this.teamFactory = teamFactory;
         logger = LoggerFactory.getLogger(MenuController.class);
     }
 
@@ -161,7 +163,7 @@ public class MenuController {
     @FXML
     void loadBlankBritishQuidditchLeague(ActionEvent ignoredEvent) {
         standardBritishQuidditchLeague(britishTeams.stream()
-                .map(name -> TeamFactory.newTeam(
+                .map(name -> teamFactory.newTeam(
                                 resources.getString("tournament.BIQL." + name + ".name"),
                                 resources.getString("tournament.BIQL." + name + ".name.short"),
                                 resources.getString("tournament.BIQL." + name + ".home"),
@@ -175,7 +177,7 @@ public class MenuController {
     @FXML
     void loadRandomBritishQuidditchLeague(ActionEvent ignoredEvent) {
         standardBritishQuidditchLeague(britishTeams.stream()
-                .map(name -> TeamFactory.randomTeam(
+                .map(name -> teamFactory.randomTeam(
                                 resources.getString("tournament.BIQL." + name + ".name"),
                                 resources.getString("tournament.BIQL." + name + ".name.short"),
                                 resources.getString("tournament.BIQL." + name + ".home")
