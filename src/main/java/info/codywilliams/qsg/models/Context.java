@@ -31,7 +31,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableMap;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -48,12 +47,11 @@ public class Context {
     final private LongProperty seed;
     final private IntegerProperty numTeams;
     final private IntegerProperty numLocations;
-    final private StringProperty leftStatus;
-    final private StringProperty rightStatus;
+    final private StringProperty settingsStatus;
+    final private StringProperty outputStatus;
     final private BooleanProperty loggedInToMediawiki;
     private final BooleanProperty matchesReady;
     private final Mediawiki mediawiki;
-    private File currentSaveFile;
     private boolean listChangeAndChangeFlag = false;
 
 
@@ -72,8 +70,8 @@ public class Context {
         numTeams = new SimpleIntegerProperty(this, "numTeams", 0);
         numLocations = new SimpleIntegerProperty(this, "numLocations", 0);
 
-        leftStatus = new SimpleStringProperty(this, "leftStatus");
-        rightStatus = new SimpleStringProperty(this, "rightStatus");
+        settingsStatus = new SimpleStringProperty(this, "settingsStatus");
+        outputStatus = new SimpleStringProperty(this, "outputStatus");
         loggedInToMediawiki = new SimpleBooleanProperty(this, "loggedInToMediawiki", false);
         matchesReady = new SimpleBooleanProperty(this, "matchesReady", false);
 
@@ -171,28 +169,28 @@ public class Context {
         return teams;
     }
 
-    public String getLeftStatus() {
-        return leftStatus.get();
+    public String getSettingsStatus() {
+        return settingsStatus.get();
     }
 
-    public void setLeftStatus(String leftStatus) {
-        this.leftStatus.set(leftStatus);
+    public void setSettingsStatus(String settingsStatus) {
+        this.settingsStatus.set(settingsStatus);
     }
 
-    public StringProperty leftStatusProperty() {
-        return leftStatus;
+    public StringProperty settingsStatusProperty() {
+        return settingsStatus;
     }
 
-    public String getRightStatus() {
-        return rightStatus.get();
+    public String getOutputStatus() {
+        return outputStatus.get();
     }
 
-    public void setRightStatus(String rightStatus) {
-        this.rightStatus.set(rightStatus);
+    public void setOutputStatus(String outputStatus) {
+        this.outputStatus.set(outputStatus);
     }
 
-    public StringProperty rightStatusProperty() {
-        return rightStatus;
+    public StringProperty outputStatusProperty() {
+        return outputStatus;
     }
 
     public TournamentOptions getTournamentOptions() {
@@ -265,14 +263,6 @@ public class Context {
 
     public IntegerProperty numLocationsProperty() {
         return numLocations;
-    }
-
-    public File getCurrentSaveFile() {
-        return currentSaveFile;
-    }
-
-    public void setCurrentSaveFile(File currentSaveFile) {
-        this.currentSaveFile = currentSaveFile;
     }
 
     public void changeCurrentTournament(TournamentType type) {

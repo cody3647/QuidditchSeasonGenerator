@@ -109,11 +109,12 @@ public class App extends Application {
 
     private void setupDependencyInjector() {
         Locale locale = Locale.getDefault();
-        ResourceBundle resources = ResourceBundle.getBundle("info.codywilliams.qsg.language.Text", locale);
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("info.codywilliams.qsg.language.Text", locale);
 
         Context context = new Context();
-        PageService pageService = new PageService(resources);
-        OutputService outputService = new OutputService(resources);
+        PageService pageService = new PageService(resourceBundle);
+        OutputService outputService = new OutputService(resourceBundle);
+        SaveSettingsService saveSettingsService = new SaveSettingsService(context, resourceBundle);
 
         Random random = new Random();
 
@@ -126,10 +127,10 @@ public class App extends Application {
         TeamFactory teamFactory = new TeamFactory(teamNames, playerFactory);
 
 
-        DependencyInjector.setBundle(resources);
+        DependencyInjector.setBundle(resourceBundle);
 
         DependencyInjector.addInjectionMethod(AppController.class, type -> new AppController(context, teamFactory, pageService, outputService));
-        DependencyInjector.addInjectionMethod(MenuController.class, type -> new MenuController(context, teamFactory));
+        DependencyInjector.addInjectionMethod(MenuController.class, type -> new MenuController(context, teamFactory, saveSettingsService));
         DependencyInjector.addInjectionMethod(TeamEditorController.class, type -> new TeamEditorController(context, playerFactory));
         DependencyInjector.addInjectionMethod(TournamentEditorController.class, type -> new TournamentEditorController(context));
         DependencyInjector.addInjectionMethod(TournamentInfoController.class, type -> new TournamentInfoController(context));

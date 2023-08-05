@@ -18,19 +18,14 @@
 
 package info.codywilliams.qsg.models;
 
-import com.fasterxml.jackson.databind.SerializationFeature;
 import info.codywilliams.qsg.models.tournament.BlackoutDates;
 import info.codywilliams.qsg.models.tournament.MatchDayTime;
 import info.codywilliams.qsg.models.tournament.TournamentOptions;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
 
-import java.io.File;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
-import static info.codywilliams.qsg.App.mapper;
 
 public class SaveSettings {
     private List<Team> teams;
@@ -59,10 +54,6 @@ public class SaveSettings {
 
     public SaveSettings(Context context) {
         this(new ArrayList<>(context.getTeams()), (context.getCurrentTournament() != null) ? context.getCurrentTournament().getType() : null, context.getTournamentOptions(), context.getSeed());
-    }
-
-    static public SaveSettings loadFromFile(File settingsFile) throws IOException {
-        return mapper.readValue(settingsFile, SaveSettings.class);
     }
 
     public List<Team> getTeams() {
@@ -119,10 +110,5 @@ public class SaveSettings {
 
     public void setSeed(long seed) {
         this.seed = seed;
-    }
-
-    public void saveToFile(File saveFile) throws IOException {
-        mapper.enable(SerializationFeature.INDENT_OUTPUT);
-        mapper.writeValue(saveFile, this);
     }
 }

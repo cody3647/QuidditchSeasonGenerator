@@ -63,9 +63,9 @@ public class AppController {
     @FXML
     FlowPane buttonFlowPane;
     @FXML
-    Label leftStatus;
+    Label settingsStatus;
     @FXML
-    Label rightStatus;
+    Label outputStatus;
     @FXML
     ResourceBundle resources;
     @FXML
@@ -111,9 +111,9 @@ public class AppController {
         rightPane.setContent(teamEditorPane);
 
 
-        leftStatus.textProperty().bind(context.leftStatusProperty());
-        context.leftStatusProperty().set(resources.getString("app.newStatus"));
-        rightStatus.textProperty().bind(context.rightStatusProperty());
+        settingsStatus.textProperty().bind(context.settingsStatusProperty());
+        context.settingsStatusProperty().set(resources.getString("app.newStatus"));
+        outputStatus.textProperty().bind(context.outputStatusProperty());
 
         leftPaneListView.setItems(context.getTeams());
 

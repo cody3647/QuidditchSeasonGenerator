@@ -5,15 +5,14 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.LoggerContext;
 import info.codywilliams.qsg.App;
 import info.codywilliams.qsg.models.Context;
-import info.codywilliams.qsg.models.SaveSettings;
 import info.codywilliams.qsg.models.Team;
 import info.codywilliams.qsg.models.tournament.MatchDayTime;
 import info.codywilliams.qsg.models.tournament.TournamentOptions;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
 import info.codywilliams.qsg.service.MatchGenerator;
 import info.codywilliams.qsg.service.Mediawiki;
+import info.codywilliams.qsg.service.SaveSettingsService;
 import info.codywilliams.qsg.service.TeamFactory;
-import info.codywilliams.qsg.util.Formatters;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -30,7 +29,6 @@ import java.io.File;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.time.DayOfWeek;
-import java.time.Instant;
 import java.time.LocalTime;
 import java.util.HexFormat;
 import java.util.List;
@@ -41,6 +39,7 @@ import java.util.regex.Pattern;
 public class MenuController {
     private final Context context;
     private final TeamFactory teamFactory;
+    private final SaveSettingsService saveSettingsService;
     private final Logger logger;
     @FXML
     TextField seedTextField;
@@ -52,9 +51,10 @@ public class MenuController {
             "portree", "puddlemere", "tutshill", "wigtown", "wimbourne"
     );
 
-    public MenuController(Context context, TeamFactory teamFactory) {
+    public MenuController(Context context, TeamFactory teamFactory, SaveSettingsService saveSettingsService) {
         this.context = context;
         this.teamFactory = teamFactory;
+        this.saveSettingsService = saveSettingsService;
         logger = LoggerFactory.getLogger(MenuController.class);
     }
 
@@ -74,17 +74,26 @@ public class MenuController {
 
         if (settingsFile != null) {
             try {
-                SaveSettings settings = SaveSettings.loadFromFile(settingsFile);
-
-                context.clearContext();
-                context.loadContext(settings);
-                context.setCurrentSaveFile(settingsFile);
-                updateLeftStatus(settingsFile);
+                saveSettingsService.loadSettings(settingsFile);
             } catch (IOException e) {
                 App.exceptionAlert(e, resources);
-                logger.error("Error loading file", e);
             }
         }
+    }
+
+    @FXML
+    void fileSaveAction(ActionEvent event) {
+        if (saveSettingsService.getCurrentSaveFile() == null) {
+            saveSettingsService.setCurrentSaveFile(selectFile(event, FileAction.SAVE));
+        }
+        saveSettings();
+    }
+
+    @FXML
+    void fileSaveAs(ActionEvent event) {
+        saveSettingsService.setCurrentSaveFile(selectFile(event, FileAction.SAVE));
+
+        saveSettings();
     }
 
     private File selectFile(ActionEvent event, FileAction fileAction) {
@@ -107,42 +116,12 @@ public class MenuController {
         return null;
     }
 
-    private void updateLeftStatus(File saveFile) {
-        Instant timestamp = Instant.ofEpochMilli(saveFile.lastModified());
-        context.setLeftStatus(String.format("%s %s %s", resources.getString("app.lastSaved"), saveFile.getName(), Formatters.dateTimeFormatter.format(timestamp)));
-    }
-
-    @FXML
-    void fileSaveAction(ActionEvent event) {
-        if (context.getCurrentSaveFile() == null) {
-            context.setCurrentSaveFile(selectFile(event, FileAction.SAVE));
+    private void saveSettings() {
+        try {
+            saveSettingsService.saveSettings();
+        } catch (Exception e) {
+            App.exceptionAlert(e, resources);
         }
-
-        saveSettings(context.getCurrentSaveFile());
-    }
-
-    private void saveSettings(File saveFile) {
-        if (saveFile != null) {
-            try {
-                SaveSettings settings = new SaveSettings(context);
-
-                settings.saveToFile(saveFile);
-
-                updateLeftStatus(saveFile);
-
-                logger.debug("Saved to file {}", saveFile);
-            } catch (IOException e) {
-                App.exceptionAlert(e, resources);
-                logger.error("Error saving file", e);
-            }
-        }
-    }
-
-    @FXML
-    void fileSaveAs(ActionEvent event) {
-        context.setCurrentSaveFile(selectFile(event, FileAction.SAVE));
-
-        saveSettings(context.getCurrentSaveFile());
     }
 
     @FXML
