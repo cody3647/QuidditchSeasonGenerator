@@ -61,15 +61,42 @@ public class MatchInfobox extends Element implements ElementOutputs {
 
     @Override
     public String toHtml(int tabs) {
+        String teamDirectory = "../" + outputResourceBundle.getString("directory.teams");
         // Build the infobox header
-        Div homeImageImageLink = new Div(Link.ImageLink.createTeamLink(homeTeamName));
-        Div awayImageImageLink = new Div(Link.ImageLink.createTeamLink(awayTeamName));
+        Div homeImageImageLink = new Div(
+                new Link.ImageLink(
+                        homeTeamName,
+                        homeTeamName + ".png",
+                        teamDirectory,
+                        homeTeamName
+                )
+        );
+        Div awayImageImageLink = new Div(
+                new Link.ImageLink(
+                        awayTeamName,
+                        awayTeamName + ".png",
+                        teamDirectory,
+                        awayTeamName
+                )
+        );
         Div images = new Div(homeImageImageLink, awayImageImageLink);
         images.addClass("team-vs-container");
 
-        Div homeLink = new Div(Link.TextLink.createTeamLink(homeTeamName));
+        Div homeLink = new Div(
+                new Link.TextLink(
+                        homeTeamName,
+                        teamDirectory,
+                        homeTeamName
+                )
+        );
         homeLink.addClass("team-vs-link");
-        Div awayLink = new Div(Link.TextLink.createTeamLink(awayTeamName));
+        Div awayLink = new Div(
+                new Link.TextLink(
+                        awayTeamName,
+                        teamDirectory,
+                        awayTeamName
+                )
+        );
         awayLink.addClass("team-vs-link");
         Div vs = new Div(new Text(" " + outputResourceBundle.getString("match.versus.abbr")));
         vs.addClass("team-vs");
@@ -84,7 +111,7 @@ public class MatchInfobox extends Element implements ElementOutputs {
         // Create the table with the header
         Table table = new Table(new Table.Row(imageData), new Table.Row(vsData));
 
-        Table.Cell footer = new Table.Cell(Link.TextLink.createTournamentLink(tournamentTitle, tournamentTitle));
+        Table.Cell footer = new Table.Cell(Link.TextLink.createIndexLink(tournamentTitle, tournamentTitle));
         footer.addAttribute("colspan", "2");
         Table.Row footerRow = new Table.Row(footer);
         footerRow.addClass("ib-footer");

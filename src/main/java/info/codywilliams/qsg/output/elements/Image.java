@@ -26,7 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class Image extends Element implements InlineElement {
-    public static final String IMAGES_DIR = "/images/";
+    public static final String IMAGES_DIR = "../images/";
     private static final Set<String> specialClasses = Set.of("border", "frameless", "frame", "thumb");
     private static final Set<String> specialAttributes = Set.of("height", "width");
     public static String IMG = "img";

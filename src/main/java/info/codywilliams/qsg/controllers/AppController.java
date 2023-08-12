@@ -153,8 +153,8 @@ public class AppController {
         List<Page> pages = pageService.buildPages(
                 context.getCurrentTournament(), context.getTeams(), matchPagesCheckBox.isSelected(), playerDetailsCheckBox.isSelected(), context.getSeed()
         );
-        String tournamentTitle = pageService.getTournamentTitle();
-        outputService.writePagesToHtml(tournamentTitle, pages);
+
+        outputService.writePagesToHtml(pages);
     }
 
     @FXML
@@ -176,7 +176,7 @@ public class AppController {
                     return;
             }
 
-            outputService.writePagesToMediawiki(tournamentTitle, pages, mediawiki);
+            outputService.writePagesToMediawiki(pages, mediawiki);
         } catch (IOException e) {
             logger.error("Error communicating with mediawiki instance", e);
             throw new RuntimeException(e);

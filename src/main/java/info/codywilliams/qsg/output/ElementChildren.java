@@ -27,6 +27,7 @@ public abstract class ElementChildren<T extends ElementOutputs> extends Element 
         children = new LinkedList<>();
     }
 
+    @SafeVarargs
     public ElementChildren(T... elements) {
         this();
         addChildren(elements);
@@ -42,12 +43,13 @@ public abstract class ElementChildren<T extends ElementOutputs> extends Element 
      *
      * @param elements Child elements to add to this element
      */
-    public void addChildren(T... elements) {
-        children.addAll(Arrays.asList(elements));
+    @SafeVarargs
+    public final void addChildren(T... elements) {
+        children.addAll(Arrays.stream(elements).filter(Objects::nonNull).toList());
     }
 
     public void addChildren(Collection<T> elements) {
-        children.addAll(elements);
+        children.addAll(elements.stream().filter(Objects::nonNull).toList());
     }
 
     /**

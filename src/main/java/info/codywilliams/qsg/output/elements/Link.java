@@ -20,32 +20,37 @@ package info.codywilliams.qsg.output.elements;
 
 import info.codywilliams.qsg.output.Element;
 import info.codywilliams.qsg.output.ElementChildren;
+import info.codywilliams.qsg.service.OutputService;
 import info.codywilliams.qsg.util.Formatters;
 
 public class Link {
-    static public final String TEAMS_DIR = "../teams/";
     public static String A = "a";
+
+    private static String buildHref(String dir, String page) {
+        page = Formatters.sanitizeFileNames(page) + ".html";
+        if (!dir.isEmpty()) {
+            return OutputService.sanitizeDirectories(dir) + '/' + page;
+        }
+        return page;
+    }
 
     public static class TextLink extends ElementChildren<Text> {
         String wikipage;
 
-        public TextLink(String text, String dir, String page, String ext) {
+        public TextLink(String text, String dir, String page) {
             super(new Text(text));
-            addAttribute("href", dir + Formatters.sanitizeFileNames(page) + '.' + ext);
+
+            addAttribute("href",  buildHref(dir, page));
             wikipage = page;
         }
 
-        static public TextLink createTeamLink(String teamName) {
-            return new TextLink(teamName, TEAMS_DIR, teamName, "html");
+        static public TextLink createIndexLink(String text, String page) {
+            return createIndexLink(text, "", page);
         }
 
-        static public TextLink createMatchLink(String text, String matchTitle) {
-            return new TextLink(text, "", matchTitle, "html");
-        }
-
-        static public TextLink createTournamentLink(String text, String tournamentTitle) {
-            TextLink tournamentLink = new TextLink(text, "", "index", "html");
-            tournamentLink.wikipage = tournamentTitle;
+        static public TextLink createIndexLink(String text, String dir, String page) {
+            TextLink tournamentLink = new TextLink(text, dir, "index");
+            tournamentLink.wikipage = page;
             return tournamentLink;
         }
 
@@ -84,14 +89,11 @@ public class Link {
         private final Image image;
         String wikipage;
 
-        public ImageLink(String alt, String imageName, String pageDir, String page, String pageExt) {
+        public ImageLink(String alt, String imageName, String pageDir, String page) {
             image = new Image(alt, imageName);
-            addAttribute("href", pageDir + Formatters.sanitizeFileNames(page) + '.' + pageExt);
-            wikipage = page;
-        }
 
-        static public ImageLink createTeamLink(String teamName) {
-            return new ImageLink(teamName, teamName + ".png", TEAMS_DIR, teamName, "html");
+            addAttribute("href", buildHref(pageDir, page));
+            wikipage = page;
         }
 
         @Override

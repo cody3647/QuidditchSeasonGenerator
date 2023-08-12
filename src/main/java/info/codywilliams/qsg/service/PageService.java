@@ -63,6 +63,7 @@ public class PageService {
 
     static private final Pattern ballPattern = Pattern.compile("((quaffle|bludger|snitch)\\w*)", Pattern.CASE_INSENSITIVE);
     static private final String ballReplacement = "<span class=\"$2\">$1</span>";
+    static private final String QUIDDITCH_STYLE = "QuidditchGenerator.css";
 
     public PageService(ResourceBundle outputResourceBundle) {
         this.outputResourceBundleReplacer = new ResourceBundleReplacer(outputResourceBundle);
@@ -96,6 +97,10 @@ public class PageService {
             }
         }
 
+        for (Team team: teamList) {
+            pages.add(buildTeamPage(team));
+        }
+
         pages.add(0, buildTournamentPage(tournamentTitle, seed));
 
         now = System.currentTimeMillis() - now;
@@ -103,10 +108,55 @@ public class PageService {
         return pages;
     }
 
+    private Page buildTeamPage(Team team) {
+        Page teamPage = new Page(team.getName(), outputResourceBundleReplacer.getString("directory.teams"));
+        teamPage.addStyle(QUIDDITCH_STYLE);
+        teamPage.addMetadata(
+                "keywords",
+                null,
+                outputResourceBundleReplacer.getString("meta.tournament.keywords") + ", " + team.getName(),
+                null
+        );
+
+        teamPage.addBodyContent(
+                new Header(2, outputResourceBundleReplacer.getString("team.seasons")),
+                new Header(3, yearRange)
+        );
+
+        Table teamRoster = buildRosterTable(
+                null,
+                Map.of(
+                        outputResourceBundleReplacer.getString("team.beaters"), team.getBeaters(),
+                        outputResourceBundleReplacer.getString("team.chasers"), team.getChasers(),
+                        outputResourceBundleReplacer.getString("team.keepers"), team.getKeepers(),
+                        outputResourceBundleReplacer.getString("team.seekers"), team.getSeekers()
+                )
+        );
+
+
+
+        teamPage.addBodyContent(
+                Link.TextLink.createIndexLink(
+                        outputResourceBundleReplacer.getString("tournamentTitle"),
+                        "../" + outputResourceBundleReplacer.getString("tournamentTitle"),
+                        outputResourceBundleReplacer.getString("tournamentTitle")
+                ),
+                new Header(4, outputResourceBundleReplacer.getString("team.roster")),
+                teamRoster
+        );
+
+        return teamPage;
+    }
+
     private Page buildTournamentPage(String title, long seed) {
-        Page seasonPage = new Page(title, "index");
-        seasonPage.addStyle("QuidditchGenerator.css");
-        seasonPage.addMetadata("keywords", null, outputResourceBundleReplacer.getString("meta.tournament.keywords"), null);
+        Page seasonPage = new Page(title, outputResourceBundleReplacer.getString("directory.tournament"), true);
+        seasonPage.addStyle(QUIDDITCH_STYLE);
+        seasonPage.addMetadata(
+                "keywords",
+                null,
+                outputResourceBundleReplacer.getString("meta.tournament.keywords"),
+                null
+        );
 
         Image.Gallery teamGallery = new Image.Gallery("packed");
         teamList.stream()
@@ -149,18 +199,7 @@ public class PageService {
         leagueScheduleTopper.addClass("league-schedule-topper");
         seasonPage.addBodyContent(leagueScheduleTopper);
 
-        Table matchTable = new Table();
-        matchTable.addClass("league-schedule", "wikitable");
-
-        int round = 0;
-        for (Match match : tournament.getMatches()) {
-            if (round != match.getRound()) {
-                round = match.getRound();
-                matchTable.addChildren(matchTableRoundHeader(round));
-            }
-
-            matchTable.addChildren(matchTableRow(match));
-        }
+        Table matchTable = buildMatchTable(tournament.getMatches());
 
         seasonPage.addBodyContent(matchTable);
 
@@ -213,11 +252,32 @@ public class PageService {
         return seasonPage;
     }
 
-    private Table.Row[] matchTableRoundHeader(int roundNum) {
+    private Table buildMatchTable(Set<Match> matches) {
+        Table matchTable = new Table();
+        matchTable.addClass("league-schedule", "wikitable");
+
+
+        int round = 0;
+        for (Match match : matches) {
+            if (round != match.getRound()) {
+                round = match.getRound();
+                matchTable.addChildren(matchTableRoundHeader(round), matchTableHeaders());
+            }
+
+            matchTable.addChildren(matchTableRow(match));
+        }
+
+        return matchTable;
+    }
+
+    private Table.Row matchTableRoundHeader(int roundNum) {
         Table.HeaderCell roundHeaderCell = new Table.HeaderCell(outputResourceBundleReplacer.getString("header.round") + roundNum);
         roundHeaderCell.addAttribute("colspan", "7");
+        return new Table.Row(roundHeaderCell);
+    }
 
-        Table.HeaderCell[] columnHeaderCells = new Table.HeaderCell[]{
+    private Table.Row matchTableHeaders() {
+                Table.HeaderCell[] columnHeaderCells = new Table.HeaderCell[]{
                 new Table.HeaderCell(outputResourceBundleReplacer.getString("header.date")),
                 new Table.HeaderCell(outputResourceBundleReplacer.getString("header.home")),
                 new Table.HeaderCell(outputResourceBundleReplacer.getString("header.away")),
@@ -227,21 +287,42 @@ public class PageService {
                 new Table.HeaderCell(outputResourceBundleReplacer.getString("header.points"))
         };
 
-        return new Table.Row[]{new Table.Row(roundHeaderCell), new Table.Row(columnHeaderCells)};
+        return new Table.Row(columnHeaderCells);
     }
 
     private Table.Row matchTableRow(Match match) {
         Table.Cell date;
+        String matchDirectory  = outputResourceBundleReplacer.getString("directory.tournament");
+        String teamDirectory = "../" + outputResourceBundleReplacer.getString("directory.teams");
+
         if (createMatchPages) {
-            date = new Table.Cell(Link.TextLink.createMatchLink(match.getStartDateTime().format(Formatters.dateTimeFormatter), match.getTitle()));
+            date = new Table.Cell(
+                    new Link.TextLink(
+                            match.getStartDateTime().format(Formatters.dateTimeFormatter),
+                            matchDirectory,
+                            match.getTitle()
+                    )
+            );
         }
         else {
             date = new Table.Cell(match.getStartDateTime().format(Formatters.dateTimeFormatter));
         }
 
 
-        Table.Cell home = new Table.Cell(Link.TextLink.createTeamLink(match.getHomeTeam().getName()));
-        Table.Cell away = new Table.Cell(Link.TextLink.createTeamLink(match.getAwayTeam().getName()));
+        Table.Cell home = new Table.Cell(
+                new Link.TextLink(
+                        match.getHomeTeam().getName(),
+                        teamDirectory,
+                        match.getHomeTeam().getName()
+                )
+        );
+        Table.Cell away = new Table.Cell(
+                new Link.TextLink(
+                        match.getAwayTeam().getName(),
+                        teamDirectory,
+                        match.getAwayTeam().getName()
+                )
+        );
         Table.Cell location = new Table.Cell(match.getLocation());
         Table.Cell length = new Table.Cell(Formatters.formatDuration(match.getMatchLength()));
         Table.Cell score = new Table.Cell(match.getScoreHome() + " - " + match.getScoreAway());
@@ -300,15 +381,15 @@ public class PageService {
         String title = outputResourceBundleReplacer.getString("match.title");
         match.setTitle(title);
 
-        Page matchPage = new Page(title, title);
-        matchPage.addStyle("QuidditchGenerator.css");
+        Page matchPage = new Page(title, outputResourceBundleReplacer.getString("directory.tournament"));
+        matchPage.addStyle(QUIDDITCH_STYLE);
         matchPage.addMetadata("keywords", null, outputResourceBundleReplacer.getString("meta.match.keywords"), null);
         matchPage.addBodyContent(new MatchInfobox(match, tournamentTitle, outputResourceBundleReplacer.getString("leagueName"), outputResourceBundleReplacer.getString("yearRange"), outputResourceBundle));
 
         if (includePlayerDetails) {
             matchPage.addBodyContent(new Header(2, "Match Rosters"));
-            matchPage.addBodyContent(buildRosters(homeTeam.getName(), match.getHomeTeamRoster()));
-            matchPage.addBodyContent(buildRosters(awayTeam.getName(), match.getAwayTeamRoster()));
+            matchPage.addBodyContent(buildRosterTable(homeTeam.getName(), match.getHomeTeamRoster()));
+            matchPage.addBodyContent(buildRosterTable(awayTeam.getName(), match.getAwayTeamRoster()));
 
             matchPage.addBodyContent(new Header(2, "Injured Players"));
             matchPage.addBodyContent(buildInjuredPlayersTable(homeTeam.getName(), match.getHomeInjuredBefore(), match.getHomeInjuredDuring()));
@@ -363,7 +444,7 @@ public class PageService {
         return matchPage;
     }
 
-    private Table buildRosters(String teamName, Map<String, List<? extends Player>> rosterMap) {
+    private Table buildRosterTable(String teamName, Map<String, List<? extends Player>> rosterMap) {
         ArrayList<Table.TableCell> headerCells = new ArrayList<>();
         ArrayList<Table.TableCell> playerCells = new ArrayList<>();
         for (Map.Entry<String, List<? extends Player>> entry : rosterMap.entrySet()) {
@@ -393,6 +474,9 @@ public class PageService {
     }
 
     private Table buildInjuredPlayersTable(String teamName, Map<String, LocalDate> injuredBefore, Map<String, LocalDate> injuredDuring) {
+        if (injuredBefore.isEmpty() && injuredDuring.isEmpty())
+            return null;
+
         Table injuredTable = new Table();
         injuredTable.setCaption(teamName);
         injuredTable.addClass("quidditch-roster");

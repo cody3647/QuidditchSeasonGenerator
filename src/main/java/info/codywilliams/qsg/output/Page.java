@@ -18,24 +18,28 @@
 
 package info.codywilliams.qsg.output;
 
+import info.codywilliams.qsg.service.OutputService;
 import info.codywilliams.qsg.util.DependencyInjector;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class Page implements ElementOutputs {
     private final String pageTitle;
-    private final String fileName;
+    private final String directory;
+    private final boolean indexPage;
     private final ArrayList<Metadata> metadata;
 
     private final ArrayList<Element> body;
     private final ArrayList<String> styles;
 
-    public Page(String pageTitle, String fileName) {
+    public Page(String pageTitle, String directory) {
+        this(pageTitle, directory, false);
+    }
+
+    public Page(String pageTitle, String directory, boolean indexPage) {
         this.pageTitle = pageTitle;
-        this.fileName = fileName;
+        this.directory = OutputService.sanitizeDirectories(directory);
+        this.indexPage = indexPage;
 
         metadata = new ArrayList<>();
         body = new ArrayList<>();
@@ -48,15 +52,17 @@ public class Page implements ElementOutputs {
     }
 
     public void addBodyContent(Element element) {
-        body.add(element);
+        if (element != null)
+            body.add(element);
     }
 
     public void addBodyContent(Element... elements) {
-        body.addAll(Arrays.asList(elements));
+        body.addAll(Arrays.stream(elements).filter(Objects::nonNull).toList());
+
     }
 
     public void addBodyContent(Collection<Element> elements) {
-        body.addAll(elements);
+        body.addAll(elements.stream().filter(Objects::nonNull).toList());
     }
 
     public List<String> getStyles() {
@@ -79,7 +85,7 @@ public class Page implements ElementOutputs {
                 stringBuilder.append(meta.toHtml());
         if (!styles.isEmpty())
             for (String style : styles)
-                stringBuilder.append("\n\t\t<link rel='stylesheet' href=\"").append(style).append("\">");
+                stringBuilder.append("\n\t\t<link rel='stylesheet' href=\"../css/").append(style).append("\">");
         stringBuilder.append("\n</head>\n<body>\n\t<div id=\"content\">");
 
         stringBuilder.append("\n\t\t<h1 class=\"firstHeading\">").append(pageTitle).append("</h1>");
@@ -113,8 +119,12 @@ public class Page implements ElementOutputs {
         return pageTitle;
     }
 
-    public String getFileName() {
-        return fileName;
+    public String getDirectory() {
+        return directory;
+    }
+
+    public boolean isIndexPage() {
+        return indexPage;
     }
 
     static public class Metadata {

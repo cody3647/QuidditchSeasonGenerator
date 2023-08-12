@@ -165,6 +165,11 @@ div.ib table th,  div.ib table tr.ib-footer {
     display: flex;
 }
 
+.team-vs-container img {
+    max-width: 125px;
+    max-height: 125px;
+}
+
 .team-vs-link {
     flex: 2;
 }

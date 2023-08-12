@@ -31,40 +31,64 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class OutputService {
     final Logger logger = LoggerFactory.getLogger(OutputService.class);
 
+    public static String sanitizeDirectories(String dir) {
+        if (dir.contains("/")) {
+            ArrayList<String> dirList = new ArrayList<>();
+            String[] directories = dir.split("/");
+            for (String directory: directories) {
+                dirList.add(Formatters.sanitizeFileNames(directory));
+            }
+            dir = String.join("/", dirList);
+        }
+        else {
+            dir = Formatters.sanitizeFileNames(dir);
+        }
+
+        return dir;
+    }
+
     public OutputService() {
     }
 
-    public void writePagesToHtml(String tournamentTitle, List<Page> pages) {
+    public void writePagesToHtml(List<Page> pages) {
         // Set up an output directory with a subdirectory named after the league and year
-        Path outputPath = Paths.get("output", Formatters.sanitizeFileNames(tournamentTitle));
+        Path outputPath = Paths.get("output");
 
         try {
             Files.createDirectories(outputPath);
             for (Page page : pages) {
-                Path pageFile = outputPath.resolve(Formatters.sanitizeFileNames(page.getFileName()) + ".html");
+                Path pageDir = outputPath.resolve(page.getDirectory());
+                Files.createDirectories(pageDir);
+                String fileName = page.isIndexPage() ? "index.html" : Formatters.sanitizeFileNames(page.getPageTitle()) + ".html";
+                Path pageFile = pageDir.resolve(fileName);
                 Files.writeString(pageFile, page.toHtml(0), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
             }
 
-            Path pageFile = outputPath.resolve("QuidditchGenerator.css");
-            Files.writeString(pageFile, getStylesheet(true), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            Path cssDir = outputPath.resolve("css");
+            Path imagesDir = outputPath.resolve("images");
+
+            Files.createDirectories(imagesDir);
+            Files.createDirectories(cssDir);
+            Path cssFile = cssDir.resolve("QuidditchGenerator.css");
+            Files.writeString(cssFile, getStylesheet(true), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             logger.error("Problem with HTML files", e);
         }
     }
 
-    public void writePagesToMediawiki(String tournamentTitle, List<Page> pages, Mediawiki mediawiki) throws IOException {
+    public void writePagesToMediawiki(List<Page> pages, Mediawiki mediawiki) throws IOException {
 
         if(!mediawiki.isLoggedIn())
             return;
 
         try {
-
             for (Page page : pages) {
                 logger.info("Writing: {}", page.getPageTitle());
                 mediawiki.createPage(page.getPageTitle(), page.toWikitext());
