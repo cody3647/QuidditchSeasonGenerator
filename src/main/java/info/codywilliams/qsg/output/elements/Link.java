@@ -85,6 +85,23 @@ public class Link {
         }
     }
 
+    public static class WikiLink extends TextLink {
+        public WikiLink(String text, String page) {
+            super(text, "", page);
+        }
+
+        @Override
+        public String toHtml(int tabs) {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            for (Text child : children) {
+                stringBuilder.append(child.toHtml(tabs + 1));
+            }
+
+            return stringBuilder.toString();
+        }
+    }
+
     public static class ImageLink extends Element {
         private final Image image;
         String wikipage;

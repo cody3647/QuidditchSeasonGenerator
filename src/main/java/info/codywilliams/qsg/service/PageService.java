@@ -488,7 +488,7 @@ public class PageService {
 
             rosterTable.addChildren(new Table.Row(positionHeader));
             for  (Player player: entry.getValue()) {
-                Table.Cell playerCell = new Table.Cell(player.getName());
+                Table.Cell playerCell = new Table.Cell(new Link.WikiLink(player.getName(), player.getName()));
                 playerCell.addClass("quidditch-name");
                 rosterTable.addChildren(
                         new Table.Row(
