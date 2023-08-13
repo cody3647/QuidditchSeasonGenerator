@@ -18,6 +18,7 @@
 
 package info.codywilliams.qsg.service;
 
+import info.codywilliams.qsg.output.Element;
 import info.codywilliams.qsg.output.MatchInfobox;
 import info.codywilliams.qsg.output.Page;
 import info.codywilliams.qsg.util.Formatters;
@@ -33,10 +34,14 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class OutputService {
-    final Logger logger = LoggerFactory.getLogger(OutputService.class);
+    final private ResourceBundle outputResourceBundle;
+    final Logger logger;
 
     public static String sanitizeDirectories(String dir) {
         if (dir.contains("/")) {
@@ -54,21 +59,47 @@ public class OutputService {
         return dir;
     }
 
-    public OutputService() {
+    public OutputService(ResourceBundle outputResoureBundle) {
+        this.outputResourceBundle = outputResoureBundle;
+        this.logger = LoggerFactory.getLogger(OutputService.class);
     }
 
-    public void writePagesToHtml(List<Page> pages) {
+    public void writePagesToHtml(List<Page> pages, String yearRange) {
         // Set up an output directory with a subdirectory named after the league and year
         Path outputPath = Paths.get("output");
+
+        final String teamSeasonDivRegex = "<h3>" + yearRange + "</h3>.*?<div class=\"team-season\" id=\"team-season-" + yearRange + "\">.*?<\\/div>.*?<\\/div>";
+        final Pattern teamSeasonDivPattern = Pattern.compile(teamSeasonDivRegex, Pattern.MULTILINE | Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 
         try {
             Files.createDirectories(outputPath);
             for (Page page : pages) {
                 Path pageDir = outputPath.resolve(page.getDirectory());
                 Files.createDirectories(pageDir);
-                String fileName = page.isIndexPage() ? "index.html" : Formatters.sanitizeFileNames(page.getPageTitle()) + ".html";
+                String fileName = page.getPageType() == Page.Type.TOURNAMENT ? "index.html" : Formatters.sanitizeFileNames(page.getPageTitle()) + ".html";
                 Path pageFile = pageDir.resolve(fileName);
-                Files.writeString(pageFile, page.toHtml(0), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+
+                switch (page.getPageType()) {
+                    case MATCH, TOURNAMENT, PLAYER ->  Files.writeString(pageFile, page.toHtml(0), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                    case TEAM -> {
+                        if (!Files.exists(pageFile))
+                            Files.writeString(pageFile, page.toHtml(0), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                        else {
+                            List<Element> elements = page.getSubsetPageElements(outputResourceBundle.getString("team.seasons"), null);
+                            String content = elements.stream().map(element -> element.toHtml(2)).collect(Collectors.joining("\n"));
+                            String originalContent = Files.readString(pageFile);
+                            Matcher matcher = teamSeasonDivPattern.matcher(originalContent);
+                            if (matcher.find()) {
+                                content = matcher.replaceAll(content);
+                            }
+                            else {
+                                content = originalContent.replace("\t</div>\n</body>", content + "\n\t</div>\n</body>");
+                            }
+                            Files.writeString(pageFile, content, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                        }
+                    }
+                }
             }
 
             Path cssDir = outputPath.resolve("css");
@@ -83,15 +114,33 @@ public class OutputService {
         }
     }
 
-    public void writePagesToMediawiki(List<Page> pages, Mediawiki mediawiki) throws IOException {
-
+    public void writePagesToMediawiki(List<Page> pages, Mediawiki mediawiki, String yearRange) throws IOException {
         if(!mediawiki.isLoggedIn())
             return;
-
         try {
             for (Page page : pages) {
                 logger.info("Writing: {}", page.getPageTitle());
-                mediawiki.createPage(page.getPageTitle(), page.toWikitext());
+                switch (page.getPageType()) {
+                    case MATCH, TOURNAMENT, PLAYER ->  mediawiki.createPage(page.getPageTitle(), page.toWikitext());
+                    case TEAM -> {
+                        if (!mediawiki.pageExists(page.getPageTitle()))
+                            mediawiki.createPage(page.getPageTitle(), page.toWikitext());
+                        else {
+                            List<Element> elements = page.getSubsetPageElements(outputResourceBundle.getString("team.seasons"), null);
+                            String content = elements.stream().map(Element::toWikitext).collect(Collectors.joining("\n"));
+
+                            if (mediawiki.sectionExists(page.getPageTitle(), yearRange))
+                                mediawiki.replaceSection(page.getPageTitle(), yearRange, content);
+                            else
+                                mediawiki.appendToSection(
+                                        page.getPageTitle(),
+                                        outputResourceBundle.getString("team.seasons"),
+                                        "\n" + content
+                                );
+                        }
+                    }
+                }
+
                 Thread.sleep(250);
             }
 

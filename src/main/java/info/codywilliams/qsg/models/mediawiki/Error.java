@@ -23,7 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import static info.codywilliams.qsg.App.mapper;
 
-public class Error extends MediaikiApiResponse {
+public class Error extends MediawikiApiResponse {
     public static final String field = "Error";
     String code;
     String info;

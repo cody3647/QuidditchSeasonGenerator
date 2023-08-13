@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 
 import static info.codywilliams.qsg.App.mapper;
 
-public class Edit extends MediaikiApiResponse {
+public class Edit extends MediawikiApiResponse {
     public static final String field = "edit";
     String result;
     @JsonProperty("pageid")

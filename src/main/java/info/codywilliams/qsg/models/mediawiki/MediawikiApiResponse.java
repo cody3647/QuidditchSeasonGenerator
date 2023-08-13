@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 
-public abstract class MediaikiApiResponse extends OtherFields {
+public abstract class MediawikiApiResponse extends OtherFields {
     @JsonIgnore
     String batchComplete = "";
     @JsonIgnore

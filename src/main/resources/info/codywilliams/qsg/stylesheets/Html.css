@@ -185,3 +185,7 @@ div.ib table th,  div.ib table tr.ib-footer {
     min-height: 25px;
     padding: 5px 0px 5px 5px;
 }
+
+div.team-season div table {
+    max-width:45% !important;
+}

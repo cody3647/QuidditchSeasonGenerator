@@ -18,28 +18,26 @@
 
 package info.codywilliams.qsg.output;
 
+import info.codywilliams.qsg.output.elements.Header;
+import info.codywilliams.qsg.output.elements.Text;
 import info.codywilliams.qsg.service.OutputService;
 import info.codywilliams.qsg.util.DependencyInjector;
 
 import java.util.*;
 
 public class Page implements ElementOutputs {
+    public enum Type {MATCH, TOURNAMENT, TEAM, PLAYER}
     private final String pageTitle;
     private final String directory;
-    private final boolean indexPage;
     private final ArrayList<Metadata> metadata;
-
     private final ArrayList<Element> body;
     private final ArrayList<String> styles;
+    private final Page.Type pageType;
 
-    public Page(String pageTitle, String directory) {
-        this(pageTitle, directory, false);
-    }
-
-    public Page(String pageTitle, String directory, boolean indexPage) {
+    public Page(String pageTitle, String directory, Type pageType) {
         this.pageTitle = pageTitle;
         this.directory = OutputService.sanitizeDirectories(directory);
-        this.indexPage = indexPage;
+        this.pageType = pageType;
 
         metadata = new ArrayList<>();
         body = new ArrayList<>();
@@ -71,6 +69,29 @@ public class Page implements ElementOutputs {
 
     public void addStyle(String style) {
         this.styles.add(style);
+    }
+
+    public List<Element> getSubsetPageElements(String startHeaderExclusive, String endHeaderExclusive) {
+        List<Element> newPageElements = new ArrayList<>();
+        boolean seen = false;
+        for (Element element: body) {
+            if (element instanceof Header header) {
+                String text = String.join(" ", header.children.stream().map(Text::getText).toList());
+                if (text.equals(startHeaderExclusive)) {
+                    seen = true;
+                    continue;
+                }
+                if (text.equals(endHeaderExclusive)) {
+                    break;
+                }
+            }
+
+            if (seen) {
+                newPageElements.add(element);
+            }
+        }
+
+        return newPageElements;
     }
 
     @Override
@@ -123,8 +144,8 @@ public class Page implements ElementOutputs {
         return directory;
     }
 
-    public boolean isIndexPage() {
-        return indexPage;
+    public Type getPageType() {
+        return pageType;
     }
 
     static public class Metadata {

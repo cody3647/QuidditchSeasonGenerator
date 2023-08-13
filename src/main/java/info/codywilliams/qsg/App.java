@@ -114,7 +114,7 @@ public class App extends Application {
 
         Context context = new Context();
         PageService pageService = new PageService(outputResourceBundle);
-        OutputService outputService = new OutputService();
+        OutputService outputService = new OutputService(outputResourceBundle);
         SaveSettingsService saveSettingsService = new SaveSettingsService(context, resourceBundle);
 
         Random random = new Random();

@@ -25,7 +25,7 @@ import java.util.Map;
 
 import static info.codywilliams.qsg.App.mapper;
 
-public class Query extends MediaikiApiResponse {
+public class Query extends MediawikiApiResponse {
     public static final String field = "query";
     List<Page> pages;
     Map<String, String> tokens;

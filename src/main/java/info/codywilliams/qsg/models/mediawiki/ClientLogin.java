@@ -23,7 +23,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import static info.codywilliams.qsg.App.mapper;
 
-public class ClientLogin extends MediaikiApiResponse {
+public class ClientLogin extends MediawikiApiResponse {
     public static final String field = "clientlogin";
     String status;
     String username;

@@ -95,6 +95,8 @@ public class Image extends Element implements InlineElement {
 
                 stringBuilder.append(attribute.getValue());
             } else {
+                if (attribute.getKey().equals("src"))
+                    continue;
                 stringBuilder.append('|').append(attribute.getKey()).append('=').append(attribute.getValue());
             }
         }

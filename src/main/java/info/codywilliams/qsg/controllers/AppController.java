@@ -154,7 +154,7 @@ public class AppController {
                 context.getCurrentTournament(), context.getTeams(), matchPagesCheckBox.isSelected(), playerDetailsCheckBox.isSelected(), context.getSeed()
         );
 
-        outputService.writePagesToHtml(pages);
+        outputService.writePagesToHtml(pages, pageService.getYearRange());
     }
 
     @FXML
@@ -176,7 +176,7 @@ public class AppController {
                     return;
             }
 
-            outputService.writePagesToMediawiki(pages, mediawiki);
+            outputService.writePagesToMediawiki(pages, mediawiki, pageService.getYearRange());
         } catch (IOException e) {
             logger.error("Error communicating with mediawiki instance", e);
             throw new RuntimeException(e);

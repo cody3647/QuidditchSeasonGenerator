@@ -79,37 +79,66 @@ div.ib table .ib-footer {
     }
 }
 
-/*Quidditch Matches*/
-table.quidditch-roster {
-    width: calc(100% - 300px);
-    table-layout: fixed;
-    margin-bottom: 2em;
-}
+/* Team page */
 
-.quidditch-roster td {
+table.team-injuries th {
+    text-align: left;
+    white-space: nowrap;
     vertical-align: top;
 }
 
-.quidditch-roster th {
-    text-align: left;
+div.team-season div table {
+    max-width:85%;
 }
 
-.quidditch-roster caption {
-    font-size: large;
-    font-weight: bold;
-    border-bottom: solid 1px #72777d;
+@media (max-width: 850px) {
+    div.team-season div table {
+        max-width:100%;
+    }
 }
 
-.quidditch-match li, .quidditch-roster-players li {
+/* Common Roster Classes (Match and Team Pages) */
+.quidditch-roster {
+
+}
+
+.quidditch-name {
+    white-space: nowrap;
+}
+
+div#match-rosters, div.team-season div {
+    display: flex;
+    justify-content: space-between;
+    flex-flow: wrap;
+}
+
+div#match-rosters {
+    align-items:baseline;
+}
+
+
+/*Quidditch Matches*/
+div#match-rosters img {
+    display: block;
+    max-width: 200px;
+    max-height: 200px;
+    margin: auto;
+}
+
+table.match-injuries {
+    width: 100%;
+}
+
+.match-play li, #match-roster-players li {
     list-style: none;
 }
 
-ul.quidditch-match, .quidditch-match ul, .quidditch-roster ul {
+ul.match-play, .match-play ul, .match-roster ul {
     margin: 0;
     padding: 0;
 }
 
-.quidditch-match div, .quidditch-time div {
+.match-play div, .match-time div {
     margin: .5em 2em;
     width: 25em;
     padding: .5em;
@@ -122,7 +151,7 @@ ul.quidditch-match, .quidditch-match ul, .quidditch-roster ul {
     border: 1px solid #580000;
 }
 
-.quidditch-foul div {
+.foul div {
     background-color: #412626;
     border: 1px solid #972000;
 }
@@ -152,65 +181,37 @@ ul.quidditch-match, .quidditch-match ul, .quidditch-roster ul {
 }
 
 /* Tournament Page */
-.league-schedule-topper, .league-footer {
+.tournament-schedule-info, .tournament-footer {
     display: flex;
     width: 100%;
     justify-content: space-between;
 }
 
-.tournament-key dt, .tournament-key dd , .generator-seed dt, .generator-seed dd {
+.tournament-key dt, .tournament-key dd , .tournament-seed dt, .tournament-seed dd {
     text-align: right;
 }
 
-.match-winner a, .match-winner {
+.tournament-match-winner a, .tournament-match-winner {
     color: #CCCC66;
 }
 
-.match-loser a {
-    color: #AFAFAFFF;
+.tournament-match-loser a {
+    color: #AFAFAF;
 }
 
-.match-tie a {
+.tournament-match-tie a {
     color: #cca466;
 }
 
-.league-schedule {
+.tournament-schedule {
     width: 100%;
 }
 
-table.league-rankings {
+table.tournament-rankings {
     counter-reset: rank -1;
     list-style-type: none;
 }
 
-table.league-rankings tr {
+table.tournament-rankings tr {
     counter-increment: rank;
-}
-
-/* Player Tooltips */
-/* Tooltip container */
-.player-tooltip {
-    position: relative;
-    display: inline-block;
-    border-bottom: 1px dotted #00817b; /* If you want dots under the hoverable text */
-}
-
-/* Tooltip text */
-.player-tooltip .player-tooltip-text {
-    visibility: hidden;
-    position: absolute;
-    z-index: 1;
-    width: 30em;
-    color: white;
-    background-color: #00817b;
-    border-radius: 10px;
-    padding: 10px 15px 10px 15px;
-    top: -2.7em;
-    right: -12.5em;
-    text-align: center;
-}
-
-/* Show the tooltip text when you mouse over the tooltip container */
-.player-tooltip:hover .player-tooltip-text {
-    visibility: visible;
 }

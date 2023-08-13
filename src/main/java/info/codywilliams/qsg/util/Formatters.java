@@ -34,6 +34,8 @@ public class Formatters {
     public final static DateTimeFormatter dateFormatter =
             DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.getDefault()).withZone(ZoneId.systemDefault());
 
+    public final static DateTimeFormatter yearlessDateFormatter =
+            DateTimeFormatter.ofPattern("d MMM").withZone(ZoneId.systemDefault());
     public final static DateTimeFormatter timeFormatter =
             DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM).withLocale(Locale.getDefault()).withZone(ZoneId.systemDefault());
 

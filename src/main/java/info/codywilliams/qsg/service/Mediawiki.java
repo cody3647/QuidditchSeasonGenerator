@@ -167,43 +167,119 @@ public class Mediawiki {
         return !query.getPages().get(0).isMissing();
     }
 
+    public boolean sectionExists(String pageName, String sectionName) throws IOException {
+        String sectionId = getSectionId(pageName, sectionName);
+        return !sectionId.equals("new");
+    }
+
     public Response createPage(String pageName, String content) throws IOException {
+        Response response = checkLoggedIn();
+        if (response.isFailure())
+            return response;
+
+        logger.debug("CreatePage - Attempting to edit/create {}", pageName);
+        return editPage(pageName, "text", content);
+    }
+
+    public Response appendToPage(String pageName, String content) throws IOException {
+        Response response = checkLoggedIn();
+        if (response.isFailure())
+            return response;
+
+        logger.debug("Appending to Page - Attempting to edit {}", pageName);
+        return editPage(pageName, "appendtext", content);
+    }
+
+    public Response editPage(String pageName, String contentField, String content) throws IOException {
+        Response response = getCsrfToken();
+        if (response.isFailure())
+            return response;
+
+        Query query = queryInfoRevisions(pageName);
+        if (errorReturned(query)) {
+            return new Response(false, query.getError().getCode(), query.getError().getInfo());
+        }
+
+        Map<String, String> params = getEditRequestParams(pageName, query);
+
+        return edit(contentField, content, params);
+    }
+
+    public Response appendToSection(String pageName, String sectionTitle, String content) throws IOException {
+        return sectionEdit(pageName, sectionTitle, content, "appendtext");
+    }
+
+    public Response replaceSection(String pageName, String sectionTitle, String content) throws IOException {
+        return sectionEdit(pageName, sectionTitle, content, "text");
+    }
+
+    private Response sectionEdit(String pageName, String sectionTitle, String content, String contentField) throws IOException {
+        Response response = checkLoggedIn();
+        if (response.isFailure())
+            return response;
+
+        response = getCsrfToken();
+        if (response.isFailure())
+            return response;
+
+        String sectionId = getSectionId(pageName, sectionTitle);
+
+        Query query = queryInfoRevisions(pageName);
+        if (errorReturned(query)) {
+            return new Response(false, query.getError().getCode(), query.getError().getInfo());
+        }
+
+        Map<String, String> params = getEditRequestParams(pageName, query);
+        params.put("section", sectionId);
+        if (sectionId.equals("new")) {
+            params.put("sectiontitle", sectionTitle);
+            contentField = "text";
+        }
+
+        return edit(contentField, content, params);
+    }
+
+    private Response checkLoggedIn() {
         if (!loggedIn) {
             String message = "Must be logged in to edit pages with this tool.";
             logger.error(message);
             return new Response(false, "nologgedin", message);
         }
-        logger.debug("CreatePage - Attempting to edit/create {}", pageName);
-        URI uri;
-        Query query;
-        HttpRequest request;
+
+        return new Response(true, null, null);
+    }
+
+    private Response getCsrfToken() throws IOException {
         if (token == null) {
-            uri = buildUri("query",
+            URI uri = buildUri("query",
                     Map.of("meta", "tokens")
             );
-            request = HttpRequest.newBuilder()
+            HttpRequest request = HttpRequest.newBuilder()
                     .uri(uri)
                     .build();
-           query = apiCall(request, Query.field, Query.class);
+            Query query = apiCall(request, Query.field, Query.class);
             if (errorReturned(query)) {
                 return new Response(false, query.getError().getCode(), query.getError().getInfo());
             }
             token = query.getToken("csrftoken");
         }
 
-        uri = buildUri("query",
+        return new Response(true, null, null);
+    }
+
+    private Query queryInfoRevisions(String pageName) throws IOException {
+        URI uri = buildUri("query",
                 Map.of("prop", "info|revisions",
                         "titles", pageName
                 )
         );
-        request = HttpRequest.newBuilder()
+        HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .build();
-        query = apiCall(request, Query.field, Query.class);
-        if (errorReturned(query)) {
-            return new Response(false, query.getError().getCode(), query.getError().getInfo());
-        }
+        return apiCall(request, Query.field, Query.class);
+    }
 
+    private Map<String, String> getEditRequestParams(String pageName, Query query) {
         Page firstPage = query.getPages().get(0);
 
         Map<String, String> params = new HashMap<>();
@@ -216,13 +292,18 @@ public class Mediawiki {
                 params.put("basetimestamp", revisions.get(0).getTimestamp().format(DateTimeFormatter.ISO_DATE_TIME));
         }
 
-        uri = buildUri(Edit.field, params);
+        return params;
+    }
+
+    private Response edit(String contentField, String content, Map<String,String> params) throws IOException {
+        URI uri = buildUri(Edit.field, params);
 
         MultipartFormDataBodyPublisher formBody = new MultipartFormDataBodyPublisher()
-                .add("text", content)
+                .add(contentField, content)
+                .add("summary", "Edit made by QuidditchSeasonGenerator")
                 .add("token", token);
 
-        request = HttpRequest.newBuilder()
+        HttpRequest request = HttpRequest.newBuilder()
                 .uri(uri)
                 .header("Content-Type", formBody.contentType())
                 .POST(formBody)
@@ -242,7 +323,7 @@ public class Mediawiki {
         if (errorReturned(edit)) {
             return new Response(false, edit.getError().getCode(), edit.getError().getInfo());
         }
-        logger.debug("CreatePage - Edit of {} {}, new page: {}, no change: {}", edit.getTitle(), edit.getResult(), edit.isNewPage(), edit.isNoChange());
+        logger.debug("Edit - Edit of {} {}, new page: {}, no change: {}", edit.getTitle(), edit.getResult(), edit.isNewPage(), edit.isNoChange());
         String messageCode = null;
         if (edit.isNewPage())
             messageCode = "newpage";
@@ -251,7 +332,35 @@ public class Mediawiki {
         return new Response(true, messageCode, null);
     }
 
-    private <T extends MediaikiApiResponse> T apiCall(HttpRequest request, String field, Class<T> type) throws IOException {
+    private String getSectionId(String pageName, String sectionTitle) throws IOException {
+        URI uri = buildUri("parse",
+                Map.of("prop", "sections",
+                        "page", pageName
+                )
+        );
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(uri)
+                .build();
+        Parse parseResponse = apiCall(request, Parse.field, Parse.class);
+
+        List<Parse.Section> sections = parseResponse.getSections();
+        for (Parse.Section section: sections) {
+            if (section.getLine().equals(sectionTitle))
+                return section.getIndex();
+        }
+
+        return "new";
+    }
+
+    public boolean errorReturned(MediawikiApiResponse mediawikiApiResponse) {
+        if (mediawikiApiResponse.getError() != null) {
+            logger.error("{}: {}", mediawikiApiResponse.getError().getCode(), mediawikiApiResponse.getError().getInfo());
+            return true;
+        }
+        return false;
+    }
+
+    private <T extends MediawikiApiResponse> T apiCall(HttpRequest request, String field, Class<T> type) throws IOException {
         try {
             logger.trace("{}: {}", request.method(), request.uri());
 
@@ -304,14 +413,6 @@ public class Mediawiki {
         }
     }
 
-    public boolean errorReturned(MediaikiApiResponse mediaikiApiResponse) {
-        if (mediaikiApiResponse.getError() != null) {
-            logger.error("{}: {}", mediaikiApiResponse.getError().getCode(), mediaikiApiResponse.getError().getInfo());
-            return true;
-        }
-        return false;
-    }
-
     private URI buildUri(String action, @NotNull Map<String, String> queryParams) {
         String base = apiUrlString + "?action=" + action + "&format=json&curtimestamp=true&formatversion=2&";
         String url = queryParams.entrySet().stream()
@@ -332,6 +433,7 @@ public class Mediawiki {
         }
         this.apiUrlString = apiUrlString;
     }
+
 
     public String getUsername() {
         return username;

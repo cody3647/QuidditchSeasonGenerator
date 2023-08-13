@@ -27,6 +27,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.TreeSet;
 
 abstract public class Player implements Serializable, Comparable<Player> {
@@ -160,6 +163,44 @@ abstract public class Player implements Serializable, Comparable<Player> {
         return date.minusDays(1);
     }
 
+    public List<InjuryRange> getInjuryDateRanges() {
+        List<InjuryRange> dateRanges = new ArrayList<>();
+        LocalDate startDate = null;
+        LocalDate endDate = null;
+        LocalDate firstInjury = injuryHistory.get().stream().min(Comparator.naturalOrder()).orElse(null);
+        if (firstInjury == null)
+            return List.of();
+
+        LocalDate lastInjury = injuryHistory.get().stream().max(Comparator.naturalOrder()).orElse(null);
+        if (lastInjury == null)
+            return List.of();
+
+        if (firstInjury.isEqual(lastInjury)) {
+            return List.of(new InjuryRange(firstInjury, lastInjury));
+        }
+
+        LocalDate date = firstInjury;
+
+        lastInjury = lastInjury.plusDays(2);
+        while (date.isBefore(lastInjury)) {
+            if (isInjured(date)) {
+                if (startDate == null) {
+                    startDate = date;
+                }
+                endDate = date;
+            }
+            else {
+                if (startDate != null) {
+                    dateRanges.add(new InjuryRange(startDate, endDate));
+                    startDate = null;
+                }
+            }
+
+            date = date.plusDays(1);
+        }
+        return dateRanges;
+    }
+
     public int getSkillDefense() {
         return skillDefense.get();
     }
@@ -287,5 +328,8 @@ abstract public class Player implements Serializable, Comparable<Player> {
             return 1;
         else
             return -1;
+    }
+
+    public record InjuryRange(LocalDate start, LocalDate end) {
     }
 }
