@@ -121,6 +121,7 @@ public class Image extends Element implements InlineElement {
 
         @Override
         public String toHtml(int tabs) {
+            super.classes.add("image-gallery");
             return super.toHtml(0);
         }
 

@@ -27,7 +27,7 @@ public class TableOfContents extends Element implements ElementOutputs {
      */
     @Override
     public String toHtml(int tabs) {
-        return null;
+        return "";
     }
 
     @Override

@@ -389,14 +389,22 @@ public class PageService {
         matchPage.addBodyContent(new MatchInfobox(match, tournamentTitle, outputResourceBundleReplacer.getString("leagueName"), outputResourceBundleReplacer.getString("yearRange"), outputResourceBundle));
 
         if (includePlayerDetails) {
-            Image homeImage = new Image(homeTeam.getName(), homeTeam.getName() + ".png");
-            homeImage.addAttribute("height", "200px");
-            homeImage.addAttribute("width", "200px");
-            homeImage.addAttribute("alt", homeTeam.getName() + " Logo");
-            Image awayImage = new Image(awayTeam.getName(), awayTeam.getName() + ".png");
+            Link.ImageLink homeImage = new Link.ImageLink(
+                    homeTeam.getName() + " Logo",
+                    homeTeam.getName() + ".png",
+                    "../" + outputResourceBundle.getString("directory.teams"),
+                    homeTeam.getName()
+            );
+            homeImage.addImageAttribute("height", "200px");
+            homeImage.addImageAttribute("width", "200px");
+            Link.ImageLink awayImage = new Link.ImageLink(
+                    awayTeam.getName() + " Logo",
+                    awayTeam.getName() + ".png",
+                    "../" + outputResourceBundle.getString("directory.teams"),
+                    awayTeam.getName()
+            );
             awayImage.addAttribute("height", "200px");
             awayImage.addAttribute("width", "200px");
-            awayImage.addAttribute("alt", awayTeam.getName() + " Logo");
             Div rostersDiv = new Div(
                     new Div(
                             homeImage,

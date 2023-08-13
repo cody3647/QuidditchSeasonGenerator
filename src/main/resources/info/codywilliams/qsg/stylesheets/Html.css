@@ -189,3 +189,14 @@ div.ib table th,  div.ib table tr.ib-footer {
 div.team-season div table {
     max-width:45% !important;
 }
+
+.image-gallery img {
+    max-width: 125px;
+    max-height: 125px;
+}
+.image-gallery {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
