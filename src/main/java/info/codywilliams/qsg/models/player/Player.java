@@ -18,6 +18,7 @@
 package info.codywilliams.qsg.models.player;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -32,6 +33,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeSet;
 
+@JsonPropertyOrder({"name", "skillOffense", "skillDefense", "skillTeamwork", "foulLikelihood"})
 abstract public class Player implements Serializable, Comparable<Player> {
     final static int MAX = 10;
     final static int MIN = 1;
@@ -46,7 +48,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
     @JsonIgnore
     final private NumberBinding skillLevel;
     @JsonIgnore
-    public boolean isCurrentlyInjured = false;
+    public boolean currentlyInjured = false;
     @JsonIgnore
     private double defenseModifier;
     @JsonIgnore
@@ -70,7 +72,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
 
     public void clear() {
         injuryHistory.clear();
-        isCurrentlyInjured = false;
+        currentlyInjured = false;
     }
 
     public static int validateSkill(int skillNumber) {
@@ -129,11 +131,11 @@ abstract public class Player implements Serializable, Comparable<Player> {
     }
 
     public boolean isCurrentlyInjured() {
-        return isCurrentlyInjured;
+        return currentlyInjured;
     }
 
     public void setCurrentlyInjured(boolean currentlyInjured) {
-        isCurrentlyInjured = currentlyInjured;
+        this.currentlyInjured = currentlyInjured;
     }
 
     public double getInjuryDivisor() {
@@ -163,6 +165,7 @@ abstract public class Player implements Serializable, Comparable<Player> {
         return date.minusDays(1);
     }
 
+    @JsonIgnore
     public List<InjuryRange> getInjuryDateRanges() {
         List<InjuryRange> dateRanges = new ArrayList<>();
         LocalDate startDate = null;
@@ -276,15 +279,15 @@ abstract public class Player implements Serializable, Comparable<Player> {
     }
 
     public double getDefenseModifier() {
-        return isCurrentlyInjured ? defenseModifier / injuryDivisor : defenseModifier;
+        return currentlyInjured ? defenseModifier / injuryDivisor : defenseModifier;
     }
 
     public double getOffenceModifier() {
-        return isCurrentlyInjured ? offenceModifier / injuryDivisor : offenceModifier;
+        return currentlyInjured ? offenceModifier / injuryDivisor : offenceModifier;
     }
 
     public double getTeamworkModifier() {
-        return isCurrentlyInjured ? teamworkModifier / injuryDivisor : teamworkModifier;
+        return currentlyInjured ? teamworkModifier / injuryDivisor : teamworkModifier;
     }
 
     public double getFoulModifier() {

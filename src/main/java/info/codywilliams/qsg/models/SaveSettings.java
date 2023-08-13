@@ -18,6 +18,7 @@
 
 package info.codywilliams.qsg.models;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import info.codywilliams.qsg.models.tournament.BlackoutDates;
 import info.codywilliams.qsg.models.tournament.MatchDayTime;
 import info.codywilliams.qsg.models.tournament.TournamentOptions;
@@ -27,6 +28,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+@JsonPropertyOrder({"seed", "leagueName", "tournamentType", "startDate", "matchDayTimeList", "blackoutDates", "teams"})
 public class SaveSettings {
     private List<Team> teams;
     private TournamentType tournamentType;

@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 public class OutputService {
     final private ResourceBundle outputResourceBundle;
     final Logger logger;
+    private final SaveSettingsService saveSettingsService;
 
     public static String sanitizeDirectories(String dir) {
         if (dir.contains("/")) {
@@ -59,9 +60,10 @@ public class OutputService {
         return dir;
     }
 
-    public OutputService(ResourceBundle outputResoureBundle) {
+    public OutputService(ResourceBundle outputResoureBundle, SaveSettingsService saveSettingsService) {
         this.outputResourceBundle = outputResoureBundle;
         this.logger = LoggerFactory.getLogger(OutputService.class);
+        this.saveSettingsService = saveSettingsService;
     }
 
     public void writePagesToHtml(List<Page> pages, String yearRange) {
@@ -79,9 +81,13 @@ public class OutputService {
                 String fileName = page.getPageType() == Page.Type.TOURNAMENT ? "index.html" : Formatters.sanitizeFileNames(page.getPageTitle()) + ".html";
                 Path pageFile = pageDir.resolve(fileName);
 
-
                 switch (page.getPageType()) {
-                    case MATCH, TOURNAMENT, PLAYER ->  Files.writeString(pageFile, page.toHtml(0), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                    case TOURNAMENT -> {
+                        Files.writeString(pageFile, page.toHtml(0), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                        Path settingsFile = pageDir.resolve("settings.json");
+                        Files.writeString(settingsFile, saveSettingsService.getSettingsJsonAsString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+                    }
+                    case MATCH, PLAYER ->  Files.writeString(pageFile, page.toHtml(0), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
                     case TEAM -> {
                         if (!Files.exists(pageFile))
                             Files.writeString(pageFile, page.toHtml(0), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
@@ -121,7 +127,11 @@ public class OutputService {
             for (Page page : pages) {
                 logger.info("Writing: {}", page.getPageTitle());
                 switch (page.getPageType()) {
-                    case MATCH, TOURNAMENT, PLAYER ->  mediawiki.createPage(page.getPageTitle(), page.toWikitext());
+                    case TOURNAMENT ->  {
+                        mediawiki.createPage(page.getPageTitle(), page.toWikitext());
+                        mediawiki.createPage(page.getPageTitle() + "/settings.json", saveSettingsService.getSettingsJsonAsString());
+                    }
+                    case MATCH, PLAYER -> mediawiki.createPage(page.getPageTitle(), page.toWikitext());
                     case TEAM -> {
                         if (!mediawiki.pageExists(page.getPageTitle()))
                             mediawiki.createPage(page.getPageTitle(), page.toWikitext());

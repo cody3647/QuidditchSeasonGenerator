@@ -18,6 +18,7 @@
 
 package info.codywilliams.qsg.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -80,6 +81,12 @@ public class SaveSettingsService {
             context.setSettingsStatus(resourceBundle.getString("error.saveSettings"));
             throw new Exception(e);
         }
+    }
+
+    public String getSettingsJsonAsString() throws JsonProcessingException {
+        SaveSettings settings = new SaveSettings(context);
+        mapper.enable(SerializationFeature.INDENT_OUTPUT);
+        return mapper.writeValueAsString(settings);
     }
 
     private String getSettingsStatus() {

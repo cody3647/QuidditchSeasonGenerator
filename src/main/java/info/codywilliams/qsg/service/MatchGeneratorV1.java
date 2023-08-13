@@ -657,10 +657,10 @@ public class MatchGeneratorV1 implements MatchGenerator {
 
             for (T player : players) {
                 if (player.isInjured(date)) {
-                    player.isCurrentlyInjured = true;
+                    player.currentlyInjured = true;
                     injuredPlayers.add(player);
                 } else {
-                    player.isCurrentlyInjured = false;
+                    player.currentlyInjured = false;
                     uninjuredPlayers.add(player);
                 }
             }
@@ -681,7 +681,7 @@ public class MatchGeneratorV1 implements MatchGenerator {
 
         void markNotCurrentlyInjured(List<? extends Player> players) {
             for (Player player : players)
-                player.isCurrentlyInjured = false;
+                player.currentlyInjured = false;
         }
 
         Beater getBeater(int idx) {

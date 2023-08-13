@@ -113,9 +113,10 @@ public class App extends Application {
         ResourceBundle outputResourceBundle = ResourceBundle.getBundle("info.codywilliams.qsg.language.Output", locale);
 
         Context context = new Context();
-        PageService pageService = new PageService(outputResourceBundle);
-        OutputService outputService = new OutputService(outputResourceBundle);
         SaveSettingsService saveSettingsService = new SaveSettingsService(context, resourceBundle);
+        PageService pageService = new PageService(outputResourceBundle);
+        OutputService outputService = new OutputService(outputResourceBundle, saveSettingsService);
+
 
         Random random = new Random();
 
