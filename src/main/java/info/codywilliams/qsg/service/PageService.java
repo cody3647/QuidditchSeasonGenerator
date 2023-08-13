@@ -403,8 +403,8 @@ public class PageService {
                     "../" + outputResourceBundle.getString("directory.teams"),
                     awayTeam.getName()
             );
-            awayImage.addAttribute("height", "200px");
-            awayImage.addAttribute("width", "200px");
+            awayImage.addImageAttribute("height", "200px");
+            awayImage.addImageAttribute("width", "200px");
             Div rostersDiv = new Div(
                     new Div(
                             homeImage,
@@ -582,7 +582,7 @@ public class PageService {
         return injuryTable;
     }
 
-    private Function<Player.InjuryRange, String> injuryRangeStringMapper = injuryRange -> {
+    private final Function<Player.InjuryRange, String> injuryRangeStringMapper = injuryRange -> {
         if (injuryRange.start().isEqual(injuryRange.end()))
             return Formatters.yearlessDateFormatter.format(injuryRange.start());
         else
