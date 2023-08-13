@@ -461,32 +461,38 @@ public class PageService {
         return matchPage;
     }
 
-    private Table buildRosterTable(String teamName, Map<String, List<? extends Player>> rosterMap) {
-        ArrayList<Table.TableCell> headerCells = new ArrayList<>();
-        ArrayList<Table.TableCell> playerCells = new ArrayList<>();
-        for (Map.Entry<String, List<? extends Player>> entry : rosterMap.entrySet()) {
-            headerCells.add(new Table.HeaderCell(entry.getKey()));
-            List<UnorderedList.Item> playerItems = entry.getValue().stream()
-                    .map(player -> {
-                        Text tooltip = new Text(player.playerSkillsOutput());
-                        tooltip.addClass("player-tooltip-text");
+    private Table buildRosterTable(String caption, Map<String, List<? extends Player>> rosterMap) {
+        Table rosterTable = new Table(
+                new Table.Row(
+                        new Table.HeaderCell(),
+                        new Table.HeaderCell(outputResourceBundle.getString("team.roster.offense")),
+                        new Table.HeaderCell(outputResourceBundle.getString("team.roster.defense")),
+                        new Table.HeaderCell(outputResourceBundle.getString("team.roster.teamwork")),
+                        new Table.HeaderCell(outputResourceBundle.getString("team.roster.foul"))
+                )
+        );
 
-                        Div playerDiv = new Div(new Text(player.getName()), tooltip);
-                        playerDiv.addClass("player-tooltip");
+        rosterTable.setCaption(caption);
+        rosterTable.addClass("quidditch-roster", "wikitable");
+        for (Map.Entry<String, List<? extends Player>> entry: rosterMap.entrySet()) {
+            Table.HeaderCell positionHeader = new Table.HeaderCell(entry.getKey());
+            positionHeader.addAttribute("colspan", "5");
 
-                        return new UnorderedList.Item(playerDiv);
-                    }).toList();
-            playerCells.add(new Table.Cell(new UnorderedList(playerItems)));
+            rosterTable.addChildren(new Table.Row(positionHeader));
+            for  (Player player: entry.getValue()) {
+                Table.Cell playerCell = new Table.Cell(player.getName());
+                playerCell.addClass("quidditch-name");
+                rosterTable.addChildren(
+                        new Table.Row(
+                                playerCell,
+                                new Table.Cell(String.valueOf(player.getSkillOffense())),
+                                new Table.Cell(String.valueOf(player.getSkillDefense())),
+                                new Table.Cell(String.valueOf(player.getSkillTeamwork())),
+                                new Table.Cell(String.valueOf(player.getFoulLikelihood()))
+                        )
+                );
+            }
         }
-
-        Table.Row headerRow = new Table.Row(headerCells);
-        Table.Row playerRow = new Table.Row(playerCells);
-        headerRow.addClass("quidditch-roster-positions");
-        playerRow.addClass("quidditch-roster-players");
-        Table rosterTable = new Table(headerRow, playerRow);
-        rosterTable.addClass("quidditch-roster");
-        rosterTable.setCaption(teamName);
-
         return rosterTable;
     }
 
