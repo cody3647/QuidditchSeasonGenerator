@@ -96,6 +96,7 @@ public class TeamDeserializer extends StdDeserializer<Team> {
         Team team = new Team();
 
         team.setName(node.get("name").asText(""));
+        team.setShortName(node.get("shortName").asText(""));
         team.setHome(node.get("home").asText(""));
 
         deserializePlayerList(node.get("beaters"), ctxt, team.getBeaters(), Beater.class);
