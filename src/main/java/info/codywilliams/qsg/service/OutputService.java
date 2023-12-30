@@ -120,7 +120,7 @@ public class OutputService {
         }
     }
 
-    public void writePagesToMediawiki(List<Page> pages, Mediawiki mediawiki, String yearRange) throws IOException {
+    public void writePagesToMediawiki(List<Page> pages, Mediawiki mediawiki, String yearRange, Boolean writeTeamPages) throws IOException {
         if(!mediawiki.isLoggedIn())
             return;
         try {
@@ -133,20 +133,22 @@ public class OutputService {
                     }
                     case MATCH, PLAYER -> mediawiki.createPage(page.getPageTitle(), page.toWikitext());
                     case TEAM -> {
-                        if (!mediawiki.pageExists(page.getPageTitle()))
-                            mediawiki.createPage(page.getPageTitle(), page.toWikitext());
-                        else {
-                            List<Element> elements = page.getSubsetPageElements(outputResourceBundle.getString("team.seasons"), null);
-                            String content = elements.stream().map(Element::toWikitext).collect(Collectors.joining("\n"));
+                        if(writeTeamPages) {
+                            if (!mediawiki.pageExists(page.getPageTitle()))
+                                mediawiki.createPage(page.getPageTitle(), page.toWikitext());
+                            else {
+                                List<Element> elements = page.getSubsetPageElements(outputResourceBundle.getString("team.seasons"), null);
+                                String content = elements.stream().map(Element::toWikitext).collect(Collectors.joining("\n"));
 
-                            if (mediawiki.sectionExists(page.getPageTitle(), yearRange))
-                                mediawiki.replaceSection(page.getPageTitle(), yearRange, content);
-                            else
-                                mediawiki.appendToSection(
-                                        page.getPageTitle(),
-                                        outputResourceBundle.getString("team.seasons"),
-                                        "\n" + content
-                                );
+                                if (mediawiki.sectionExists(page.getPageTitle(), yearRange))
+                                    mediawiki.replaceSection(page.getPageTitle(), yearRange, content);
+                                else
+                                    mediawiki.appendToSection(
+                                            page.getPageTitle(),
+                                            outputResourceBundle.getString("team.seasons"),
+                                            "\n" + content
+                                    );
+                            }
                         }
                     }
                 }

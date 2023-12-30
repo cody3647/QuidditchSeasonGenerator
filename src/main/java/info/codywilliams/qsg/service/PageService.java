@@ -747,4 +747,8 @@ public class PageService {
     public String getYearRange() {
         return yearRange;
     }
+
+    public boolean isIncludePlayerDetails() {
+        return includePlayerDetails;
+    }
 }

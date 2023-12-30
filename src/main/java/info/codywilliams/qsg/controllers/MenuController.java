@@ -6,6 +6,7 @@ import ch.qos.logback.classic.LoggerContext;
 import info.codywilliams.qsg.App;
 import info.codywilliams.qsg.models.Context;
 import info.codywilliams.qsg.models.Team;
+import info.codywilliams.qsg.models.player.Player;
 import info.codywilliams.qsg.models.tournament.MatchDayTime;
 import info.codywilliams.qsg.models.tournament.TournamentOptions;
 import info.codywilliams.qsg.models.tournament.type.TournamentType;
@@ -32,7 +33,10 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Random;
 import java.util.ResourceBundle;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -224,6 +228,38 @@ public class MenuController {
 
         context.getTeams().clear();
         context.getTeams().addAll(teams);
+    }
+
+    @FXML
+    void changePlayerSkillLevelSmall() {
+        changePlayerSkillLevels(1);
+    }
+    void changePlayerSkillLevels(int amount) {
+        Random random = new Random(context.getSeed() + System.currentTimeMillis());
+
+        BiConsumer<Integer, Consumer<Integer>> skillAdjuster = (current, setter) -> {
+            int chance = random.nextInt(0,10);
+            switch(chance) {
+                case 0,1 -> setter.accept(current - amount);
+                case 2,3,4 -> setter.accept(current + amount);
+            }
+        };
+
+        Consumer<Player> playerAdjuster = player -> {
+            skillAdjuster.accept(player.getSkillDefense(), player::setSkillDefense);
+            skillAdjuster.accept(player.getSkillOffense(), player::setSkillOffense);
+            skillAdjuster.accept(player.getSkillTeamwork(), player::setSkillTeamwork);
+            skillAdjuster.accept(player.getFoulLikelihood(), player::setFoulLikelihood);
+        };
+
+
+
+        context.getTeams().forEach(team -> {
+            team.getBeaters().forEach(playerAdjuster);
+            team.getChasers().forEach(playerAdjuster);
+            team.getKeepers().forEach(playerAdjuster);
+            team.getSeekers().forEach(playerAdjuster);
+        });
     }
 
     @FXML

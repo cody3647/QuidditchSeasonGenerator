@@ -30,6 +30,11 @@
             </MenuItem>
         </items>
       </Menu>
+      <Menu mnemonicParsing="false" text="%app.menu.team">
+         <items>
+            <MenuItem mnemonicParsing="false" onAction="#changePlayerSkillLevelSmall" text="%app.menu.team.small.change" />
+         </items>
+      </Menu>
         <Menu mnemonicParsing="false" text="%app.menu.mediawiki">
             <items>
                 <MenuItem mnemonicParsing="false" onAction="#displayMediawikiSetupWindow" text="%app.menu.mediawiki.setup" />
